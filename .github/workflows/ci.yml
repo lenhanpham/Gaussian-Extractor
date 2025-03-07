@@ -42,7 +42,7 @@ jobs:
 
       # Upload the results file as an artifact
       - name: Upload results artifact
-        uses: actions/actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gaussian-results
           path: "*.results"  # Matches the output file (e.g., singlet-OSS-TS-done.results)
