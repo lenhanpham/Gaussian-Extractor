@@ -59,7 +59,7 @@ This runs the program with default parameters:
 
 The program will also print output on your terminal
 
-![image-20250308021332374](C:\Users\lenha\AppData\Roaming\Typora\typora-user-images\image-20250308021332374.png)
+![results](results.png)
 
 #### Customizing the Run with Command-Line Arguments
 
