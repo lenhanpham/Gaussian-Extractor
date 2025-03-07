@@ -1,59 +1,59 @@
-name CICD for Gaussian Extractor
+name: CI/CD for Gaussian Extractor
 
 # Trigger the workflow on push or pull request to the main branch
-on
-  push
-    branches [ main ]
-  pull_request
-    branches [ main ]
-  workflow_dispatch # Allows manual triggering from the GitHub Actions tab
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
 
-jobs
-  build-and-test
+jobs:
+  build-and-test:
     # Run on the latest Ubuntu runner
-    runs-on ubuntu-latest
+    runs-on: ubuntu-latest
 
-    steps
+    steps:
       # Checkout the repository code
-      - name Checkout repository
-        uses actionscheckout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       # Install g++ and necessary tools
-      - name Install dependencies
-        run 
+      - name: Install dependencies
+        run: |
           sudo apt-get update
           sudo apt-get install -y g++ make
 
       # Compile the C++ code
-      - name Build the project
-        run 
+      - name: Build the project
+        run: |
           g++ -o gaussian_extractor gaussian_extractor.cpp main.cpp -std=c++17
-        # Note Adjust file names if your source files are different
+        # Note: Adjust file names if your source files are different
 
       # Run the executable and test with sample .log files
-      - name Run the executable
-        run 
-          if ls .log devnull 2&1; then
-            .gaussian_extractor
+      - name: Run the executable
+        run: |
+          if ls *.log >/dev/null 2>&1; then
+            ./gaussian_extractor
           else
-            echo No .log files found in the repository. Skipping execution.
+            echo "No .log files found in the repository. Skipping execution."
           fi
         # This checks for .log files and runs the program if they exist
 
       # Upload the results file as an artifact
-      - name Upload results artifact
-        uses actionsupload-artifact@v3
-        with
-          name gaussian-results
-          path .results  # Matches the output file (e.g., singlet-OSS-TS-done.results)
-        if always()  # Upload even if the previous step fails
+      - name: Upload results artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: gaussian-results
+          path: "*.results"  # Matches the output file (e.g., singlet-OSS-TS-done.results)
+        if: always()  # Upload even if the previous step fails
 
       # Display results in the workflow logs (optional, for debugging)
-      - name Display results
-        run 
-          if ls .results devnull 2&1; then
-            cat .results
+      - name: Display results
+        run: |
+          if ls *.results >/dev/null 2>&1; then
+            cat *.results
           else
-            echo No results file generated.
+            echo "No results file generated."
           fi
-        if always()
+        if: always()
