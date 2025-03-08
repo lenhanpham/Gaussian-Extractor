@@ -99,7 +99,7 @@ The program will also print output on your terminal by default
 * 6th column (*SCFE*): SCF energy in hartree
 * 7th column (*ZPE*): Zero-point energy
 * 8th column (*Status*): current status of a gaussian output: DONE or UNDONE (not finished)
-* 9th column (*PCorr*): Whether phase correction (gas phase 1atm to 1M in solution) is corrected or not. This value will be YES if your were calcualtions done in solvent (scrf=solvent), and NO if your calculations were done in gas phase. 
+* 9th column (*PCorr*): Whether phase correction (gas phase 1atm to 1M in solution) is corrected or not. This value will be YES if your calcualtions were done in solvent (scrf=solvent), and NO if your calculations were done in gas phase. 
 * 10th column (*Round*): numbers of gaussian rounds in a gaussian outputs. If your inputs have 1 --link1--, this value will be 2 indicating 2 sections of run in your outputs.
 
 #### Customizing the Run with Command-Line Arguments
@@ -107,7 +107,7 @@ The program will also print output on your terminal by default
 The program accepts optional arguments to customize its behavior:
 
 - -t or --temp: Set the temperature in Kelvin. If users specify temperature via -t or --temp, this temperature value will be used for all outputs in the same directory to ensure consistency in calculations of phase correction. ***Note that corresponding temperature should be set in all gaussian inputs to take correction of entropy into account.*** ***The program does not update entropy and thermal correction; therefore if temperature is not set in all gaussian inputs, Gibbs free energy will be wrongly corrected.*** 
-- -c or --cm: Set the concentration  (in units of 1000 mM).
+- -c or --cm: Set the concentration  (in units of M).
 - -col or --column: Set the column to sort by (2 to 7, corresponding to Gibbs free energy in kJ/mol, Lowest frequency, Gibbs freee energy in Hartree, nuclear energy, SCF energy, zero-point energy and so on).
 - -q or --quiet: Run in quiet mode (no console output).
 - -f or --format: Output format (text or csv).
