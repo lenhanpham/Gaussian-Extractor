@@ -155,20 +155,21 @@ Result extract(const std::string& file_name_param, double temp, int C, double Po
     return Result{file_name, etgkj, lf, GibbsFreeHartree, nucleare, scf, zpe, status, phaseCorr, copyright_count};
 }
 
-void processAndOutputResults(double temp, int C, int column, const std::string& extension, bool quiet) {
+void processAndOutputResults(double temp, int C, int column, const std::string& extension, bool quiet, const std::string& format) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    // Get current directory name
+    // Get current directory name and set output file extension
     char cwd[1024];
     if (getcwd(cwd, sizeof(cwd)) == nullptr) {
         std::cerr << "Error: Could not get current working directory" << std::endl;
         return;
     }
     std::string dir_name = std::filesystem::path(cwd).filename().string();
-    std::string output_filename = dir_name + ".results";
+    std::string output_extension = (format == "csv") ? ".csv" : ".results";
+    std::string output_filename = dir_name + output_extension;
     std::ofstream output_file(output_filename);
     if (!output_file.is_open()) {
-        std::cerr << "Could not open output file: " << output_filename << std::endl;
+        std::cerr << "Error: Could not open output file: " << output_filename << std::endl;
         return;
     }
 
@@ -191,9 +192,9 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
         Result res = extract(log_files[i], temp, C, Po);
         results.push_back(res);
         if (i == 0) {
-            first_temp = temp;  // Temp from first file
+            first_temp = temp;
         }
-        last_GphaseCorr = R * temp * std::log(C * R * temp / Po) * 0.0003808798033989866 / 1000;  // Last file's GphaseCorr
+        last_GphaseCorr = R * temp * std::log(C * R * temp / Po) * 0.0003808798033989866 / 1000;
     }
 
     std::sort(results.begin(), results.end(), [column](const Result& a, const Result& b) {
@@ -206,55 +207,81 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
            << "The concentration for phase correction: " << C / 1000 << " M or " << C << " mol/m3\n"
            << "Last Gibbs free correction for phase changing from 1 atm to 1 M: " << std::fixed << std::setprecision(6) << last_GphaseCorr << " au\n";
 
-    // Prepare header and separator
-    std::ostringstream header;
-    header << std::setw(53) << std::left << "Output name"
-           << std::setw(18) << std::right << "ETG kJ/mol"
-           << std::setw(10) << std::right << "Low FC"
-           << std::setw(18) << std::right << "ETG a.u"
-           << std::setw(18) << std::right << "Nuclear E au"
-           << std::setw(18) << std::right << "SCFE"
-           << std::setw(10) << std::right << "ZPE "
-           << std::setw(8) << std::right << "Status"
-           << std::setw(6) << std::right << "PCorr"
-           << std::setw(6) << std::right << "Round" << "\n";
+    std::ostringstream output_stream;
 
-    std::ostringstream separator;
-    separator << std::setw(53) << std::left << std::string(53, '-')
-              << std::setw(18) << std::right << std::string(18, '-')
-              << std::setw(10) << std::right << std::string(10, '-')
-              << std::setw(18) << std::right << std::string(18, '-')
-              << std::setw(18) << std::right << std::string(18, '-')
-              << std::setw(18) << std::right << std::string(18, '-')
-              << std::setw(10) << std::right << std::string(10, '-')
-              << std::setw(8) << std::right << std::string(8, '-')
-              << std::setw(6) << std::right << std::string(6, '-')
-              << std::setw(6) << std::right << std::string(6, '-') << "\n";
+    if (format == "text") {
+        // Text format (original table)
+        std::ostringstream header;
+        header << std::setw(53) << std::left << "Output name"
+               << std::setw(18) << std::right << "ETG kJ/mol"
+               << std::setw(10) << std::right << "Low FC"
+               << std::setw(18) << std::right << "ETG a.u"
+               << std::setw(18) << std::right << "Nuclear E au"
+               << std::setw(18) << std::right << "SCFE"
+               << std::setw(10) << std::right << "ZPE "
+               << std::setw(8) << std::right << "Status"
+               << std::setw(6) << std::right << "PCorr"
+               << std::setw(6) << std::right << "Round" << "\n";
 
-    // Prepare results output
-    std::ostringstream results_stream;
-    for (const auto& result : results) {
-        results_stream << std::setw(53) << std::left << result.file_name
-                       << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.etgkj
-                       << std::setw(10) << std::right << std::fixed << std::setprecision(2) << result.lf
-                       << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.GibbsFreeHartree
-                       << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.nucleare
-                       << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.scf
-                       << std::setw(10) << std::right << std::fixed << std::setprecision(6) << result.zpe
-                       << std::setw(8) << std::right << result.status
-                       << std::setw(6) << std::right << result.phaseCorr
-                       << std::setw(6) << std::right << result.copyright_count << "\n";
+        std::ostringstream separator;
+        separator << std::setw(53) << std::left << std::string(53, '-')
+                  << std::setw(18) << std::right << std::string(18, '-')
+                  << std::setw(10) << std::right << std::string(10, '-')
+                  << std::setw(18) << std::right << std::string(18, '-')
+                  << std::setw(18) << std::right << std::string(18, '-')
+                  << std::setw(18) << std::right << std::string(18, '-')
+                  << std::setw(10) << std::right << std::string(10, '-')
+                  << std::setw(8) << std::right << std::string(8, '-')
+                  << std::setw(6) << std::right << std::string(6, '-')
+                  << std::setw(6) << std::right << std::string(6, '-') << "\n";
+
+        for (const auto& result : results) {
+            output_stream << std::setw(53) << std::left << result.file_name
+                          << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.etgkj
+                          << std::setw(10) << std::right << std::fixed << std::setprecision(2) << result.lf
+                          << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.GibbsFreeHartree
+                          << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.nucleare
+                          << std::setw(18) << std::right << std::fixed << std::setprecision(6) << result.scf
+                          << std::setw(10) << std::right << std::fixed << std::setprecision(6) << result.zpe
+                          << std::setw(8) << std::right << result.status
+                          << std::setw(6) << std::right << result.phaseCorr
+                          << std::setw(6) << std::right << result.copyright_count << "\n";
+        }
+
+        output_file << params.str() << header.str() << separator.str() << output_stream.str();
+        if (!quiet) {
+            std::cout << params.str() << header.str() << separator.str() << output_stream.str();
+        }
+    } else if (format == "csv") {
+        // CSV format
+        output_stream << "Output name,ETG kJ/mol,Low FC,ETG a.u,Nuclear E au,SCFE,ZPE,Status,PCorr,Round\n";
+        for (const auto& result : results) {
+            output_stream << "\"" << result.file_name << "\","
+                          << std::fixed << std::setprecision(6) << result.etgkj << ","
+                          << std::fixed << std::setprecision(2) << result.lf << ","
+                          << std::fixed << std::setprecision(6) << result.GibbsFreeHartree << ","
+                          << std::fixed << std::setprecision(6) << result.nucleare << ","
+                          << std::fixed << std::setprecision(6) << result.scf << ","
+                          << std::fixed << std::setprecision(6) << result.zpe << ","
+                          << result.status << ","
+                          << result.phaseCorr << ","
+                          << result.copyright_count << "\n";
+        }
+
+        output_file << params.str() << output_stream.str();
+        if (!quiet) {
+            std::cout << params.str() << output_stream.str();
+        }
+    } else {
+        std::cerr << "Error: Invalid format '" << format << "'. Supported formats: 'text', 'csv'. Using 'text'." << std::endl;
+        processAndOutputResults(temp, C, column, extension, quiet, "text");  // Fallback to text
+        return;
     }
 
-    // Write to file (always write to file)
-    output_file << params.str() << header.str() << separator.str() << results_stream.str();
     output_file.close();
 
-    // Print to terminal (only if not quiet)
     if (!quiet) {
-        std::cout << params.str() << header.str() << separator.str() << results_stream.str();
         std::cout << "Results written to " << output_filename << std::endl;
-
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> duration = end_time - start_time;
         std::cout << "Total execution time: " << duration.count() << " seconds" << std::endl;

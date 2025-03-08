@@ -7,7 +7,8 @@ int main(int argc, char* argv[]) {
     int C = 1000;
     int column = 2;
     std::string extension = ".log";
-    bool quiet = false;  // Default to verbose output
+    bool quiet = false;
+    std::string format = "text";  // Default to text format
 
     if (argc > 1) {
         for (int i = 1; i < argc; ++i) {
@@ -28,10 +29,18 @@ int main(int argc, char* argv[]) {
                 }
             } else if (arg == "-q" || arg == "--quiet") {
                 quiet = true;
+            } else if (arg == "-f" || arg == "--format") {
+                if (++i < argc) {
+                    format = argv[i];
+                    if (format != "text" && format != "csv") {
+                        std::cerr << "Error: Format must be 'text' or 'csv'. Using default 'text'." << std::endl;
+                        format = "text";
+                    }
+                }
             }
         }
     }
 
-    processAndOutputResults(temp, C, column, extension, quiet);
+    processAndOutputResults(temp, C, column, extension, quiet, format);
     return 0;
 }

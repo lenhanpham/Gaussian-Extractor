@@ -61,9 +61,23 @@ This runs the program with default parameters:
 
 - The program will:
   - Scan the current directory for all .log files.
+  
   - Extract data (e.g., energies, frequencies) from each file.
+  
   - Sort the results based on the specified column (default is etgkj).
-  - Write the results to a file named output.results in the current directory.
+  
+  - Write the results to a file named output.results in the current directory
+  
+  - A csv output file can be generated if the program runs with option -f csv:
+  
+    ```
+    Text (default): gaussian_extractor.x
+    CSV: gaussian_extractor.x -f csv
+    Quiet CSV: gaussian_extractor.x -f csv -q
+    ```
+  
+    
+  
 - You’ll see console output like:
 
 > Results written to base_directory.results
@@ -98,7 +112,7 @@ gaussian_extractor.x -c 2 -col 6
 3. Combine multiple arguments:
 
 ```
-gaussian_extractor.x -t 310.15 -c 5 -col 4 -q
+gaussian_extractor.x -t 310.15 -c 5 -col 4 -q -f csv 
 ```
 
 
