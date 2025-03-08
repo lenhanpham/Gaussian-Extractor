@@ -106,9 +106,9 @@ The program will also print output on your terminal by default
 
 The program accepts optional arguments to customize its behavior:
 
-- -t or --temp: Set the temperature in Kelvin. If users specify temperature via -t or --temp, this temperature value will be used for all outputs in the same directory to ensure consistency in calculations of phase correction. ***Note that corresponding temperature should be set in all gaussian inputs to take correction of entropy into account.*** ***The program does not update entropy and thermal correction; therefor if temperature is not set in all gaussian inputs, Gibbs free energy will be wrongly corrected.*** 
+- -t or --temp: Set the temperature in Kelvin. If users specify temperature via -t or --temp, this temperature value will be used for all outputs in the same directory to ensure consistency in calculations of phase correction. ***Note that corresponding temperature should be set in all gaussian inputs to take correction of entropy into account.*** ***The program does not update entropy and thermal correction; therefore if temperature is not set in all gaussian inputs, Gibbs free energy will be wrongly corrected.*** 
 - -c or --cm: Set the concentration  (in units of 1000 mM).
-- -col or --column: Set the column to sort by (2 to 7, corresponding to etgkj, lf, GibbsFreeHartree, nucleare, scf, zpe).
+- -col or --column: Set the column to sort by (2 to 7, corresponding to Gibbs free energy in kJ/mol, Lowest frequency, Gibbs freee energy in Hartree, nuclear energy, SCF energy, zero-point energy and so on).
 - -q or --quiet: Run in quiet mode (no console output).
 - -f or --format: Output format (text or csv).
 
