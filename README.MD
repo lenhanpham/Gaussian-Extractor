@@ -68,7 +68,7 @@ gaussian_extractor.x -q
   
   - Sort the results based on the specified column (default is etgkj).
   
-  - Write the results to a file named output.results in the current directory
+  - Write the results to a file named base_directory_name.results in the current directory
   
   - A csv output file can be generated if the program runs with option -f csv:
   
