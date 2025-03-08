@@ -155,7 +155,7 @@ Result extract(const std::string& file_name_param, double temp, int C, double Po
     return Result{file_name, etgkj, lf, GibbsFreeHartree, nucleare, scf, zpe, status, phaseCorr, copyright_count};
 }
 
-void processAndOutputResults(double temp, int C, int column) {
+void processAndOutputResults(double temp, int C, int column, const std::string& extension) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
     // Get current directory name
@@ -174,24 +174,37 @@ void processAndOutputResults(double temp, int C, int column) {
 
     std::vector<std::string> log_files;
     for (const auto& entry : std::filesystem::directory_iterator(".")) {
-        if (entry.path().extension() == ".log") {
+        if (entry.path().extension() == extension) {
             log_files.push_back(entry.path().string());
         }
     }
 
     if (log_files.empty()) {
-        std::cerr << "No .log files found in the current directory." << std::endl;
+        std::cerr << "No " << extension << " files found in the current directory." << std::endl;
         return;
     }
 
     std::vector<Result> results;
-    for (const auto& file : log_files) {
-        results.push_back(extract(file, temp, C, Po));
+    double first_temp = temp;  // Store the temperature from the first file
+    double last_GphaseCorr = 0.0;  // Store the last GphaseCorr
+    for (size_t i = 0; i < log_files.size(); ++i) {
+        Result res = extract(log_files[i], temp, C, Po);
+        results.push_back(res);
+        if (i == 0) {
+            first_temp = temp;  // Capture temp from first file
+        }
+        last_GphaseCorr = R * temp * std::log(C * R * temp / Po) * 0.0003808798033989866 / 1000;  // Update with last file's temp
     }
 
     std::sort(results.begin(), results.end(), [column](const Result& a, const Result& b) {
         return compareResults(a, b, column);
     });
+
+    // Prepare additional parameters
+    std::ostringstream params;
+    params << "Temperature in " << results[0].file_name << ": " << std::fixed << std::setprecision(3) << first_temp << " K. Make sure that temperature has been used in your input.\n"
+           << "The concentration for phase correction: " << C / 1000 << " M or " << C << " mol/m3\n"
+           << "Last Gibbs free correction for phase changing from 1 atm to 1 M: " << std::fixed << std::setprecision(6) << last_GphaseCorr << " au\n";
 
     // Prepare header and separator
     std::ostringstream header;
@@ -234,11 +247,11 @@ void processAndOutputResults(double temp, int C, int column) {
     }
 
     // Write to file
-    output_file << header.str() << separator.str() << results_stream.str();
+    output_file << params.str() << header.str() << separator.str() << results_stream.str();
     output_file.close();
 
     // Print to terminal
-    std::cout << header.str() << separator.str() << results_stream.str();
+    std::cout << params.str() << header.str() << separator.str() << results_stream.str();
     std::cout << "Results written to " << output_filename << std::endl;
 
     auto end_time = std::chrono::high_resolution_clock::now();

@@ -25,6 +25,6 @@ struct Result {
 // Function declarations
 bool compareResults(const Result& a, const Result& b, int column);
 Result extract(const std::string& file_name_param, double temp, int C, double Po);
-void processAndOutputResults(double temp, int C, int column);
+void processAndOutputResults(double temp, int C, int column, const std::string& extension = ".log");
 
 #endif // GAUSSIAN_EXTRACTOR_H
