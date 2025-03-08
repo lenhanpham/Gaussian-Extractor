@@ -118,7 +118,7 @@ Examples:
 gaussian_extractor.x -t 300
 ```
 
-2. Run with a concentration multiplier of 2000 and sort by SCF energy (column 6):
+2. Run with a concentration of 2 M and sort by SCF energy (column 6):
 
 ```
 gaussian_extractor.x -c 2 -col 6
