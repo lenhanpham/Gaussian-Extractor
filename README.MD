@@ -13,30 +13,30 @@
  * compile the program with:
 
 ```
-g++ -o gaussian_extractor gaussian_extractor.cpp main.cpp -std=c++17
+g++ -o gaussian_extractor.x gaussian_extractor.cpp main.cpp -std=c++17
 ```
 
-This creates an executable named gaussian_extractor in your current directory.
+This creates an executable named gaussian_extractor.x in your current directory.
 
 **Input Files**: The program looks for .log files in the current directory (where you run the executable). These are likely Gaussian output files containing computational chemistry data (e.g., SCF energies, frequencies, etc.).
 
 **Permissions**: Ensure you have execute permissions for the file. You can check and set this with:
 
 ```
-ls -l gaussian_extractor
-chmod +x gaussian_extractor  # If needed
+ls -l gaussian_extractor.x
+chmod +x gaussian_extractor.x  # If needed
 ```
 
 #### Basic Execution
 
 To run the program with default settings:
 
-Navigate to the directory containing your .log files and copy gaussian_extractor executable to your bin, remember to export your path:
+Navigate to the directory containing your .log files and copy gaussian_extractor.x executable to your bin, remember to export your path:
 
 Execute the program:
 
 ```
-gaussian_extractor
+gaussian_extractor.x
 ```
 
 This runs the program with default parameters:
@@ -74,19 +74,19 @@ Examples:
 1. Run with a temperature of 300 K:
 
 ```
-gaussian_extractor -t 300
+gaussian_extractor.x -t 300
 ```
 
 2. Run with a concentration multiplier of 2000 and sort by SCF energy (column 6):
 
 ```
-gaussian_extractor -c 2 -col 6
+gaussian_extractor.x -c 2 -col 6
 ```
 
 3. Combine multiple arguments:
 
 ```
-gaussian_extractor -t 310.15 -c 5 -col 4
+gaussian_extractor.x -t 310.15 -c 5 -col 4
 ```
 
 
