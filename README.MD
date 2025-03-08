@@ -92,7 +92,7 @@ The program will also print output on your terminal by default
 * 3rd column (*Low FC*): the lowest vibrational frequency. This value is useful when you want to see if a gaussian output has imaginary mode or not (geometrical optimization and transition sate search). *Note that the program just prints out the lowest frequency mode. If your outputs have more than two imaginary modes, the program won't let you know. You have to check this yourself for example TS search.* I will implement this  function soon. 
 * 4th column (*ETG a.u*): the same as the 2nd one but the unit is hartree or atomic units.
 * 5th column (*Nuclear E  au*): Repulsive nuclear energy. This is useful because nuclear energy is very sensitive to coordinates of molecular systems. Two different coordinate systems will have different nuclear energy.
-* 6ht column (*SCFE*): SCF energy in hartree
+* 6th column (*SCFE*): SCF energy in hartree
 * 7th column (*ZPE*): Zero-point energy
 * 8th column (*Status*): current status of a gaussian output: DONE or UNDONE (not finished)
 * 9th column (*PCorr*): Whether phase correction (gas phase 1atm to 1M in solution) is corrected or not
