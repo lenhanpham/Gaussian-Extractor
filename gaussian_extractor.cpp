@@ -27,7 +27,7 @@ bool compareResults(const Result& a, const Result& b, int column) {
     }
 }
 
-Result extract(const std::string& file_name_param, double temp, int C, double Po) {
+Result extract(const std::string& file_name_param, double& temp, int C, double Po, bool use_input_temp) {
     std::ifstream file(file_name_param);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + file_name_param);
@@ -102,7 +102,7 @@ Result extract(const std::string& file_name_param, double temp, int C, double Po
                         positive_freqs.push_back(freq);
                     }
                 }
-            } else if (line.find("Kelvin.  Pressure") != std::string::npos) {
+            } else if (!use_input_temp && line.find("Kelvin.  Pressure") != std::string::npos) {  // Only read temp if not using input
                 size_t start_pos = line.find("Temperature") + 11;
                 size_t end_pos = line.find("Kelvin");
                 if (start_pos != std::string::npos && end_pos != std::string::npos && start_pos < end_pos) {
@@ -112,7 +112,8 @@ Result extract(const std::string& file_name_param, double temp, int C, double Po
                     if (!temp_str.empty()) {
                         temp = std::stod(temp_str);
                     } else {
-                        std::cerr << "Warning: Could not parse temperature from '" << line << "' in file '" << file_name << "'" << std::endl;
+                        std::cerr << "Warning: Could not parse temperature from '" << line << "' in file '" << file_name << "'. Using default 298.15 K" << std::endl;
+                        temp = 298.15;  // Default for this file only
                     }
                 }
             } else if (line.find("scrf") != std::string::npos) {
@@ -155,10 +156,9 @@ Result extract(const std::string& file_name_param, double temp, int C, double Po
     return Result{file_name, etgkj, lf, GibbsFreeHartree, nucleare, scf, zpe, status, phaseCorr, copyright_count};
 }
 
-void processAndOutputResults(double temp, int C, int column, const std::string& extension, bool quiet, const std::string& format) {
+void processAndOutputResults(double temp, int C, int column, const std::string& extension, bool quiet, const std::string& format, bool use_input_temp) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    // Get current directory name and set output file extension
     char cwd[1024];
     if (getcwd(cwd, sizeof(cwd)) == nullptr) {
         std::cerr << "Error: Could not get current working directory" << std::endl;
@@ -187,14 +187,17 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
 
     std::vector<Result> results;
     double first_temp = temp;
+    double last_temp = temp;
     double last_GphaseCorr = 0.0;
     for (size_t i = 0; i < log_files.size(); ++i) {
-        Result res = extract(log_files[i], temp, C, Po);
+        double current_temp = temp;  // Start with default or input temp
+        Result res = extract(log_files[i], current_temp, C, Po, use_input_temp);
         results.push_back(res);
         if (i == 0) {
-            first_temp = temp;
+            first_temp = current_temp;
         }
-        last_GphaseCorr = R * temp * std::log(C * R * temp / Po) * 0.0003808798033989866 / 1000;
+        last_temp = current_temp;
+        last_GphaseCorr = R * last_temp * std::log(C * R * last_temp / Po) * 0.0003808798033989866 / 1000;
     }
 
     std::sort(results.begin(), results.end(), [column](const Result& a, const Result& b) {
@@ -203,20 +206,23 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
 
     // Prepare additional parameters
     std::ostringstream params;
-    params << "                                                             \n"
-           << "*************************************************************\n"
-           << "* Gaussian Extractor version 0.1: Developed by Le Nhan Pham *\n"
-           << "* https://github.com/lenhanpham/gaussian-extractor          *\n"
-           << "*************************************************************\n"
-           << "                                                             \n"
-           << "Temperature in " << results[0].file_name << ": " << std::fixed << std::setprecision(3) << first_temp << " K. Make sure that temperature has been used in your input.\n"
-           << "The concentration for phase correction: " << C / 1000 << " M or " << C << " mol/m3\n"
-           << "Last Gibbs free correction for phase changing from 1 atm to 1 M: " << std::fixed << std::setprecision(6) << last_GphaseCorr << " au\n";
+    params      << "                                                             \n"
+                << "*************************************************************\n"
+                << "* Gaussian Extractor version 0.1: Developed by Le Nhan Pham *\n"
+                << "* https://github.com/lenhanpham/gaussian-extractor          *\n"
+                << "*************************************************************\n"
+                << "                                                             \n";
+    if (use_input_temp) {
+        params << "Using specified temperature for all files: " << std::fixed << std::setprecision(3) << temp << " K\n";
+    } else {
+        params << "Temperature in " << results[0].file_name << ": " << std::fixed << std::setprecision(3) << first_temp << " K (each file uses its own temperature, defaulting to 298.15 K if not found)\n";
+    }
+    params << "The concentration for phase correction: " << C / 1000 << " M or " << C << " mol/m3\n"
+           << "Last Gibbs free correction for phase changing from 1 atm to 1 M at " << std::fixed << std::setprecision(3) << last_temp << " K: " << std::fixed << std::setprecision(6) << last_GphaseCorr << " au\n";
 
     std::ostringstream output_stream;
 
     if (format == "text") {
-        // Text format (original table)
         std::ostringstream header;
         header << std::setw(53) << std::left << "Output name"
                << std::setw(18) << std::right << "ETG kJ/mol"
@@ -259,7 +265,6 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
             std::cout << params.str() << header.str() << separator.str() << output_stream.str();
         }
     } else if (format == "csv") {
-        // CSV format
         output_stream << "Output name,ETG kJ/mol,Low FC,ETG a.u,Nuclear E au,SCFE,ZPE,Status,PCorr,Round\n";
         for (const auto& result : results) {
             output_stream << "\"" << result.file_name << "\","
@@ -280,7 +285,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
         }
     } else {
         std::cerr << "Error: Invalid format '" << format << "'. Supported formats: 'text', 'csv'. Using 'text'." << std::endl;
-        processAndOutputResults(temp, C, column, extension, quiet, "text");  // Fallback to text
+        processAndOutputResults(temp, C, column, extension, quiet, "text", use_input_temp);
         return;
     }
 

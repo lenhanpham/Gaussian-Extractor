@@ -8,13 +8,17 @@ int main(int argc, char* argv[]) {
     int column = 2;
     std::string extension = ".log";
     bool quiet = false;
-    std::string format = "text";  // Default to text format
+    std::string format = "text";
+    bool use_input_temp = false;  // Default to false (read from files)
 
     if (argc > 1) {
         for (int i = 1; i < argc; ++i) {
             std::string arg = argv[i];
             if (arg == "-t" || arg == "--temp") {
-                if (++i < argc) temp = std::stod(argv[i]);
+                if (++i < argc) {
+                    temp = std::stod(argv[i]);
+                    use_input_temp = true;  // Set true if -t is specified
+                }
             } else if (arg == "-c" || arg == "--cm") {
                 if (++i < argc) C = std::stoi(argv[i]) * 1000;
             } else if (arg == "-col" || arg == "--column") {
@@ -41,6 +45,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    processAndOutputResults(temp, C, column, extension, quiet, format);
+    processAndOutputResults(temp, C, column, extension, quiet, format, use_input_temp);
     return 0;
 }
