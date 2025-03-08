@@ -49,7 +49,7 @@ This runs the program with default parameters:
 
   
 
-  **Quiet Mode**: the program will not print output to your terminal, will only generate an output file
+  **Quiet Mode**: the program will not print output to your terminal, only an output file generated
 
   ```
   gaussian_extractor.x -q
