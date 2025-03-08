@@ -18,7 +18,7 @@ g++ -o gaussian_extractor.x gaussian_extractor.cpp main.cpp -std=c++17
 
 This creates an executable named gaussian_extractor.x in your current directory.
 
-**Input Files**: The program looks for .log files in the current directory (where you run the executable). These are likely Gaussian output files containing computational chemistry data (e.g., SCF energies, frequencies, etc.).
+**Input Files**: The program looks for .log files in the current directory (where you run the executable). These are Gaussian output files containing computational chemistry data (e.g., SCF energies, frequencies, etc.).
 
 **Permissions**: Ensure you have execute permissions for the file. You can check and set this with:
 
@@ -47,7 +47,7 @@ This runs the program with default parameters:
 
 * Temperature (temp) = 298.15 K
 
-* Concentration multiplier (C) = 1 M
+* Concentration (C) = 1 M
 
 * Sort column (column) = 2 (sorts by etgkj, the Gibbs free energy in kJ/mol)
 
