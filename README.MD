@@ -45,11 +45,11 @@ gaussian_extractor.x
 
 This runs the program with default parameters:
 
-* Temperature (temp) = 298.15 K
+* Temperature (temp) = temperature value in each output. If there is no temperature there, the default value is 298.15 K
 
 * Concentration (C) = 1 M
 
-* Sort column (column) = 2 (sorts by etgkj, the Gibbs free energy in kJ/mol)
+* Sort column (column) = 2 (sorts by Gibbs free energy in kJ/mol)
 
 **Quiet Mode**: 
 
@@ -106,7 +106,7 @@ The program will also print output on your terminal by default
 
 The program accepts optional arguments to customize its behavior:
 
-- -t or --temp: Set the temperature in Kelvin.
+- -t or --temp: Set the temperature in Kelvin. If users specify temperature via -t or --temp, this temperature value will be used for all outputs in the same directory to ensure consistency in calculations of phase correction. ***Note that corresponding temperature should be set in all gaussian inputs to take correction of entropy into account.*** ***The program does not update entropy and thermal correction; therefor if temperature is not set in all gaussian inputs, Gibbs free energy will be wrongly corrected.*** 
 - -c or --cm: Set the concentration  (in units of 1000 mM).
 - -col or --column: Set the column to sort by (2 to 7, corresponding to etgkj, lf, GibbsFreeHartree, nucleare, scf, zpe).
 - -q or --quiet: Run in quiet mode (no console output).
