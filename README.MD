@@ -31,7 +31,7 @@ chmod +x gaussian_extractor.x  # If needed
 
 To run the program with default settings:
 
-Navigate to the directory containing your .log files and copy gaussian_extractor.x executable to your bin, remember to export your path:
+Navigate to the directory containing your .log files and copy gaussian_extractor.x executable to your bin; remember to export your path:
 
 Execute the program:
 
