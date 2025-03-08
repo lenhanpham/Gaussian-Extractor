@@ -6,7 +6,8 @@ int main(int argc, char* argv[]) {
     double temp = 298.15;
     int C = 1000;
     int column = 2;
-    std::string extension = ".log";  // Default extension
+    std::string extension = ".log";
+    bool quiet = false;  // Default to verbose output
 
     if (argc > 1) {
         for (int i = 1; i < argc; ++i) {
@@ -25,10 +26,12 @@ int main(int argc, char* argv[]) {
                         extension = ".log";
                     }
                 }
+            } else if (arg == "-q" || arg == "--quiet") {
+                quiet = true;
             }
         }
     }
 
-    processAndOutputResults(temp, C, column, extension);
+    processAndOutputResults(temp, C, column, extension, quiet);
     return 0;
 }

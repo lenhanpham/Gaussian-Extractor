@@ -155,7 +155,7 @@ Result extract(const std::string& file_name_param, double temp, int C, double Po
     return Result{file_name, etgkj, lf, GibbsFreeHartree, nucleare, scf, zpe, status, phaseCorr, copyright_count};
 }
 
-void processAndOutputResults(double temp, int C, int column, const std::string& extension) {
+void processAndOutputResults(double temp, int C, int column, const std::string& extension, bool quiet) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
     // Get current directory name
@@ -185,15 +185,15 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
     }
 
     std::vector<Result> results;
-    double first_temp = temp;  // Store the temperature from the first file
-    double last_GphaseCorr = 0.0;  // Store the last GphaseCorr
+    double first_temp = temp;
+    double last_GphaseCorr = 0.0;
     for (size_t i = 0; i < log_files.size(); ++i) {
         Result res = extract(log_files[i], temp, C, Po);
         results.push_back(res);
         if (i == 0) {
-            first_temp = temp;  // Capture temp from first file
+            first_temp = temp;  // Temp from first file
         }
-        last_GphaseCorr = R * temp * std::log(C * R * temp / Po) * 0.0003808798033989866 / 1000;  // Update with last file's temp
+        last_GphaseCorr = R * temp * std::log(C * R * temp / Po) * 0.0003808798033989866 / 1000;  // Last file's GphaseCorr
     }
 
     std::sort(results.begin(), results.end(), [column](const Result& a, const Result& b) {
@@ -246,15 +246,19 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
                        << std::setw(6) << std::right << result.copyright_count << "\n";
     }
 
-    // Write to file
+    // Write to file (always write to file)
     output_file << params.str() << header.str() << separator.str() << results_stream.str();
     output_file.close();
 
-    // Print to terminal
-    std::cout << params.str() << header.str() << separator.str() << results_stream.str();
-    std::cout << "Results written to " << output_filename << std::endl;
+    // Print to terminal (only if not quiet)
+    if (!quiet) {
+        std::cout << params.str() << header.str() << separator.str() << results_stream.str();
+        std::cout << "Results written to " << output_filename << std::endl;
 
-    auto end_time = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end_time - start_time;
-    std::cout << "Total execution time: " << duration.count() << " seconds" << std::endl;
+        auto end_time = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end_time - start_time;
+        std::cout << "Total execution time: " << duration.count() << " seconds" << std::endl;
+    } else {
+        std::cout << "Processed " << log_files.size() << " files. Results written to " << output_filename << " (quiet mode)" << std::endl;
+    }
 }

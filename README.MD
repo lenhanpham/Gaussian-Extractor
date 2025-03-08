@@ -42,8 +42,20 @@ gaussian_extractor.x
 This runs the program with default parameters:
 
 - Temperature (temp) = 298.15 K
+
 - Concentration multiplier (C) = 1 M
+
 - Sort column (column) = 2 (sorts by etgkj, the Gibbs free energy in kJ/mol)
+
+  
+
+  **Quiet Mode**: the program will not print output to your terminal, will only generate an output file
+
+  ```
+  gaussian_extractor.x -q
+  ```
+
+  
 
 #### Output
 
@@ -86,7 +98,7 @@ gaussian_extractor.x -c 2 -col 6
 3. Combine multiple arguments:
 
 ```
-gaussian_extractor.x -t 310.15 -c 5 -col 4
+gaussian_extractor.x -t 310.15 -c 5 -col 4 -q
 ```
 
 
