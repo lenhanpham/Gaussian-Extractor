@@ -13,7 +13,7 @@
  * compile the program with:
 
 ```
-* g++ -o gaussian_extractor gaussian_extractor.cpp main.cpp -std=c++17
+g++ -o gaussian_extractor gaussian_extractor.cpp main.cpp -std=c++17
 ```
 
 This creates an executable named gaussian_extractor in your current directory.
