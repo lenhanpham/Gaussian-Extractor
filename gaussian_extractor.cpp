@@ -203,7 +203,13 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
 
     // Prepare additional parameters
     std::ostringstream params;
-    params << "Temperature in " << results[0].file_name << ": " << std::fixed << std::setprecision(3) << first_temp << " K. Make sure that temperature has been used in your input.\n"
+    params << "                                                             \n"
+           << "*************************************************************\n"
+           << "* Gaussian Extractor version 0.1: Developed by Le Nhan Pham *\n"
+           << "* https://github.com/lenhanpham/gaussian-extractor          *\n"
+           << "*************************************************************\n"
+           << "                                                             \n"
+           << "Temperature in " << results[0].file_name << ": " << std::fixed << std::setprecision(3) << first_temp << " K. Make sure that temperature has been used in your input.\n"
            << "The concentration for phase correction: " << C / 1000 << " M or " << C << " mol/m3\n"
            << "Last Gibbs free correction for phase changing from 1 atm to 1 M: " << std::fixed << std::setprecision(6) << last_GphaseCorr << " au\n";
 
