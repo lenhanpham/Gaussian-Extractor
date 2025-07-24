@@ -24,44 +24,6 @@
 
 ## Installation and Compilation
 
-## Project Structure
-
-The project follows a modern C++ project organization:
-
-```
-gaussian-extractor/
-├── src/                  # Source code directory
-│   ├── core/            # Core functionality
-│   │   ├── gaussian_extractor.cpp
-│   │   ├── gaussian_extractor.h
-│   │   ├── job_scheduler.cpp
-│   │   └── job_scheduler.h
-│   └── main.cpp         # Main application entry point
-├── tests/              # Test files directory
-│   └── data/           # Test data directory
-│       ├── test-1.log
-│       └── test-2.log
-├── docs/               # Documentation
-│   └── results.png
-├── scripts/           # Build and utility scripts
-│   └── build.bat
-├── CMakeLists.txt     # Main CMake configuration
-├── Makefile          # Main Makefile
-└── README.MD
-```
-
-### Directory Structure
-
-* `src/`: Contains all source code
-  * `core/`: Core implementation files
-  * `main.cpp`: Application entry point
-* `tests/`: Test-related files
-  * `data/`: Test input files
-* `docs/`: Documentation and results
-* `scripts/`: Build and utility scripts
-* `CMakeLists.txt`: CMake build configuration
-* `Makefile`: Make build configuration
-
 ### Prerequisites
 
 **Compiler Requirements:**
