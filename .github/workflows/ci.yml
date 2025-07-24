@@ -33,12 +33,14 @@ jobs:
         id: run_tests
         run: |
           ./build/gaussian_extractor.x -q -f csv
-          if ! ls *.csv.results >/dev/null 2>&1; then
-            echo "Test failed: No .csv.results file generated."
+          if ! ls *.csv >/dev/null 2>&1; then
+            echo "Test failed: No .csv file generated."
             exit 1
           fi
-          if [ ! -s *.csv.results ]; then
-            echo "Test failed: .csv.results file is empty."
+          # Find the first csv file and check if it's empty
+          csv_file=$(ls *.csv | head -n 1)
+          if [ ! -s "$csv_file" ]; then
+            echo "Test failed: $csv_file is empty."
             exit 1
           fi
           echo "Tests passed."
