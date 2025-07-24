@@ -42,7 +42,7 @@
 **Linux/macOS:**
 ```bash
 module load gcc
-make                    # Safe default build
+make                   # Safe default build
 make cluster           # Cluster-optimized build
 make debug             # Debug build with safety checks
 make release           # High-performance release
@@ -93,15 +93,25 @@ make install-user
 
 # Or add to PATH manually
 export PATH=$PATH:/path/to/gaussian-extractor
+
+# Or copy gaussian-extractor.x to your ~/bin/ . Note that if your ~/bin/ does not exist, you need to mkdir ~/bin 
+cp gaussian-extractor ~/bin/ 
 ```
 
 ## Usage
 
 ### Quick Start
 
-**Basic execution** (processes all .log files in current directory):
+Suppose that you have gaussian_extractor.x in a dir where you have exported it to your PATH
+
 ```bash
-./gaussian_extractor.x
+cd to_the_dir_where_your_outputs_are_located
+```
+
+**Basic execution** (processes all .log files in current directory):
+
+```bash
+gaussian_extractor.x
 ```
 
 **Default behavior:**
@@ -117,22 +127,22 @@ export PATH=$PATH:/path/to/gaussian-extractor
 
 ```bash
 # Set a limit number of cores which will not over use your head node
-./gaussian_extractor.x -nt 4 -q
+gaussian_extractor.x -nt 4 -q
 
 # You can check resource limits before running
-./gaussian_extractor.x --resource-info
+gaussian_extractor.x --resource-info
 
 # Maximum safety on shared head nodes
-./gaussian_extractor.x -nt 2 -q -f csv
+gaussian_extractor.x -nt 2 -q -f csv
 ```
 
 ### You can specify the number of threads
 
 **Thread Control:**
 ```bash
-./gaussian_extractor.x -nt 4        # Use exactly 4 threads
-./gaussian_extractor.x -nt half     # Use half cores (default, safest)
-./gaussian_extractor.x -nt max      # Use all cores (with safety limits)
+gaussian_extractor.x -nt 4        # Use exactly 4 threads
+gaussian_extractor.x -nt half     # Use half cores (default, safest)
+gaussian_extractor.x -nt max      # Use all cores (with safety limits)
 ```
 
 **⚠️ Cluster Safety Warning:**
@@ -145,12 +155,12 @@ export PATH=$PATH:/path/to/gaussian-extractor
 **Resource Monitoring:**
 
 ```bash
-./gaussian_extractor.x --resource-info  # Show system resources before running
+gaussian_extractor.x --resource-info  # Show system resources before running
 ```
 
 **Quiet Mode (Recommended for Batch Jobs):**
 ```bash
-./gaussian_extractor.x -q              # Minimal output, perfect for scripts
+gaussian_extractor.x -q              # Minimal output, perfect for scripts
 ```
 
 
@@ -159,13 +169,13 @@ export PATH=$PATH:/path/to/gaussian-extractor
 
 **Text Format (Default):**
 ```bash
-./gaussian_extractor.x                  # A table of text
+gaussian_extractor.x                  # A table of text
 ```
 
 **CSV Format:**
 ```bash
-./gaussian_extractor.x -f csv          # CSV
-./gaussian_extractor.x -f csv -q       # CSV with minimal console output on your terminal 
+gaussian_extractor.x -f csv          # CSV
+gaussian_extractor.x -f csv -q       # CSV with minimal console output on your terminal 
 ```
 
 **Output Files:**
@@ -252,52 +262,52 @@ Memory usage: 256.7 MB / 4.0 GB
 #### Basic Examples
 ```bash
 # Simple processing with defaults
-./gaussian_extractor.x
+gaussian_extractor.x
 
 # Process with specific temperature
-./gaussian_extractor.x -t 300
+gaussian_extractor.x -t 300
 
 # Sort by SCF energy with 2M concentration
-./gaussian_extractor.x -c 2 -col 6
+gaussian_extractor.x -c 2 -col 6
 
 # Generate CSV output quietly
-./gaussian_extractor.x -f csv -q
+gaussian_extractor.x -f csv -q
 ```
 
 #### Production Examples
 ```bash
 # Cluster-safe processing
-./gaussian_extractor.x -nt 4 -q -f csv -t 298.15
+gaussian_extractor.x -nt 4 -q -f csv -t 298.15
 
 # High-throughput processing
-./gaussian_extractor.x -nt 8 -c 5 -col 4 -f csv
+gaussian_extractor.x -nt 8 -c 5 -col 4 -f csv
 
 # Conservative head node usage
-./gaussian_extractor.x -nt 2 -q --resource-info
+gaussian_extractor.x -nt 2 -q --resource-info
 
 # Process larger files (increase 100MB default limit)
-./gaussian_extractor.x --max-file-size 500
+gaussian_extractor.x --max-file-size 500
 
 # Set specific memory limit for high-memory systems
-./gaussian_extractor.x --memory-limit 8192 -nt 16
+gaussian_extractor.x --memory-limit 8192 -nt 16
 ```
 
 #### Advanced Examples
 ```bash
 # Complete parameter specification
-./gaussian_extractor.x -t 310.15 -c 5 -col 4 -nt 6 -f csv -q
+gaussian_extractor.x -t 310.15 -c 5 -col 4 -nt 6 -f csv -q
 
 # Process .out files instead of .log
-./gaussian_extractor.x -e out -nt half
+gaussian_extractor.x -e out -nt half
 
 # Debug problematic files
-./gaussian_extractor.x -nt 1 --resource-info
+gaussian_extractor.x -nt 1 --resource-info
 
 # Handle large files (increase size limit)
-./gaussian_extractor.x --max-file-size 200 -nt 4
+gaussian_extractor.x --max-file-size 200 -nt 4
 
 # High-performance setup for 32GB+ systems
-./gaussian_extractor.x --memory-limit 16384 -nt 20 --max-file-size 500
+gaussian_extractor.x --memory-limit 16384 -nt 20 --max-file-size 500
 ```
 
 
@@ -320,33 +330,33 @@ The program now **automatically calculates optimal memory limits** based on:
 
 **Example on 32GB system:**
 ```bash
-./gaussian_extractor.x -nt 4   # Uses ~9.6GB (30% of 32GB)
-./gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)  
-./gaussian_extractor.x -nt 16  # Uses ~16GB (50% of 32GB)
-./gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
+gaussian_extractor.x -nt 4   # Uses ~9.6GB (30% of 32GB)
+gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)  
+gaussian_extractor.x -nt 16  # Uses ~16GB (50% of 32GB)
+gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
 ```
 
 ### For Cluster Head Nodes 
 ```bash
 # RECOMMENDED: Conservative settings
-./gaussian_extractor.x -nt 2 -q -f csv
+gaussian_extractor.x -nt 2 -q -f csv
 
 # CHECK FIRST: Resource availability  
-./gaussian_extractor.x --resource-info
+gaussian_extractor.x --resource-info
 
 # AVOID: Resource-intensive operations
-./gaussian_extractor.x -nt max  # DON'T USE ON HEAD NODES
+gaussian_extractor.x -nt max  # DON'T USE ON HEAD NODES
 ```
 
 ### For Compute Nodes
 ```bash
 # Optimal performance settings
-./gaussian_extractor.x -nt half    # Usually optimal
-./gaussian_extractor.x -nt max     # If node is dedicated to your job
+gaussian_extractor.x -nt half    # Usually optimal
+gaussian_extractor.x -nt max     # If node is dedicated to your job
 
 # High-performance setups (adjust based on your system)
-./gaussian_extractor.x -nt 20 --memory-limit 16384  # 16GB limit, 20 threads
-./gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
+gaussian_extractor.x -nt 20 --memory-limit 16384  # 16GB limit, 20 threads
+gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 ```
 
 ### Error Handling and Recovery
@@ -374,13 +384,13 @@ make debug  # Often reveals compilation issues
 **Performance Issues:**
 ```bash
 # Reduce thread count
-./gaussian_extractor.x -nt 2
+gaussian_extractor.x -nt 2
 
 # Check file sizes
 ls -lh *.log  # Files >100MB are automatically skipped
 
 # Monitor resources
-./gaussian_extractor.x --resource-info
+gaussian_extractor.x --resource-info
 ```
 
 **Memory Issues:**
@@ -393,8 +403,8 @@ ls -lh *.log  # Files >100MB are automatically skipped
 
 ### Getting Help
 ```bash
-./gaussian_extractor.x --help        # Complete help
-./gaussian_extractor.x --resource-info  # System information
+gaussian_extractor.x --help        # Complete help
+gaussian_extractor.x --resource-info  # System information
 ```
 
 ## Version History
