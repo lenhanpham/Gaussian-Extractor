@@ -231,7 +231,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
     std::ostringstream params;
     params      << "                                                             \n"
                 << "*************************************************************\n"
-                << "* Gaussian Extractor version 0.1: Developed by Le Nhan Pham *\n"
+                << "* Gaussian Extractor version 0.2: Developed by Le Nhan Pham *\n"
                 << "* https://github.com/lenhanpham/gaussian-extractor          *\n"
                 << "*************************************************************\n"
                 << "                                                             \n";
