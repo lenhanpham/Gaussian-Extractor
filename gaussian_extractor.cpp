@@ -539,8 +539,10 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
             line_count++;
             
             // Maintain rolling buffer of recent lines
+            context.memory_monitor->add_usage(line.capacity());
             content.push_back(line);
             if (content.size() > CONTENT_BUFFER_SIZE) {
+                context.memory_monitor->remove_usage(content.front().capacity());
                 content.erase(content.begin());
             }
             
@@ -659,6 +661,11 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
     }
     
     file.close();
+
+    // Release memory used by the content buffer
+    for (const auto& s : content) {
+        context.memory_monitor->remove_usage(s.capacity());
+    }
     
     // Process extracted data
     if (!scf_values.empty()) {

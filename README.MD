@@ -1,4 +1,4 @@
-# **Gaussian Extractor - Enhanced Safety Edition v0.3**
+# **Gaussian Extractor v0.3**
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
@@ -32,6 +32,8 @@
 * **Filesystem Support**: std::filesystem (included in modern compilers)
 
 ### Compilation Options
+
+### Note that I do not use Windows and MacOS computers or servers to test the program; I am not sure if it is going to work properly on these OSs. Only linux was tested well.
 
 #### Option 1: Automatic Build (Recommended)
 
@@ -90,23 +92,24 @@ export PATH=$PATH:/path/to/gaussian-extractor
 * **Concentration**: 1 M for phase correction
 * **Threads**: Half of available CPU cores (cluster-safe)
 * **Output**: Sorted by Gibbs free energy (kJ/mol)
-* **Format**: Human-readable text table
+* **Format**: A table of text 
 
-### Safety-First Usage for Clusters
+### Safety-First Usage for Clusters head node
 
-**Recommended cluster usage:**
+**Recommended usage if you run the program on your head node:**
+
 ```bash
-# Conservative resource usage
+# Set a limit number of cores which will not over use your head node
 ./gaussian_extractor.x -nt 4 -q
 
-# Check resource limits before running
+# You can check resource limits before running
 ./gaussian_extractor.x --resource-info
 
 # Maximum safety on shared head nodes
 ./gaussian_extractor.x -nt 2 -q -f csv
 ```
 
-### Resource Management
+### You can specify the number of threads
 
 **Thread Control:**
 ```bash
@@ -116,12 +119,14 @@ export PATH=$PATH:/path/to/gaussian-extractor
 ```
 
 **⚠️ Cluster Safety Warning:**
+
 - Program automatically detects cluster environments (SLURM, PBS, SGE, LSF)
 - In clusters: Maximum threads = min(requested, cores/4, 8)
 - On head nodes: **Never use "max"** - it can overload shared resources
 - Recommended: `-nt 2` or `-nt 4` for head nodes
 
 **Resource Monitoring:**
+
 ```bash
 ./gaussian_extractor.x --resource-info  # Show system resources before running
 ```
@@ -137,20 +142,21 @@ export PATH=$PATH:/path/to/gaussian-extractor
 
 **Text Format (Default):**
 ```bash
-./gaussian_extractor.x                  # Human-readable table
+./gaussian_extractor.x                  # A table of text
 ```
 
 **CSV Format:**
 ```bash
-./gaussian_extractor.x -f csv          # Machine-readable CSV
-./gaussian_extractor.x -f csv -q       # CSV with minimal console output
+./gaussian_extractor.x -f csv          # CSV
+./gaussian_extractor.x -f csv -q       # CSV with minimal console output on your terminal 
 ```
 
 **Output Files:**
-- **Text**: `directory_name.results`
-- **CSV**: `directory_name.csv`
 
-### Processing Workflow
+- **Text**: `base_directory_name.results`
+- **CSV**: `base_directory_name.csv`
+
+### How the program works
 
 The program automatically:
 1. **Scans** current directory for .log/.out files
@@ -162,7 +168,7 @@ The program automatically:
 7. **Reports** processing statistics and resource usage
   
     
-  
+
 **Sample Console Output:**
 ```
 Found 150 .log files
@@ -173,7 +179,6 @@ Processed 150/150 files (100%)
 Results written to project_directory.results
 Total execution time: 12.347 seconds
 Memory usage: 256.7 MB / 4.0 GB
-Successfully processed 148/150 files.
 ```
 
 ![results](results.png)
@@ -282,7 +287,7 @@ Successfully processed 148/150 files.
 
 ## Safety and Performance Guidelines
 
-### Dynamic Memory Management 🧠
+### Dynamic Memory Management 
 
 The program now **automatically calculates optimal memory limits** based on:
 - **System RAM**: Detects total available memory
@@ -304,7 +309,7 @@ The program now **automatically calculates optimal memory limits** based on:
 ./gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
 ```
 
-### For Cluster Head Nodes ⚠️
+### For Cluster Head Nodes 
 ```bash
 # RECOMMENDED: Conservative settings
 ./gaussian_extractor.x -nt 2 -q -f csv
