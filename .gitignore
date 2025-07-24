@@ -1,2 +1,7 @@
 .env
 git-clone-key.txt
+COMPILATION_FIXES.md
+JOB_SCHEDULER_GUIDE.md
+QUICK_REFERENCE.md
+SAFETY_IMPROVEMENTS.md
+test_compile.sh

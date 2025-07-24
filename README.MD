@@ -1,103 +1,180 @@
-### **Gaussian Extractor**
+# **Gaussian Extractor - Enhanced Safety Edition v0.3**
 
-* **Gaussian Extractor** is a program used to extract energies of gaussian outputs. All gaussian outputs (log files) should be located in a directory. The program will extract Gibbs free energies with correction of solution concentration from gas phase to 1M.
+**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
-* Gibb free energies are sorted
+## Key Features
 
-* This program is implemented to run in parallel to have better performance
+* **Parallel Processing**: Efficiently processes multiple Gaussian output files simultaneously
+* **Energy Extraction**: Extracts Gibbs free energies with phase correction (gas phase 1 atm → 1M solution)
+* **Automatic Sorting**: Results sorted by energy values for easy analysis
+* **Cluster Safety**: Intelligent resource management prevents head node overload
+* **Dynamic Memory Management**: Intelligent memory limits based on system RAM and thread count
+* **Error Recovery**: Robust error handling with graceful degradation
+* **Multi-Platform**: Supports Linux, macOS, and Windows with multiple compilers
 
-### How to Run the Program
+## Safety Improvements in v0.3
 
-#### Prerequisites
+⚠️ **Critical Safety Features for Cluster Environments:**
 
-1. **Compiled Executable**: 
- * g++ (GCC) 14.2.0 is needed for compilation. Other compilers may be good.
- * compile the program with:
+* **Resource Limiting**: Automatic detection of cluster environments with conservative CPU usage
+* **Smart Memory Allocation**: Dynamic memory limits that scale with system resources and thread count
+* **File Handle Management**: Prevents file descriptor exhaustion with pooled access
+* **Graceful Shutdown**: Proper signal handling for job management systems
+* **Error Isolation**: Thread-safe error handling prevents crashes from corrupted files
 
-```
-g++ -o gaussian_extractor.x gaussian_extractor.cpp main.cpp -std=c++17 -pthread
-```
+## Installation and Compilation
 
-This creates an executable named gaussian_extractor.x in your current directory.
+### Prerequisites
 
-**Input Files**: The program looks for .log files in the current directory (where you run the executable). These are Gaussian output files containing computational chemistry data (e.g., SCF energies, frequencies, etc.).
+**Compiler Requirements:**
+* **C++20 Standard**: GCC 10+, Clang 10+, or MSVC 2019+
+* **Threading Support**: pthread library (Linux/macOS) or Windows threading
+* **Filesystem Support**: std::filesystem (included in modern compilers)
 
-**Permissions**: Ensure you have execute permissions for the file. You can check and set this with:
+### Compilation Options
 
-```
-ls -l gaussian_extractor.x
-chmod +x gaussian_extractor.x  # If needed
-```
+#### Option 1: Automatic Build (Recommended)
 
-#### Basic Execution
-
-To run the program with default settings:
-
-Navigate to the directory containing your .log files and copy gaussian_extractor.x executable to your bin; remember to export your path in your .bashrc:
-
-```
-export PATH=$PATH:~/bin/gaussian-extractor
-```
-
-Execute the program:
-
-```
-gaussian_extractor.x
+**Linux/macOS:**
+```bash
+make                    # Safe default build
+make cluster           # Cluster-optimized build
+make debug             # Debug build with safety checks
+make release           # High-performance release
 ```
 
-This runs the program in parallel with default parameters:
-
-* Temperature (temp) = temperature value in each output. If there is no temperature there, the default value is 298.15 K
-* Concentration (C) = 1 M
-* Sort column (column) = 2 (sorts by Gibbs free energy in kJ/mol)
-* The number of threads is a half of the available hardware cores
-
-**Parallel Mode**: 
-
-```gaussian_extractor.x -q
-gaussian_extractor.x -nt number_of_cores
+**Windows:**
+```cmd
+build.bat              # Automatic compiler detection and build
 ```
 
-* The number_of_cores can be: max, half, or a specific number of cores
-* If you are running this code on head node of a cluster, please think twice before using all available cores of your head node with "max" for example
-
-**Quiet Mode**: 
-
-The program will not print output to your terminal, only an output file generated. This is useful when you have huge numbers of outputs (hundred thousands or millions)
-
-```
-gaussian_extractor.x -q
+#### Option 2: CMake (Cross-platform)
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build .
 ```
 
+#### Option 3: Manual Compilation
+```bash
+# Linux/macOS
+g++ -std=c++20 -O2 -Wall -Wextra -pthread -o gaussian_extractor.x gaussian_extractor.cpp main.cpp
+
+# Windows (MinGW)
+g++ -std=c++20 -O2 -Wall -Wextra -pthread -lpsapi -o gaussian_extractor.x.exe gaussian_extractor.cpp main.cpp
+```
+
+### Installation
+```bash
+# System-wide installation (requires sudo)
+make install
+
+# User installation
+make install-user
+
+# Or add to PATH manually
+export PATH=$PATH:/path/to/gaussian-extractor
+```
+
+## Usage
+
+### Quick Start
+
+**Basic execution** (processes all .log files in current directory):
+```bash
+./gaussian_extractor.x
+```
+
+**Default behavior:**
+* **Temperature**: Read from files (default: 298.15 K if not found)
+* **Concentration**: 1 M for phase correction
+* **Threads**: Half of available CPU cores (cluster-safe)
+* **Output**: Sorted by Gibbs free energy (kJ/mol)
+* **Format**: Human-readable text table
+
+### Safety-First Usage for Clusters
+
+**Recommended cluster usage:**
+```bash
+# Conservative resource usage
+./gaussian_extractor.x -nt 4 -q
+
+# Check resource limits before running
+./gaussian_extractor.x --resource-info
+
+# Maximum safety on shared head nodes
+./gaussian_extractor.x -nt 2 -q -f csv
+```
+
+### Resource Management
+
+**Thread Control:**
+```bash
+./gaussian_extractor.x -nt 4        # Use exactly 4 threads
+./gaussian_extractor.x -nt half     # Use half cores (default, safest)
+./gaussian_extractor.x -nt max      # Use all cores (with safety limits)
+```
+
+**⚠️ Cluster Safety Warning:**
+- Program automatically detects cluster environments (SLURM, PBS, SGE, LSF)
+- In clusters: Maximum threads = min(requested, cores/4, 8)
+- On head nodes: **Never use "max"** - it can overload shared resources
+- Recommended: `-nt 2` or `-nt 4` for head nodes
+
+**Resource Monitoring:**
+```bash
+./gaussian_extractor.x --resource-info  # Show system resources before running
+```
+
+**Quiet Mode (Recommended for Batch Jobs):**
+```bash
+./gaussian_extractor.x -q              # Minimal output, perfect for scripts
+```
 
 
-#### Output
 
-- The program will:
-  - Scan the current directory for all .log files.
-  
-  - Extract data (e.g., energies, frequencies) from each file.
-  
-  - Sort the results based on the specified column (default is etgkj).
-  
-  - Write the results to a file named base_directory_name.results in the current directory
-  
-  - A csv output file can be generated if the program runs with option -f csv:
-  
-    ```
-    Text (default): gaussian_extractor.x
-    CSV: gaussian_extractor.x -f csv
-    Quiet CSV: gaussian_extractor.x -f csv -q
-    ```
+### Output Formats
+
+**Text Format (Default):**
+```bash
+./gaussian_extractor.x                  # Human-readable table
+```
+
+**CSV Format:**
+```bash
+./gaussian_extractor.x -f csv          # Machine-readable CSV
+./gaussian_extractor.x -f csv -q       # CSV with minimal console output
+```
+
+**Output Files:**
+- **Text**: `directory_name.results`
+- **CSV**: `directory_name.csv`
+
+### Processing Workflow
+
+The program automatically:
+1. **Scans** current directory for .log/.out files
+2. **Validates** file sizes (skips files >100MB for safety)
+3. **Processes** files in parallel with resource monitoring
+4. **Extracts** energies, frequencies, and thermodynamic data
+5. **Sorts** results by specified column (default: Gibbs free energy)
+6. **Generates** output file with comprehensive metadata
+7. **Reports** processing statistics and resource usage
   
     
   
-- You’ll see console output like:
+**Sample Console Output:**
+```
+Found 150 .log files
+Using 4 threads (requested: half)
+Processed 75/150 files (50%)
+Processed 150/150 files (100%)
 
-> Results written to base_directory.results
-> Total execution time: X.XXXX seconds
-
-The program will also print output on your terminal by default
+Results written to project_directory.results
+Total execution time: 12.347 seconds
+Memory usage: 256.7 MB / 4.0 GB
+Successfully processed 148/150 files.
+```
 
 ![results](results.png)
 
@@ -114,39 +191,206 @@ The program will also print output on your terminal by default
 * 9th column (*PCorr*): Whether phase correction (gas phase 1atm to 1M in solution) is corrected or not. This value will be YES if your calcualtions were done in solvent (scrf=solvent), and NO if your calculations were done in gas phase. 
 * 10th column (*Round*): numbers of gaussian rounds in a gaussian outputs. If your inputs have 1 --link1--, this value will be 2 indicating 2 sections of run in your outputs.
 
-#### Customizing the Run with Command-Line Arguments
+## Command-Line Options
 
-The program accepts optional arguments to customize its behavior:
+### Complete Options Reference
 
-- -t or --temp: Set the temperature in Kelvin. If users specify temperature via -t or --temp, this temperature value will be used for all outputs in the same directory to ensure consistency in calculations of phase correction. ***Note that corresponding temperature should be set in all gaussian inputs to take correction of entropy into account.*** ***The program does not update entropy and thermal correction; therefore if temperature is not set in all gaussian inputs, Gibbs free energy will be wrongly corrected.*** 
-- -c or --cm: Set the concentration  (in units of M).
-- -col or --column: Set the column to sort by (2 to 7, corresponding to Gibbs free energy in kJ/mol, Lowest frequency, Gibbs freee energy in Hartree, nuclear energy, SCF energy, zero-point energy and so on).
-- -q or --quiet: Run in quiet mode (no console output).
-- -f or --format: Output format (text or csv).
-- -nt or --thread: the number of threads for running this program in parallel. 
+| Option | Description | Values | Default |
+|--------|-------------|---------|---------|
+| `-t, --temp` | Temperature (K) | Positive number | 298.15 |
+| `-c, --cm` | Concentration (M) | Positive integer | 1 |
+| `-col, --column` | Sort column | 2-10 | 2 (ETG kJ/mol) |
+| `-e, --ext` | File extension | log, out | log |
+| `-f, --format` | Output format | text, csv | text |
+| `-nt, --threads` | Thread count | number, half, max | half |
+| `-q, --quiet` | Quiet mode | - | false |
+| `--max-file-size` | Max file size (MB) | Positive integer | 100 |
+| `--memory-limit` | Memory limit (MB) | Positive integer | Auto-calculated |
+| `--resource-info` | Show resources | - | false |
+| `-h, --help` | Show help | - | false |
 
-Examples:
+### Important Notes
 
-1. Run with a temperature of 300 K:
+**Temperature Setting (`-t, --temp`):**
+- **Consistency Critical**: When specified, applies to ALL files for consistent phase correction
+- **Entropy Warning**: Ensure Gaussian inputs use same temperature for proper entropy corrections
+- **File Override**: Without `-t`, program reads temperature from each file individually
 
+**Column Sorting (`-col, --column`):**
+- **2**: ETG kJ/mol (Gibbs free energy) - **Default**
+- **3**: Lowest frequency (for transition state analysis)
+- **4**: ETG a.u (Gibbs free energy in atomic units)
+- **5**: Nuclear repulsion energy
+- **6**: SCF energy
+- **7**: Zero-point energy
+- **10**: Round count (number of Gaussian calculation rounds)
+
+### Usage Examples
+
+#### Basic Examples
+```bash
+# Simple processing with defaults
+./gaussian_extractor.x
+
+# Process with specific temperature
+./gaussian_extractor.x -t 300
+
+# Sort by SCF energy with 2M concentration
+./gaussian_extractor.x -c 2 -col 6
+
+# Generate CSV output quietly
+./gaussian_extractor.x -f csv -q
 ```
-gaussian_extractor.x -t 300
+
+#### Production Examples
+```bash
+# Cluster-safe processing
+./gaussian_extractor.x -nt 4 -q -f csv -t 298.15
+
+# High-throughput processing
+./gaussian_extractor.x -nt 8 -c 5 -col 4 -f csv
+
+# Conservative head node usage
+./gaussian_extractor.x -nt 2 -q --resource-info
+
+# Process larger files (increase 100MB default limit)
+./gaussian_extractor.x --max-file-size 500
+
+# Set specific memory limit for high-memory systems
+./gaussian_extractor.x --memory-limit 8192 -nt 16
 ```
 
-2. Run with a concentration of 2 M and sort by SCF energy (column 6):
+#### Advanced Examples
+```bash
+# Complete parameter specification
+./gaussian_extractor.x -t 310.15 -c 5 -col 4 -nt 6 -f csv -q
 
+# Process .out files instead of .log
+./gaussian_extractor.x -e out -nt half
+
+# Debug problematic files
+./gaussian_extractor.x -nt 1 --resource-info
+
+# Handle large files (increase size limit)
+./gaussian_extractor.x --max-file-size 200 -nt 4
+
+# High-performance setup for 32GB+ systems
+./gaussian_extractor.x --memory-limit 16384 -nt 20 --max-file-size 500
 ```
-gaussian_extractor.x -c 2 -col 6
+
+
+
+## Safety and Performance Guidelines
+
+### Dynamic Memory Management 🧠
+
+The program now **automatically calculates optimal memory limits** based on:
+- **System RAM**: Detects total available memory
+- **Thread Count**: More threads = higher memory allocation
+- **Environment**: Conservative limits in cluster environments
+
+**Memory Allocation Strategy:**
+- **1-4 threads**: 30% of system RAM
+- **5-8 threads**: 40% of system RAM  
+- **9-16 threads**: 50% of system RAM
+- **17+ threads**: 60% of system RAM
+- **Cluster environments**: 70% of calculated amount
+
+**Example on 32GB system:**
+```bash
+./gaussian_extractor.x -nt 4   # Uses ~9.6GB (30% of 32GB)
+./gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)  
+./gaussian_extractor.x -nt 16  # Uses ~16GB (50% of 32GB)
+./gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
 ```
 
-3. Combine multiple arguments:
+### For Cluster Head Nodes ⚠️
+```bash
+# RECOMMENDED: Conservative settings
+./gaussian_extractor.x -nt 2 -q -f csv
 
+# CHECK FIRST: Resource availability  
+./gaussian_extractor.x --resource-info
+
+# AVOID: Resource-intensive operations
+./gaussian_extractor.x -nt max  # DON'T USE ON HEAD NODES
 ```
-gaussian_extractor.x -t 310.15 -c 5 -col 4 -q -f csv 
+
+### For Compute Nodes
+```bash
+# Optimal performance settings
+./gaussian_extractor.x -nt half    # Usually optimal
+./gaussian_extractor.x -nt max     # If node is dedicated to your job
+
+# High-performance setups (adjust based on your system)
+./gaussian_extractor.x -nt 20 --memory-limit 16384  # 16GB limit, 20 threads
+./gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 ```
 
+### Error Handling and Recovery
+- **Automatic**: Continues processing if individual files fail
+- **Reporting**: Comprehensive error and warning collection
+- **Graceful Shutdown**: Responds properly to Ctrl+C and job termination signals
+- **Memory Safety**: Automatically limits memory usage to prevent crashes
 
+## Troubleshooting
 
-All further functions can be requested via issues
+### Common Issues
+
+**Build Errors:**
+```bash
+# Check compiler version
+g++ --version  # Need GCC 10+ for C++20
+
+# Install dependencies (Ubuntu/Debian)
+sudo apt install build-essential
+
+# Try alternative build
+make debug  # Often reveals compilation issues
+```
+
+**Performance Issues:**
+```bash
+# Reduce thread count
+./gaussian_extractor.x -nt 2
+
+# Check file sizes
+ls -lh *.log  # Files >100MB are automatically skipped
+
+# Monitor resources
+./gaussian_extractor.x --resource-info
+```
+
+**Memory Issues:**
+- Default limit: Auto-calculated based on system RAM and thread count
+- Large files (>100MB) automatically skipped by default
+- Use `--max-file-size 200` to process larger files
+- Use `--memory-limit 8192` to set specific memory limits
+- Check system memory with `--resource-info`
+- Reduce threads if memory pressure occurs
+
+### Getting Help
+```bash
+./gaussian_extractor.x --help        # Complete help
+./gaussian_extractor.x --resource-info  # System information
+```
+
+## Version History
+
+- **v0.3** (Enhanced Safety Edition): Complete resource management, cluster awareness, comprehensive error handling
+- **v0.2** (Original): Basic parallel processing
+- **v0.1** (Initial): Single-threaded processing
+
+## Contributing and Issues
+
+For bug reports, feature requests, or safety concerns, please create an issue at the project repository. When reporting issues, include:
+- System specifications (OS, compiler, cluster environment)
+- Command used and error messages
+- Sample files (if possible)
+- Resource usage information (`--resource-info` output)
+
+---
+
+**⚠️ Important**: This enhanced version prioritizes system stability and cluster safety. Always test in your environment before production use, especially on shared systems.
 
    

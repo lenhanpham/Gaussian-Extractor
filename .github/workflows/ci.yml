@@ -2,9 +2,9 @@ name: CI/CD for Gaussian Extractor
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -18,27 +18,39 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++ make
+          sudo apt-get install -y g++ make cmake clang-tidy
+
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Static Analysis
+        run: clang-tidy -p build main.cpp gaussian_extractor.cpp job_scheduler.cpp
 
       - name: Build the project
-        run: |
-          g++ -o gaussian_extractor gaussian_extractor.cpp main.cpp -std=c++17 -pthread
+        run: cmake --build build
 
-      - name: Run the executable with .log files
+      - name: Run Tests
+        id: run_tests
         run: |
-          if ls *.log >/dev/null 2>&1; then
-            ./gaussian_extractor
-          else
-            echo "No .log files found in the repository. Skipping execution."
+          ./build/gaussian_extractor.x -q -f csv
+          if ! ls *.csv.results >/dev/null 2>&1; then
+            echo "Test failed: No .csv.results file generated."
+            exit 1
           fi
+          if [ ! -s *.csv.results ]; then
+            echo "Test failed: .csv.results file is empty."
+            exit 1
+          fi
+          echo "Tests passed."
 
-      - name: Run the executable with .out files
+      - name: Process log and out files
+        if: success() || steps.run_tests.conclusion == 'success'
         run: |
-          if ls *.out >/dev/null 2>&1; then
-            ./gaussian_extractor -e out
-          else
-            echo "No .out files found in the repository. Skipping execution."
-          fi
+          # Run with log files (if any)
+          find . -maxdepth 1 -name "*.log" -print0 | xargs -0 -r ./build/gaussian_extractor.x
+
+          # Run with out files (if any)
+          find . -maxdepth 1 -name "*.out" -print0 | xargs -0 -r ./build/gaussian_extractor.x -e out
 
       - name: Upload results artifact
         uses: actions/upload-artifact@v4
