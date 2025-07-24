@@ -29,6 +29,9 @@ jobs:
       - name: Build the project
         run: cmake --build build
 
+      - name: Prepare test data
+        run: cp tests/data/*.log .
+
       - name: Run Tests
         id: run_tests
         run: |
