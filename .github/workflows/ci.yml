@@ -24,7 +24,7 @@ jobs:
         run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
       - name: Static Analysis
-        run: clang-tidy -p build main.cpp gaussian_extractor.cpp job_scheduler.cpp
+        run: clang-tidy -p build src/main.cpp src/core/gaussian_extractor.cpp src/core/job_scheduler.cpp
 
       - name: Build the project
         run: cmake --build build

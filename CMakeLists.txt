@@ -1,7 +1,7 @@
 # CMake configuration for Gaussian Extractor
 cmake_minimum_required(VERSION 3.16)
 project(GaussianExtractor
-    VERSION 0.3.0
+    VERSION 0.3.1
     DESCRIPTION "High-performance Gaussian log file processor"
     LANGUAGES CXX
 )

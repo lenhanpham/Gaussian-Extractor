@@ -1,5 +1,5 @@
 # Makefile for Gaussian Extractor
-# Enhanced Safety Edition v0.3
+# Enhanced Safety Edition v0.3.1
 
 # Directory structure
 SRC_DIR = src
