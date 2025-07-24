@@ -32,7 +32,7 @@ jobs:
       - name: Run Tests
         id: run_tests
         run: |
-          ./build/gaussian_extractor.x -q -f csv
+          ./build/bin/gaussian_extractor.x -q -f csv
           if ! ls *.csv >/dev/null 2>&1; then
             echo "Test failed: No .csv file generated."
             exit 1
@@ -49,10 +49,10 @@ jobs:
         if: success() || steps.run_tests.conclusion == 'success'
         run: |
           # Run with log files (if any)
-          find . -maxdepth 1 -name "*.log" -print0 | xargs -0 -r ./build/gaussian_extractor.x
+          find . -maxdepth 1 -name "*.log" -print0 | xargs -0 -r ./build/bin/gaussian_extractor.x
 
           # Run with out files (if any)
-          find . -maxdepth 1 -name "*.out" -print0 | xargs -0 -r ./build/gaussian_extractor.x -e out
+          find . -maxdepth 1 -name "*.out" -print0 | xargs -0 -r ./build/bin/gaussian_extractor.x -e out
 
       - name: Upload results artifact
         uses: actions/upload-artifact@v4
