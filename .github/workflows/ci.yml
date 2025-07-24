@@ -22,7 +22,7 @@ jobs:
 
       - name: Build the project
         run: |
-          g++ -o gaussian_extractor gaussian_extractor.cpp main.cpp -std=c++17
+          g++ -o gaussian_extractor gaussian_extractor.cpp main.cpp -std=c++17 -pthread
 
       - name: Run the executable with .log files
         run: |
