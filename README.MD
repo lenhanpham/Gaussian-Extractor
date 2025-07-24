@@ -2,6 +2,8 @@
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
+![results](./docs/results.png)
+
 ## Key Features
 
 * **Parallel Processing**: Efficiently processes multiple Gaussian output files simultaneously
