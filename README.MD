@@ -4,6 +4,8 @@
 
 * Gibb free energies are sorted
 
+* This program is implemented to run in parallel to have better performance
+
 ### How to Run the Program
 
 #### Prerequisites
@@ -13,7 +15,7 @@
  * compile the program with:
 
 ```
-g++ -o gaussian_extractor.x gaussian_extractor.cpp main.cpp -std=c++17
+g++ -o gaussian_extractor.x gaussian_extractor.cpp main.cpp -std=c++17 -pthread
 ```
 
 This creates an executable named gaussian_extractor.x in your current directory.
@@ -43,13 +45,21 @@ Execute the program:
 gaussian_extractor.x
 ```
 
-This runs the program with default parameters:
+This runs the program in parallel with default parameters:
 
 * Temperature (temp) = temperature value in each output. If there is no temperature there, the default value is 298.15 K
-
 * Concentration (C) = 1 M
-
 * Sort column (column) = 2 (sorts by Gibbs free energy in kJ/mol)
+* The number of threads is a half of the available hardware cores
+
+**Parallel Mode**: 
+
+```gaussian_extractor.x -q
+gaussian_extractor.x -nt number_of_cores
+```
+
+* The number_of_cores can be: max, half, or a specific number of cores
+* If you are running this code on head node of a cluster, please think twice before using all available cores of your head node with "max" for example
 
 **Quiet Mode**: 
 
@@ -58,6 +68,8 @@ The program will not print output to your terminal, only an output file generate
 ```
 gaussian_extractor.x -q
 ```
+
+
 
 #### Output
 
@@ -111,6 +123,7 @@ The program accepts optional arguments to customize its behavior:
 - -col or --column: Set the column to sort by (2 to 7, corresponding to Gibbs free energy in kJ/mol, Lowest frequency, Gibbs freee energy in Hartree, nuclear energy, SCF energy, zero-point energy and so on).
 - -q or --quiet: Run in quiet mode (no console output).
 - -f or --format: Output format (text or csv).
+- -nt or --thread: the number of threads for running this program in parallel. 
 
 Examples:
 

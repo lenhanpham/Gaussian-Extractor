@@ -9,6 +9,10 @@
 #include <chrono>
 #include <filesystem>
 #include <unistd.h>
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 // Constants definition
 const double R = 8.314462618;  // J/K/mol
@@ -23,11 +27,12 @@ bool compareResults(const Result& a, const Result& b, int column) {
         case 5: return a.nucleare < b.nucleare;
         case 6: return a.scf < b.scf;
         case 7: return a.zpe < b.zpe;
+        case 10: return a.copyright_count < b.copyright_count;
         default: return false;
     }
 }
 
-Result extract(const std::string& file_name_param, double& temp, int C, double Po, bool use_input_temp) {
+Result extract(const std::string& file_name_param, double& temp, int C, bool use_input_temp) {
     std::ifstream file(file_name_param);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + file_name_param);
@@ -156,7 +161,7 @@ Result extract(const std::string& file_name_param, double& temp, int C, double P
     return Result{file_name, etgkj, lf, GibbsFreeHartree, nucleare, scf, zpe, status, phaseCorr, copyright_count};
 }
 
-void processAndOutputResults(double temp, int C, int column, const std::string& extension, bool quiet, const std::string& format, bool use_input_temp) {
+void processAndOutputResults(double temp, int C, int column, const std::string& extension, bool quiet, const std::string& format, bool use_input_temp, unsigned int num_threads, const std::vector<std::string>& warnings) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
     char cwd[1024];
@@ -186,18 +191,36 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
     }
 
     std::vector<Result> results;
-    double first_temp = temp;
-    double last_temp = temp;
-    double last_GphaseCorr = 0.0;
-    for (size_t i = 0; i < log_files.size(); ++i) {
-        double current_temp = temp;  // Start with default or input temp
-        Result res = extract(log_files[i], current_temp, C, Po, use_input_temp);
-        results.push_back(res);
-        if (i == 0) {
-            first_temp = current_temp;
+    std::mutex results_mutex;
+    std::atomic<size_t> file_index(0);
+
+    auto worker_function = [&]() {
+        while (true) {
+            size_t i = file_index.fetch_add(1);
+            if (i >= log_files.size()) {
+                break;
+            }
+            const std::string& file = log_files[i];
+            double current_temp = temp;
+            Result res = extract(file, current_temp, C, use_input_temp);
+            
+            std::lock_guard<std::mutex> lock(results_mutex);
+            results.push_back(res);
         }
-        last_temp = current_temp;
-        last_GphaseCorr = R * last_temp * std::log(C * R * last_temp / Po) * 0.0003808798033989866 / 1000;
+    };
+
+    std::vector<std::thread> threads;
+    for (unsigned int i = 0; i < num_threads; ++i) {
+        threads.emplace_back(worker_function);
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    if (results.empty()) {
+        std::cerr << "No valid results were extracted." << std::endl;
+        return;
     }
 
     std::sort(results.begin(), results.end(), [column](const Result& a, const Result& b) {
@@ -215,10 +238,21 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
     if (use_input_temp) {
         params << "Using specified temperature for all files: " << std::fixed << std::setprecision(3) << temp << " K\n";
     } else {
-        params << "Temperature in " << results[0].file_name << ": " << std::fixed << std::setprecision(3) << first_temp << " K (each file uses its own temperature, defaulting to 298.15 K if not found)\n";
+        params << "Default temperature for files without specified temp: " << std::fixed << std::setprecision(3) << temp << " K\n";
     }
-    params << "The concentration for phase correction: " << C / 1000 << " M or " << C << " mol/m3\n"
-           << "Last Gibbs free correction for phase changing from 1 atm to 1 M at " << std::fixed << std::setprecision(3) << last_temp << " K: " << std::fixed << std::setprecision(6) << last_GphaseCorr << " au\n";
+    params << "The concentration for phase correction: " << C / 1000 << " M or " << C << " mol/m3\n";
+    double representative_GphaseCorr = R * temp * std::log(C * R * temp / Po) * 0.0003808798033989866 / 1000;
+    params << "Representative Gibbs free correction for phase changing at " << std::fixed << std::setprecision(3) << temp << " K: " << std::fixed << std::setprecision(6) << representative_GphaseCorr << " au\n";
+    params << "Using " << num_threads << " threads for processing.\n";
+
+    if (!warnings.empty()) {
+        params << "\n-------------------------------------------------------------\n";
+        params << "Warnings:\n";
+        for (const auto& warning : warnings) {
+            params << "- " << warning << "\n";
+        }
+        params << "-------------------------------------------------------------\n";
+    }
 
     std::ostringstream output_stream;
 
@@ -285,7 +319,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
         }
     } else {
         std::cerr << "Error: Invalid format '" << format << "'. Supported formats: 'text', 'csv'. Using 'text'." << std::endl;
-        processAndOutputResults(temp, C, column, extension, quiet, "text", use_input_temp);
+        processAndOutputResults(temp, C, column, extension, quiet, "text", use_input_temp, num_threads, warnings);
         return;
     }
 
