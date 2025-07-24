@@ -1,9 +1,15 @@
 # Makefile for Gaussian Extractor
 # Enhanced Safety Edition v0.3
 
+# Directory structure
+SRC_DIR = src
+CORE_DIR = $(SRC_DIR)/core
+BUILD_DIR = build
+TEST_DIR = tests
+
 # Compiler settings
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread
+CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR) -I$(CORE_DIR)
 DEBUGFLAGS = -g -DDEBUG_BUILD -fsanitize=address -fno-omit-frame-pointer
 LDFLAGS = -pthread
 
@@ -17,10 +23,18 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 # Source files
-SOURCES = main.cpp gaussian_extractor.cpp job_scheduler.cpp
-HEADERS = gaussian_extractor.h job_scheduler.h
-OBJECTS = $(SOURCES:.cpp=.o)
+SOURCES = $(SRC_DIR)/main.cpp \
+          $(CORE_DIR)/gaussian_extractor.cpp \
+          $(CORE_DIR)/job_scheduler.cpp
+
+HEADERS = $(CORE_DIR)/gaussian_extractor.h \
+          $(CORE_DIR)/job_scheduler.h
+
+OBJECTS = $(SOURCES:%.cpp=$(BUILD_DIR)/%.o)
 TARGET = gaussian_extractor.x
+
+# Ensure build directory structure exists
+$(shell mkdir -p $(BUILD_DIR)/$(SRC_DIR)/core)
 
 # Default target
 all: $(TARGET)
@@ -30,7 +44,8 @@ $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
 
 # Compile source files to object files
-%.o: %.cpp $(HEADERS)
+$(BUILD_DIR)/%.o: %.cpp $(HEADERS)
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Debug build with additional safety checks
@@ -48,7 +63,7 @@ cluster: clean $(TARGET)
 
 # Clean build artifacts
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -rf $(BUILD_DIR) $(TARGET)
 
 # Install to system (requires sudo)
 install: $(TARGET)
@@ -74,12 +89,12 @@ test-build: clean $(TARGET)
 # Quick test with sample files
 test: $(TARGET)
 	@echo "Testing Gaussian Extractor..."
-	@if [ -f test-1.log ] && [ -f test-2.log ]; then \
+	@if [ -f $(TEST_DIR)/data/test-1.log ] && [ -f $(TEST_DIR)/data/test-2.log ]; then \
 		./$(TARGET) --resource-info; \
 		./$(TARGET) -q -f csv; \
 		echo "Test completed. Check output files."; \
 	else \
-		echo "Test files not found. Please ensure test-1.log and test-2.log exist."; \
+		echo "Test files not found. Please ensure test files exist in $(TEST_DIR)/data/"; \
 	fi
 
 # Check for memory leaks (requires valgrind)
@@ -94,7 +109,7 @@ memcheck: debug
 # Create distribution package
 dist: clean
 	@mkdir -p gaussian-extractor-$(shell date +%Y%m%d)
-	@cp *.cpp *.h Makefile CMakeLists.txt README.MD SAFETY_IMPROVEMENTS.md gaussian-extractor-$(shell date +%Y%m%d)/
+	@cp -r $(SRC_DIR) $(TEST_DIR) docs scripts CMakeLists.txt README.MD .clang-format gaussian-extractor-$(shell date +%Y%m%d)/
 	@tar czf gaussian-extractor-$(shell date +%Y%m%d).tar.gz gaussian-extractor-$(shell date +%Y%m%d)/
 	@rm -rf gaussian-extractor-$(shell date +%Y%m%d)/
 	@echo "Distribution package created: gaussian-extractor-$(shell date +%Y%m%d).tar.gz"

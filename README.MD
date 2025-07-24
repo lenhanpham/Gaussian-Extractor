@@ -1,4 +1,4 @@
-# **Gaussian Extractor v0.3**
+# **Gaussian Extractor v0.3**.1
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
@@ -23,6 +23,44 @@
 * **Error Isolation**: Thread-safe error handling prevents crashes from corrupted files
 
 ## Installation and Compilation
+
+## Project Structure
+
+The project follows a modern C++ project organization:
+
+```
+gaussian-extractor/
+├── src/                  # Source code directory
+│   ├── core/            # Core functionality
+│   │   ├── gaussian_extractor.cpp
+│   │   ├── gaussian_extractor.h
+│   │   ├── job_scheduler.cpp
+│   │   └── job_scheduler.h
+│   └── main.cpp         # Main application entry point
+├── tests/              # Test files directory
+│   └── data/           # Test data directory
+│       ├── test-1.log
+│       └── test-2.log
+├── docs/               # Documentation
+│   └── results.png
+├── scripts/           # Build and utility scripts
+│   └── build.bat
+├── CMakeLists.txt     # Main CMake configuration
+├── Makefile          # Main Makefile
+└── README.MD
+```
+
+### Directory Structure
+
+* `src/`: Contains all source code
+  * `core/`: Core implementation files
+  * `main.cpp`: Application entry point
+* `tests/`: Test-related files
+  * `data/`: Test input files
+* `docs/`: Documentation and results
+* `scripts/`: Build and utility scripts
+* `CMakeLists.txt`: CMake build configuration
+* `Makefile`: Make build configuration
 
 ### Prerequisites
 
@@ -57,13 +95,26 @@ cmake ..
 cmake --build .
 ```
 
+The build will create the executable in the `build` directory. For development, the project supports different build types:
+
+```bash
+# Debug build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+
+# Release build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+
+# Enable extra warnings
+cmake -DENABLE_EXTRA_WARNINGS=ON ..
+```
+
 #### Option 3: Manual Compilation
 ```bash
 # Linux/macOS
-g++ -std=c++20 -O2 -Wall -Wextra -pthread -o gaussian_extractor.x gaussian_extractor.cpp main.cpp
+g++ -std=c++20 -O2 -Wall -Wextra -pthread -o gaussian_extractor.x src/main.cpp src/core/gaussian_extractor.cpp src/core/job_scheduler.cpp
 
 # Windows (MinGW)
-g++ -std=c++20 -O2 -Wall -Wextra -pthread -lpsapi -o gaussian_extractor.x.exe gaussian_extractor.cpp main.cpp
+g++ -std=c++20 -O2 -Wall -Wextra -pthread -lpsapi -o gaussian_extractor.x.exe src/main.cpp src/core/gaussian_extractor.cpp src/core/job_scheduler.cpp
 ```
 
 ### Installation
