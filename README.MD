@@ -14,9 +14,9 @@
 * **Error Recovery**: Robust error handling with graceful degradation
 * **Multi-Platform**: Supports Linux, macOS, and Windows with multiple compilers
 
-## Safety Improvements in v0.3
+## Safety Improvements in v0.3.1
 
-⚠️ **Critical Safety Features for Cluster Environments:**
+⚠️ **Critical Safety Features for HPC Environments:**
 
 * **Resource Limiting**: Automatic detection of cluster environments with conservative CPU usage
 * **Smart Memory Allocation**: Dynamic memory limits that scale with system resources and thread count
