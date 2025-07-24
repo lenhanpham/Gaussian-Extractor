@@ -39,6 +39,7 @@
 
 **Linux/macOS:**
 ```bash
+module load gcc
 make                    # Safe default build
 make cluster           # Cluster-optimized build
 make debug             # Debug build with safety checks
@@ -52,6 +53,7 @@ build.bat              # Automatic compiler detection and build
 
 #### Option 2: CMake (Cross-platform)
 ```bash
+module load gcc
 mkdir build && cd build
 cmake ..
 cmake --build .
