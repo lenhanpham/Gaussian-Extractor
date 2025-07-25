@@ -16,7 +16,7 @@
 
 ## Safety Improvements in v0.3.1
 
-⚠️ **Critical Safety Features for HPC Environments:**
+**Critical Safety Features for HPC Environments:**
 
 * **Resource Limiting**: Automatic detection of cluster environments with conservative CPU usage
 * **Smart Memory Allocation**: Dynamic memory limits that scale with system resources and thread count
@@ -29,7 +29,7 @@
 ### Prerequisites
 
 **Compiler Requirements:**
-* **C++20 Standard**: GCC 10+, Clang 10+, or MSVC 2019+
+* **C++17 or newer**: GCC 10+, Clang 10+, or MSVC 2019+
 * **Threading Support**: pthread library (Linux/macOS) or Windows threading
 * **Filesystem Support**: std::filesystem (included in modern compilers)
 
@@ -59,28 +59,6 @@ module load gcc
 mkdir build && cd build
 cmake ..
 cmake --build .
-```
-
-The build will create the executable in the `build` directory. For development, the project supports different build types:
-
-```bash
-# Debug build
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-
-# Release build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-
-# Enable extra warnings
-cmake -DENABLE_EXTRA_WARNINGS=ON ..
-```
-
-#### Option 3: Manual Compilation
-```bash
-# Linux/macOS
-g++ -std=c++20 -O2 -Wall -Wextra -pthread -o gaussian_extractor.x src/main.cpp src/core/gaussian_extractor.cpp src/core/job_scheduler.cpp
-
-# Windows (MinGW)
-g++ -std=c++20 -O2 -Wall -Wextra -pthread -lpsapi -o gaussian_extractor.x.exe src/main.cpp src/core/gaussian_extractor.cpp src/core/job_scheduler.cpp
 ```
 
 ### Installation
@@ -145,7 +123,7 @@ gaussian_extractor.x -nt half     # Use half cores (default, safest)
 gaussian_extractor.x -nt max      # Use all cores (with safety limits)
 ```
 
-**⚠️ Cluster Safety Warning:**
+** Cluster Safety Warning:**
 
 - Program automatically detects cluster environments (SLURM, PBS, SGE, LSF)
 - In clusters: Maximum threads = min(requested, cores/4, 8)
@@ -208,7 +186,7 @@ Total execution time: 12.347 seconds
 Memory usage: 256.7 MB / 4.0 GB
 ```
 
-![results](results.png)
+![results](./docs/results.png)
 
 ***Output explanation:***
 
@@ -230,7 +208,7 @@ Memory usage: 256.7 MB / 4.0 GB
 | Option | Description | Values | Default |
 |--------|-------------|---------|---------|
 | `-t, --temp` | Temperature (K) | Positive number | 298.15 |
-| `-c, --cm` | Concentration (M) | Positive integer | 1 |
+| `-c, --cm` | Concentration (M) | Positive value | 1 |
 | `-col, --column` | Sort column | 2-10 | 2 (ETG kJ/mol) |
 | `-e, --ext` | File extension | log, out | log |
 | `-f, --format` | Output format | text, csv | text |
@@ -299,9 +277,6 @@ gaussian_extractor.x -t 310.15 -c 5 -col 4 -nt 6 -f csv -q
 
 # Process .out files instead of .log
 gaussian_extractor.x -e out -nt half
-
-# Debug problematic files
-gaussian_extractor.x -nt 1 --resource-info
 
 # Handle large files (increase size limit)
 gaussian_extractor.x --max-file-size 200 -nt 4
@@ -372,7 +347,7 @@ gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 **Build Errors:**
 ```bash
 # Check compiler version
-g++ --version  # Need GCC 10+ for C++20
+g++ --version  # Need GCC 10+ for C++17
 
 # Install dependencies (Ubuntu/Debian)
 sudo apt install build-essential
