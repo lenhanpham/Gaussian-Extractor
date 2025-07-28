@@ -36,7 +36,6 @@ set(SOURCES
     src/core/job_checker.cpp
     src/core/command_executor.cpp
     src/core/config_manager.cpp
-    src/core/high_level_energy.cpp
 )
 
 set(HEADERS
@@ -45,8 +44,6 @@ set(HEADERS
     src/core/command_system.h
     src/core/job_checker.h
     src/core/config_manager.h
-    src/core/high_level_energy.h
-    src/core/version.h
 )
 
 # Create the executable
