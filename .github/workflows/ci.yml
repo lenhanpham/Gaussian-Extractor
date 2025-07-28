@@ -21,13 +21,23 @@ jobs:
           sudo apt-get install -y g++ make cmake clang-tidy
 
       - name: Configure CMake
-        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        run: |
+          cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          if [ $? -ne 0 ]; then
+            echo "CMake configuration failed. Please check your CMakeLists.txt for errors."
+            exit 1
+          fi
 
       - name: Static Analysis
         run: clang-tidy -p build src/main.cpp src/core/gaussian_extractor.cpp src/core/job_scheduler.cpp
 
       - name: Build the project
-        run: cmake --build build
+        run: |
+          cmake --build build
+          if [ $? -ne 0 ]; then
+            echo "Build failed. Please check the compilation errors above."
+            exit 1
+          fi
 
       - name: Prepare test data
         run: cp tests/data/*.log .
