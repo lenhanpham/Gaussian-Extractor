@@ -8,21 +8,12 @@
 
 * **Parallel Processing**: Efficiently processes multiple Gaussian output files simultaneously
 * **Energy Extraction**: Extracts Gibbs free energies with phase correction (gas phase 1 atm → 1M solution)
+* **Gibbs Free Energy Extractionn**: Calculates Gibbs free energies from output files with improved elecgtronic energy (single point) from higher levels of theory
 * **Automatic Sorting**: Results sorted by energy values for easy analysis
 * **Cluster Safety**: Intelligent resource management prevents head node overload
 * **Dynamic Memory Management**: Intelligent memory limits based on system RAM and thread count
 * **Error Recovery**: Robust error handling with graceful degradation
 * **Multi-Platform**: Supports Linux, macOS, and Windows with multiple compilers
-
-## Safety Improvements in v0.3.1
-
-**Critical Safety Features for HPC Environments:**
-
-* **Resource Limiting**: Automatic detection of cluster environments with conservative CPU usage
-* **Smart Memory Allocation**: Dynamic memory limits that scale with system resources and thread count
-* **File Handle Management**: Prevents file descriptor exhaustion with pooled access
-* **Graceful Shutdown**: Proper signal handling for job management systems
-* **Error Isolation**: Thread-safe error handling prevents crashes from corrupted files
 
 ## Installation and Compilation
 
@@ -72,8 +63,8 @@ make install-user
 # Or add to PATH manually
 export PATH=$PATH:/path/to/gaussian-extractor
 
-# Or copy gaussian-extractor.x to your ~/bin/ . Note that if your ~/bin/ does not exist, you need to mkdir ~/bin 
-cp gaussian-extractor ~/bin/ 
+# Or copy gaussian-extractor.x to your ~/bin/ . Note that if your ~/bin/ does not exist, you need to mkdir ~/bin
+cp gaussian-extractor ~/bin/
 ```
 
 ## Usage
@@ -97,7 +88,7 @@ gaussian_extractor.x
 * **Concentration**: 1 M for phase correction
 * **Threads**: Half of available CPU cores (cluster-safe)
 * **Output**: Sorted by Gibbs free energy (kJ/mol)
-* **Format**: A table of text 
+* **Format**: A table of text
 
 ### Safety-First Usage for Clusters head node
 
@@ -153,7 +144,7 @@ gaussian_extractor.x                  # A table of text
 **CSV Format:**
 ```bash
 gaussian_extractor.x -f csv          # CSV
-gaussian_extractor.x -f csv -q       # CSV with minimal console output on your terminal 
+gaussian_extractor.x -f csv -q       # CSV with minimal console output on your terminal
 ```
 
 **Output Files:**
@@ -171,8 +162,8 @@ The program automatically:
 5. **Sorts** results by specified column (default: Gibbs free energy)
 6. **Generates** output file with comprehensive metadata
 7. **Reports** processing statistics and resource usage
-  
-    
+
+
 
 **Sample Console Output:**
 ```
@@ -192,13 +183,13 @@ Memory usage: 256.7 MB / 4.0 GB
 
 * 1st column (*Output name*): the name of gaussian output files
 * 2nd column (*ETG Kj/mol*): the Gibbs free energy with all correction (entropy at corresponding temperature and phase correction from gas phase 1 atm to 1 M)
-* 3rd column (*Low FC*): the lowest vibrational frequency. This value is useful when you want to see if a gaussian output has imaginary modes or not (geometrical optimization and transition sate search). *Note that the program just prints out the lowest frequency mode. If your outputs have more than two imaginary modes, the program won't let you know. You have to check this yourself for example TS search.* I will implement this  function soon. 
+* 3rd column (*Low FC*): the lowest vibrational frequency. This value is useful when you want to see if a gaussian output has imaginary modes or not (geometrical optimization and transition sate search). *Note that the program just prints out the lowest frequency mode. If your outputs have more than two imaginary modes, the program won't let you know. You have to check this yourself for example TS search.* I will implement this  function soon.
 * 4th column (*ETG a.u*): the same as the 2nd one but the unit is hartree or atomic units.
 * 5th column (*Nuclear E  au*): Repulsive nuclear energy. This is useful because nuclear energy is very sensitive to coordinates of molecular systems. Two different coordinate systems will have different nuclear energy.
 * 6th column (*SCFE*): SCF energy in hartree
 * 7th column (*ZPE*): Zero-point energy
 * 8th column (*Status*): current status of a gaussian output: DONE or UNDONE (not finished)
-* 9th column (*PCorr*): Whether phase correction (gas phase 1atm to 1M in solution) is corrected or not. This value will be YES if your calcualtions were done in solvent (scrf=solvent), and NO if your calculations were done in gas phase. 
+* 9th column (*PCorr*): Whether phase correction (gas phase 1atm to 1M in solution) is corrected or not. This value will be YES if your calcualtions were done in solvent (scrf=solvent), and NO if your calculations were done in gas phase.
 * 10th column (*Round*): numbers of gaussian rounds in a gaussian outputs. If your inputs have 1 --link1--, this value will be 2 indicating 2 sections of run in your outputs.
 
 ## Command-Line Options
@@ -252,6 +243,27 @@ gaussian_extractor.x -c 2 -col 6
 gaussian_extractor.x -f csv -q
 ```
 
+### Check if gaussian jobs are done and errors
+Jobs (log, chk, input) will be move to a directory dependending on their status
+```bash
+gaussian_extractor.x done      # completed jobs will be moved to base_name_dir-done
+gaussian_extractor.x errors    # all general errors causing jobs killed will be moved to errorJobs
+gaussian_extractor.x pcm       # errors related to pcm convergence will be moved to PCMMkU
+```
+
+### Calculate final energy and energy components if a single point calculation was done for electronic energy correction
+- Single point calculations are usually done at a higher level of theory and electronic energy is then used to improve the accuracy of the final Gibbs free energy.
+- Suppose the single point calculation was done in a dir called higher_level within a current dir where all geometrical optimizations and frequency calculations were done (Opt Freq).
+- Log files of the single point calculations should have the same names as the ones calculated at the lower level of theory.
+![dirs](./docs/tree_dir.png)
+```bash
+cd higher_level
+gaussian_extractor high-kj    # for improved Gibbs free energy in kJ/mol
+gaussian_extractor high-au    # for improved Gibbs free energy in hartree or atomic unit
+```
+
+
+### Some examples where you have massive number of outputs files
 #### Production Examples
 ```bash
 # Cluster-safe processing
@@ -289,7 +301,7 @@ gaussian_extractor.x --memory-limit 16384 -nt 20 --max-file-size 500
 
 ## Safety and Performance Guidelines
 
-### Dynamic Memory Management 
+### Dynamic Memory Management
 
 The program now **automatically calculates optimal memory limits** based on:
 - **System RAM**: Detects total available memory
@@ -298,7 +310,7 @@ The program now **automatically calculates optimal memory limits** based on:
 
 **Memory Allocation Strategy:**
 - **1-4 threads**: 30% of system RAM
-- **5-8 threads**: 40% of system RAM  
+- **5-8 threads**: 40% of system RAM
 - **9-16 threads**: 50% of system RAM
 - **17+ threads**: 60% of system RAM
 - **Cluster environments**: 70% of calculated amount
@@ -306,17 +318,17 @@ The program now **automatically calculates optimal memory limits** based on:
 **Example on 32GB system:**
 ```bash
 gaussian_extractor.x -nt 4   # Uses ~9.6GB (30% of 32GB)
-gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)  
+gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)
 gaussian_extractor.x -nt 16  # Uses ~16GB (50% of 32GB)
 gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
 ```
 
-### For Cluster Head Nodes 
+### For Cluster Head Nodes
 ```bash
 # RECOMMENDED: Conservative settings
 gaussian_extractor.x -nt 2 -q -f csv
 
-# CHECK FIRST: Resource availability  
+# CHECK FIRST: Resource availability
 gaussian_extractor.x --resource-info
 
 # AVOID: Resource-intensive operations
@@ -384,6 +396,7 @@ gaussian_extractor.x --resource-info  # System information
 
 ## Version History
 
+- **v0.4** Several new features have been implemented, including error checks, solvent error check, completed job checks, calculations of Gibbs free energy using high-level electronic energy in combiation with low-level energy components (entropy, zero-point energy, thermal correction)
 - **v0.3** (Enhanced Safety Edition): Complete resource management, cluster awareness, comprehensive error handling
 - **v0.2** (Original): Basic parallel processing
 - **v0.1** (Initial): Single-threaded processing
@@ -399,5 +412,3 @@ For bug reports, feature requests, or safety concerns, please create an issue at
 ---
 
 **⚠️ Important**: This enhanced version prioritizes system stability and cluster safety. Always test in your environment before production use, especially on shared systems.
-
-   
