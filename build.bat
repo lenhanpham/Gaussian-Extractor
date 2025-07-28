@@ -1,11 +1,21 @@
 @echo off
 REM Build script for Gaussian Extractor - Windows
-REM Enhanced Safety Edition v0.3
+REM Enhanced Safety Edition v0.3.1 with Job Management Commands
 
 setlocal EnableDelayedExpansion
 
 echo Gaussian Extractor Build Script for Windows
 echo ==========================================
+
+REM Set source directories
+set SRC_DIR=src
+set CORE_DIR=%SRC_DIR%\core
+
+REM Source files
+set SOURCES=%SRC_DIR%\main.cpp %CORE_DIR%\gaussian_extractor.cpp %CORE_DIR%\job_scheduler.cpp %CORE_DIR%\command_system.cpp %CORE_DIR%\job_checker.cpp %CORE_DIR%\command_executor.cpp %CORE_DIR%\config_manager.cpp %CORE_DIR%\high_level_energy.cpp
+
+REM Include directories
+set INCLUDES=-I%SRC_DIR% -I%CORE_DIR%
 
 REM Check for Visual Studio compiler
 where cl >nul 2>nul
@@ -43,7 +53,7 @@ exit /b 1
 :build_msvc
 echo Building with Visual Studio (MSVC)...
 set COMPILER=cl
-set FLAGS=/std:c++20 /O2 /W4 /EHsc /D_WIN32_WINNT=0x0601
+set FLAGS=/std:c++20 /O2 /W4 /EHsc /D_WIN32_WINNT=0x0601 %INCLUDES%
 set LIBS=psapi.lib
 set OUTPUT=/Fe:gaussian_extractor.x.exe
 
@@ -51,8 +61,9 @@ REM Clean previous build
 if exist *.obj del *.obj
 if exist gaussian_extractor.x.exe del gaussian_extractor.x.exe
 
-echo Compiling...
-%COMPILER% %FLAGS% main.cpp gaussian_extractor.cpp job_scheduler.cpp %LIBS% %OUTPUT%
+echo Compiling source files...
+echo Sources: %SOURCES%
+%COMPILER% %FLAGS% %SOURCES% %LIBS% %OUTPUT%
 
 if %ERRORLEVEL% == 0 (
     echo Build successful! Created gaussian_extractor.x.exe
@@ -66,7 +77,7 @@ if %ERRORLEVEL% == 0 (
 :build_mingw
 echo Building with MinGW (g++)...
 set COMPILER=g++
-set FLAGS=-std=c++20 -O2 -Wall -Wextra -pthread
+set FLAGS=-std=c++20 -O2 -Wall -Wextra -pthread %INCLUDES%
 set LIBS=-lpsapi
 set OUTPUT=-o gaussian_extractor.x.exe
 
@@ -74,8 +85,9 @@ REM Clean previous build
 if exist *.o del *.o
 if exist gaussian_extractor.x.exe del gaussian_extractor.x.exe
 
-echo Compiling...
-%COMPILER% %FLAGS% main.cpp gaussian_extractor.cpp job_scheduler.cpp %LIBS% %OUTPUT%
+echo Compiling source files...
+echo Sources: %SOURCES%
+%COMPILER% %FLAGS% %SOURCES% %LIBS% %OUTPUT%
 
 if %ERRORLEVEL% == 0 (
     echo Build successful! Created gaussian_extractor.x.exe
@@ -89,7 +101,7 @@ if %ERRORLEVEL% == 0 (
 :build_clang
 echo Building with Clang...
 set COMPILER=clang++
-set FLAGS=-std=c++20 -O2 -Wall -Wextra -pthread
+set FLAGS=-std=c++20 -O2 -Wall -Wextra -pthread %INCLUDES%
 set LIBS=-lpsapi
 set OUTPUT=-o gaussian_extractor.x.exe
 
@@ -97,8 +109,9 @@ REM Clean previous build
 if exist *.o del *.o
 if exist gaussian_extractor.x.exe del gaussian_extractor.x.exe
 
-echo Compiling...
-%COMPILER% %FLAGS% main.cpp gaussian_extractor.cpp job_scheduler.cpp %LIBS% %OUTPUT%
+echo Compiling source files...
+echo Sources: %SOURCES%
+%COMPILER% %FLAGS% %SOURCES% %LIBS% %OUTPUT%
 
 if %ERRORLEVEL% == 0 (
     echo Build successful! Created gaussian_extractor.x.exe
@@ -122,24 +135,48 @@ if exist gaussian_extractor.x.exe (
         echo.
         echo The executable 'gaussian_extractor.x.exe' is ready to use.
         echo.
-        echo Usage examples:
-        echo   gaussian_extractor.x.exe                    # Process all .log files
-        echo   gaussian_extractor.x.exe -q                 # Quiet mode
-        echo   gaussian_extractor.x.exe -nt half           # Use half CPU cores
-        echo   gaussian_extractor.x.exe -f csv             # CSV output format
-        echo   gaussian_extractor.x.exe --resource-info    # Show resource information
-        echo   gaussian_extractor.x.exe --help             # Show full help
+        echo NEW COMMANDS AVAILABLE:
+        echo   gaussian_extractor.x.exe                    # Extract energies (default)
+        echo   gaussian_extractor.x.exe extract           # Extract energies (explicit)
+        echo   gaussian_extractor.x.exe done              # Check completed jobs
+        echo   gaussian_extractor.x.exe errors            # Check error jobs
+        echo   gaussian_extractor.x.exe pcm               # Check PCM failures
+        echo   gaussian_extractor.x.exe check             # Run all checks
+        echo.
+        echo COMMON OPTIONS:
+        echo   -q                       # Quiet mode
+        echo   -nt half                 # Use half CPU cores
+        echo   -nt 4                    # Use 4 threads
+        echo   --max-file-size 200      # Handle larger files (MB)
+        echo.
+        echo EXTRACT COMMAND OPTIONS:
+        echo   -t 300                   # Temperature (K)
+        echo   -c 2                     # Concentration (M)
+        echo   -f csv                   # CSV output format
+        echo   --resource-info          # Show system resources
+        echo.
+        echo JOB MANAGEMENT OPTIONS:
+        echo   --target-dir my-errors   # Custom directory name
+        echo   --dir-suffix completed   # Custom done directory suffix
+        echo   --show-details           # Show error details
         echo.
 
-        REM Check if test files exist
-        if exist test-1.log (
-            if exist test-2.log (
-                echo Test files found. Running sample processing...
-                gaussian_extractor.x.exe -q -f csv
-                echo Sample processing completed.
-            )
+        REM Test new commands if log files exist
+        if exist *.log (
+            echo Test .log files found. Testing new commands...
+            echo.
+            echo Testing 'done' command:
+            gaussian_extractor.x.exe done -q
+            echo.
+            echo Testing 'errors' command:
+            gaussian_extractor.x.exe errors -q
+            echo.
+            echo Testing 'pcm' command:
+            gaussian_extractor.x.exe pcm -q
+            echo.
+            echo Command tests completed.
         ) else (
-            echo Note: No test files found. Place .log files in this directory to process them.
+            echo Note: No .log files found. Place Gaussian log files in this directory to test job management commands.
         )
     ) else (
         echo WARNING: Build succeeded but executable test failed.
@@ -151,4 +188,9 @@ if exist gaussian_extractor.x.exe (
 
 echo.
 echo Build process completed.
+echo.
+echo For more information, see:
+echo   - README.MD for general usage
+echo   - COMMANDS.md for detailed command documentation
+echo.
 pause

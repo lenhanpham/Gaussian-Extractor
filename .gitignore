@@ -5,3 +5,5 @@ JOB_SCHEDULER_GUIDE.md
 QUICK_REFERENCE.md
 SAFETY_IMPROVEMENTS.md
 test_compile.sh
+.rules
+docs/

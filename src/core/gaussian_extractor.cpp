@@ -1,4 +1,43 @@
+/**
+ * @file gaussian_extractor.cpp
+ * @brief Implementation of core Gaussian log file processing and data extraction
+ * @author Le Nhan Pham
+ * @date 2025
+ * 
+ * This file implements the core functionality for extracting thermodynamic data
+ * from Gaussian computational chemistry log files. It provides multi-threaded
+ * processing with comprehensive resource management, thread-safe operations,
+ * and integration with job scheduler systems for HPC environments.
+ * 
+ * @section Key Implementations
+ * - MemoryMonitor: Thread-safe memory usage tracking and limiting
+ * - FileHandleManager: RAII-based file handle resource management  
+ * - ThreadSafeErrorCollector: Centralized error collection across threads
+ * - Result extraction: Core data parsing from Gaussian log files
+ * - Multi-threaded processing: Parallel file processing with coordination
+ * 
+ * @section Threading Architecture
+ * The implementation uses a producer-consumer model:
+ * - Main thread: File discovery, validation, and result coordination
+ * - Worker threads: Parallel file processing with resource management
+ * - Shared resources: Memory monitor, file handle manager, error collector
+ * 
+ * @section Resource Management
+ * Comprehensive resource management prevents system overload:
+ * - Memory usage monitoring with configurable limits
+ * - File handle limiting to prevent system exhaustion
+ * - Thread-safe error collection and reporting
+ * - Integration with job scheduler resource limits
+ * 
+ * @section Platform Support
+ * The implementation supports multiple platforms:
+ * - Windows: Using Windows API for system information
+ * - Linux: Using sysinfo and proc filesystem
+ * - Other Unix: Using standard POSIX interfaces
+ */
+
 #include "gaussian_extractor.h"
+#include "version.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -31,27 +70,61 @@
 #endif
 #endif
 
-// Constants definition
-const double R = 8.314462618;  // J/K/mol
-const double Po = 101325;      // 1 atm in N/m^2
-const double kB = 0.000003166811563;  // Boltzmann constant in Hartree/K
+/**
+ * @defgroup PhysicalConstants Physical Constants Implementation
+ * @brief Definition of fundamental physical constants used throughout calculations
+ * @{
+ */
 
-// Global signal handler for graceful shutdown
-std::atomic<bool> g_shutdown_requested{false};
+/// Universal gas constant in J/(K·mol) - 2018 CODATA value
+const double R = 8.314462618;
 
-void signalHandler(int signal) {
-    std::cerr << "\nReceived signal " << signal << ". Initiating graceful shutdown..." << std::endl;
-    g_shutdown_requested.store(true);
-}
+/// Standard atmospheric pressure in N/m² (exactly 1 atm)
+const double Po = 101325;
 
-// MemoryMonitor implementation
+/// Boltzmann constant in Hartree/K for atomic unit calculations
+const double kB = 0.000003166811563;
+
+/** @} */ // end of PhysicalConstants group
+
+// External global variable for shutdown handling
+extern std::atomic<bool> g_shutdown_requested;
+
+/**
+ * @defgroup MemoryMonitorImpl MemoryMonitor Implementation
+ * @brief Implementation of thread-safe memory usage tracking and limiting
+ * @{
+ */
+
+/**
+ * @brief Constructor initializes memory monitor with specified limit
+ * @param max_memory_mb Maximum memory usage limit in megabytes
+ * 
+ * Converts megabyte limit to internal byte representation for efficient
+ * atomic operations. The limit should account for other system processes.
+ */
 MemoryMonitor::MemoryMonitor(size_t max_memory_mb)
     : max_bytes(max_memory_mb * 1024 * 1024) {}
 
+/**
+ * @brief Check if allocation would exceed memory limit
+ * @param bytes Number of bytes to potentially allocate
+ * @return true if allocation is within limits, false if would exceed
+ * 
+ * Thread-safe check using atomic load operation. Should be called before
+ * large allocations to prevent memory exhaustion.
+ */
 bool MemoryMonitor::can_allocate(size_t bytes) {
     return (current_usage_bytes.load() + bytes) < max_bytes;
 }
 
+/**
+ * @brief Record memory allocation and update peak usage tracking
+ * @param bytes Number of bytes allocated
+ * 
+ * Atomically updates current usage and peak usage statistics. Uses
+ * compare-and-swap to handle concurrent peak updates correctly.
+ */
 void MemoryMonitor::add_usage(size_t bytes) {
     size_t new_usage = current_usage_bytes.fetch_add(bytes) + bytes;
     size_t current_peak = peak_usage_bytes.load();
@@ -62,26 +135,64 @@ void MemoryMonitor::add_usage(size_t bytes) {
     }
 }
 
+/**
+ * @brief Record memory deallocation
+ * @param bytes Number of bytes freed
+ * 
+ * Atomically decreases current usage counter. Should be called when
+ * memory is freed or objects are destroyed.
+ */
 void MemoryMonitor::remove_usage(size_t bytes) {
     current_usage_bytes.fetch_sub(bytes);
 }
 
+/**
+ * @brief Get current memory usage
+ * @return Current memory usage in bytes
+ * 
+ * Thread-safe atomic read of current memory usage.
+ */
 size_t MemoryMonitor::get_current_usage() const {
     return current_usage_bytes.load();
 }
 
+/**
+ * @brief Get peak memory usage since monitor creation
+ * @return Peak memory usage in bytes
+ * 
+ * Thread-safe atomic read of peak memory usage for performance analysis.
+ */
 size_t MemoryMonitor::get_peak_usage() const {
     return peak_usage_bytes.load();
 }
 
+/**
+ * @brief Get configured memory limit
+ * @return Maximum allowed memory usage in bytes
+ */
 size_t MemoryMonitor::get_max_usage() const {
     return max_bytes;
 }
 
+/**
+ * @brief Update memory limit during runtime
+ * @param max_memory_mb New memory limit in megabytes
+ * 
+ * Allows dynamic adjustment of memory limits based on system conditions
+ * or user preferences. Not thread-safe for concurrent limit changes.
+ */
 void MemoryMonitor::set_memory_limit(size_t max_memory_mb) {
     max_bytes = max_memory_mb * 1024 * 1024;
 }
 
+/**
+ * @brief Detect total system memory capacity
+ * @return Total system memory in megabytes
+ * 
+ * Platform-specific implementation for detecting available system memory.
+ * Uses Windows API on Windows and POSIX/Linux interfaces on Unix-like systems.
+ * Provides fallback values if detection fails.
+ */
 size_t MemoryMonitor::get_system_memory_mb() {
 #ifdef _WIN32
     MEMORYSTATUSEX memInfo;
@@ -719,10 +830,6 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
                            size_t memory_limit_mb, const std::vector<std::string>& warnings,
                            const JobResources& job_resources) {
 
-    // Set up signal handlers for graceful shutdown
-    std::signal(SIGINT, signalHandler);
-    std::signal(SIGTERM, signalHandler);
-
     auto start_time = std::chrono::high_resolution_clock::now();
 
     try {
@@ -809,7 +916,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
         }
 
         // Create processing context with job-aware memory limit
-        ProcessingContext context(temp, C, use_input_temp, num_threads);
+        ProcessingContext context(temp, C, use_input_temp, num_threads, extension, job_resources);
 
         // Apply calculated memory limit
         context.memory_monitor->set_memory_limit(calculated_memory_limit);
@@ -907,10 +1014,20 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
 
         // Prepare header information
         std::ostringstream params;
+        
+        // Create dynamic header with proper formatting
+        auto create_header_line = [](const std::string& content) -> std::string {
+            const size_t total_width = 61;  // Including asterisks
+            std::string line = "* " + content;
+            while (line.length() < total_width - 2) line += " ";
+            line += " *";
+            return line;
+        };
+        
         params << "                                                             \n"
                << "*************************************************************\n"
-               << "* Gaussian Extractor v0.3.1 developed by Le Nhan Pham       *\n"
-               << "* https://github.com/lenhanpham/gaussian-extractor          *\n"
+               << create_header_line(GaussianExtractor::get_header_info()) << "\n"
+               << create_header_line(GAUSSIAN_EXTRACTOR_REPOSITORY) << "\n"
                << "*************************************************************\n"
                << "                                                             \n";
 

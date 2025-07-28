@@ -1,5 +1,5 @@
 # Makefile for Gaussian Extractor
-# Enhanced Safety Edition v0.3.1
+# Enhanced Safety Edition v0.4.0
 
 # Directory structure
 SRC_DIR = src
@@ -25,10 +25,20 @@ endif
 # Source files
 SOURCES = $(SRC_DIR)/main.cpp \
           $(CORE_DIR)/gaussian_extractor.cpp \
-          $(CORE_DIR)/job_scheduler.cpp
+          $(CORE_DIR)/job_scheduler.cpp \
+          $(CORE_DIR)/command_system.cpp \
+          $(CORE_DIR)/job_checker.cpp \
+          $(CORE_DIR)/command_executor.cpp \
+          $(CORE_DIR)/config_manager.cpp \
+          $(CORE_DIR)/high_level_energy.cpp
 
 HEADERS = $(CORE_DIR)/gaussian_extractor.h \
-          $(CORE_DIR)/job_scheduler.h
+          $(CORE_DIR)/job_scheduler.h \
+          $(CORE_DIR)/command_system.h \
+          $(CORE_DIR)/job_checker.h \
+          $(CORE_DIR)/config_manager.h \
+          $(CORE_DIR)/version.h \
+          $(CORE_DIR)/high_level_energy.h
 
 OBJECTS = $(SOURCES:%.cpp=$(BUILD_DIR)/%.o)
 TARGET = gaussian_extractor.x
@@ -130,6 +140,10 @@ help:
 	@echo "  memcheck     - Run with valgrind memory checker"
 	@echo "  dist         - Create distribution package"
 	@echo "  help         - Show this help message"
+	@echo ""
+	@echo "Version Management:"
+	@echo "  scripts/update_version.sh <version>  - Update version across all files"
+	@echo "  ./gaussian_extractor.x --version     - Check current version"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make                    # Build with default settings"
