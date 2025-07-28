@@ -255,7 +255,7 @@ gaussian_extractor.x pcm       # errors related to pcm convergence will be moved
 - Single point calculations are usually done at a higher level of theory and electronic energy is then used to improve the accuracy of the final Gibbs free energy.
 - Suppose the single point calculation was done in a dir called higher_level within a current dir where all geometrical optimizations and frequency calculations were done (Opt Freq).
 - Log files of the single point calculations should have the same names as the ones calculated at the lower level of theory.
-![dirs](./docs/tree_dir.png)
+- ![dirs](./docs/tree_dir.png)
 ```bash
 cd higher_level
 gaussian_extractor high-kj    # for improved Gibbs free energy in kJ/mol
