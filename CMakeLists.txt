@@ -118,6 +118,11 @@ target_link_libraries(gaussian_extractor
         Threads::Threads
 )
 
+# Link stdc++fs for non-MSVC compilers if needed for std::filesystem
+if(NOT MSVC)
+    target_link_libraries(gaussian_extractor PRIVATE stdc++fs)
+endif()
+
 if(WIN32)
     target_link_libraries(gaussian_extractor PRIVATE psapi)
 endif()

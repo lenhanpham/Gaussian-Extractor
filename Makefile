@@ -8,7 +8,16 @@ BUILD_DIR = build
 TEST_DIR = tests
 
 # Compiler settings
-CXX = g++
+# Auto-detect compiler. Prefers Intel compilers (icpx, icpc, icc) over GCC (g++).
+COMPILER_LIST := icpx icpc icc g++
+CXX := $(firstword $(foreach c,$(COMPILER_LIST),$(if $(shell command -v $(c)),$(c))))
+
+# Fallback to a default if no compiler is found in PATH and print a warning.
+ifeq ($(CXX),)
+    $(warning "No supported compiler (icpx, icpc, icc, g++) found in PATH. Defaulting to g++.")
+    CXX = g++
+endif
+$(info Using compiler: $(CXX)) 
 CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR) -I$(CORE_DIR)
 DEBUGFLAGS = -g -DDEBUG_BUILD -fsanitize=address -fno-omit-frame-pointer
 LDFLAGS = -pthread
@@ -16,7 +25,7 @@ LDFLAGS = -pthread
 # Platform detection
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-    LDFLAGS += -lrt
+    LDFLAGS += -lrt -lstdc++fs
 endif
 ifeq ($(UNAME_S),Darwin)
     # macOS specific flags if needed

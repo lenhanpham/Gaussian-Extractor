@@ -39,6 +39,7 @@
 #include "gaussian_extractor.h"
 #include "version.h"
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <regex>

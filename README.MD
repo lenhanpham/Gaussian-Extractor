@@ -8,7 +8,7 @@
 
 * **Parallel Processing**: Efficiently processes multiple Gaussian output files simultaneously
 * **Energy Extraction**: Extracts Gibbs free energies with phase correction (gas phase 1 atm → 1M solution)
-* **Gibbs Free Energy Extractionn**: Calculates Gibbs free energies from output files with improved elecgtronic energy (single point) from higher levels of theory
+* **Gibbs Free Energy Calculation**: Calculates Gibbs free energies from output files with improved elecgtronic energy (single point) from higher levels of theory
 * **Automatic Sorting**: Results sorted by energy values for easy analysis
 * **Cluster Safety**: Intelligent resource management prevents head node overload
 * **Dynamic Memory Management**: Intelligent memory limits based on system RAM and thread count
@@ -20,7 +20,7 @@
 ### Prerequisites
 
 **Compiler Requirements:**
-* **C++17 or newer**: GCC 10+, Clang 10+, or MSVC 2019+
+* **C++20 or newer**: GCC 10+, Intel oneAPI, Intel Classic, Clang 10+, or MSVC 2019+
 * **Threading Support**: pthread library (Linux/macOS) or Windows threading
 * **Filesystem Support**: std::filesystem (included in modern compilers)
 
@@ -30,26 +30,83 @@
 
 #### Option 1: Automatic Build (Recommended)
 
-**Linux/macOS:**
+**Basic Build (Auto-detects Compiler):**
+
 ```bash
-module load gcc
-make                   # Safe default build
-make cluster           # Cluster-optimized build
-make debug             # Debug build with safety checks
-make release           # High-performance release
+# Load your preferred compiler module if on a cluster
+module load intel-compiler-llvm           # For Intel compilers
+# OR
+module load gcc             			  # For GCC
+
+# Build with auto-detected compiler (priority: icpx > icpc > icc > g++)
+make -j 10                  # Automatically selects best available compiler
 ```
 
-**Windows:**
-```cmd
-build.bat              # Automatic compiler detection and build
+**Build Variants:**
+```bash
+make cluster -j 8           # Cluster-optimized build
+make debug                  # Debug build with safety checks
+make release                # High-performance release
+```
+
+**Force Specific Compiler:**
+```bash
+# Intel oneAPI compiler
+CXX=icpx make -j 8
+
+# Intel Classic compiler
+CXX=icpc make -j 8
+
+# GNU compiler
+CXX=g++ make -j 8
 ```
 
 #### Option 2: CMake (Cross-platform)
+
+**Basic CMake Build (Auto-detects Compiler):**
 ```bash
-module load gcc
+# Load your preferred compiler module if on a cluster
+module load intel-compiler-llvm           # For Intel compilers
+# OR
+module load gcc            				  # For GCC
+
+# Create build directory
 mkdir build && cd build
-cmake ..
-cmake --build .
+
+# Configure with auto-detected compiler (priority: icpx > icpc > icc > g++)
+cmake ..                    
+
+# Build with parallel jobs
+cmake --build . -j 10       
+```
+
+**CMake with Specific Intel Compiler:**
+```bash
+# Load Intel compiler module
+module load intel
+
+# Create build directory
+mkdir build && cd build
+
+# Force specific Intel compiler
+cmake -DINTEL_COMPILER=icpx ..   # Use Intel oneAPI compiler
+# OR
+cmake -DINTEL_COMPILER=icpc ..   # Use Intel Classic compiler
+
+# Build with parallel jobs
+cmake --build . -j 10
+```
+
+**CMake Build Types:**
+```bash
+# Debug build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+
+# Release build (optimized)
+cmake -DCMAKE_BUILD_TYPE=Release ..
+
+# Cluster-optimized build
+cmake -DBUILD_FOR_CLUSTER=ON ..
 ```
 
 ### Installation
@@ -132,8 +189,6 @@ gaussian_extractor.x --resource-info  # Show system resources before running
 gaussian_extractor.x -q              # Minimal output, perfect for scripts
 ```
 
-
-
 ### Output Formats
 
 **Text Format (Default):**
@@ -163,9 +218,8 @@ The program automatically:
 6. **Generates** output file with comprehensive metadata
 7. **Reports** processing statistics and resource usage
 
-
-
 **Sample Console Output:**
+
 ```
 Found 150 .log files
 Using 4 threads (requested: half)
@@ -361,13 +415,48 @@ gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 **Build Errors:**
 ```bash
 # Check compiler version
-g++ --version  # Need GCC 10+ for C++17
+g++ --version                # Need GCC 10+ for C++20
+icpx --version               # Intel oneAPI compiler
+icpc --version               # Intel Classic compiler
 
 # Install dependencies (Ubuntu/Debian)
 sudo apt install build-essential
 
+# Check compiler information
+make compiler-info           # Shows detected compiler and flags
+
 # Try alternative build
-make debug  # Often reveals compilation issues
+make debug                   # Often reveals compilation issues
+
+# Force specific compiler
+CXX=g++ make                 # Force GCC compiler
+CXX=icpx make                # Force Intel oneAPI compiler
+```
+
+**Intel oneAPI 2025.x Compatibility:**
+
+The build system automatically handles two known issues with Intel oneAPI 2025.x:
+
+1. **Object File Format Issue:**
+   If you encounter the following error:
+   ```
+   build/src/main.o: file not recognized: File format not recognized
+   icpx: error: linker command failed with exit code 1 (use -v to see invocation)
+   ```
+   The build system automatically disables Interprocedural Optimization (IPO) for Intel oneAPI 2025.x.
+
+2. **std::filesystem Linking Issue:**
+   If you encounter errors like:
+   ```
+   undefined reference to `std::filesystem::status(std::filesystem::__cxx11::path const&)'
+   undefined reference to `std::filesystem::file_size(std::filesystem::__cxx11::path const&)'
+   ```
+   The build system automatically adds the `-lstdc++fs` flag for Intel oneAPI 2025.x.
+
+These fixes are applied automatically, but you can verify by checking the compiler information:
+
+```bash
+make compiler-info           # Shows IPO status and std::filesystem support for 2025.x
 ```
 
 **Performance Issues:**
