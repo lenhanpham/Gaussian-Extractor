@@ -74,42 +74,14 @@ module load gcc            				  # For GCC
 mkdir build && cd build
 
 # Configure with auto-detected compiler (priority: icpx > icpc > icc > g++)
-cmake ..                    
-
-# Build with parallel jobs
-cmake --build . -j 10       
-```
-
-**CMake with Specific Intel Compiler:**
-```bash
-# Load Intel compiler module
-module load intel
-
-# Create build directory
-mkdir build && cd build
-
-# Force specific Intel compiler
-cmake -DINTEL_COMPILER=icpx ..   # Use Intel oneAPI compiler
-# OR
-cmake -DINTEL_COMPILER=icpc ..   # Use Intel Classic compiler
+cmake ..
 
 # Build with parallel jobs
 cmake --build . -j 10
 ```
 
-**CMake Build Types:**
-```bash
-# Debug build
-cmake -DCMAKE_BUILD_TYPE=Debug ..
 
-# Release build (optimized)
-cmake -DCMAKE_BUILD_TYPE=Release ..
 
-# Cluster-optimized build
-cmake -DBUILD_FOR_CLUSTER=ON ..
-```
-
-### Installation
 ```bash
 # System-wide installation (requires sudo)
 make install
@@ -308,7 +280,7 @@ gaussian_extractor.x pcm       # errors related to pcm convergence will be moved
 ### Calculate final energy and energy components if a single point calculation was done for electronic energy correction
 - Single point calculations are usually done at a higher level of theory and electronic energy is then used to improve the accuracy of the final Gibbs free energy.
 - Suppose the single point calculation was done in a dir called higher_level within a current dir where all geometrical optimizations and frequency calculations were done (Opt Freq).
-- Log files of the single point calculations should have the same names as the ones calculated at the lower level of theory.
+- Log files of the single point calculations should have the same names as the ones calculated at the lower level of theory
 
 ![dirs](./docs/tree_dir.png)
 
@@ -435,23 +407,16 @@ CXX=icpx make                # Force Intel oneAPI compiler
 
 **Intel oneAPI 2025.x Compatibility:**
 
-The build system automatically handles two known issues with Intel oneAPI 2025.x:
+The build system automatically handles the known issues with Intel oneAPI 202x.x:
 
-1. **Object File Format Issue:**
-   If you encounter the following error:
-   ```
-   build/src/main.o: file not recognized: File format not recognized
-   icpx: error: linker command failed with exit code 1 (use -v to see invocation)
-   ```
-   The build system automatically disables Interprocedural Optimization (IPO) for Intel oneAPI 2025.x.
+**std::filesystem Linking Issue:**
+If you encounter errors like:
 
-2. **std::filesystem Linking Issue:**
-   If you encounter errors like:
-   ```
-   undefined reference to `std::filesystem::status(std::filesystem::__cxx11::path const&)'
-   undefined reference to `std::filesystem::file_size(std::filesystem::__cxx11::path const&)'
-   ```
-   The build system automatically adds the `-lstdc++fs` flag for Intel oneAPI 2025.x.
+```
+undefined reference to `std::filesystem::status(std::filesystem::__cxx11::path const&)'
+undefined reference to `std::filesystem::file_size(std::filesystem::__cxx11::path const&)'
+```
+The build system automatically adds the `-lstdc++fs` flag for Intel oneAPI 202x.x.
 
 These fixes are applied automatically, but you can verify by checking the compiler information:
 
