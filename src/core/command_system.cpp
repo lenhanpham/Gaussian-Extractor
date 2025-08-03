@@ -1,11 +1,11 @@
 #include "command_system.h"
-#include "gaussian_extractor.h"
+
 #include "config_manager.h"
 #include "version.h"
 #include <iostream>
 #include <algorithm>
 #include <thread>
-#include <stdexcept>
+
 #include <string>
 #include <cstdlib>
 
@@ -35,19 +35,29 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
         return context;
     }
 
-    // Check if first argument is a command
-    std::string first_arg = argv[1];
-    CommandType potential_command = parse_command(first_arg);
-
-    int start_index = 1;
-    if (potential_command != CommandType::EXTRACT || first_arg == "extract") {
-        context.command = potential_command;
-        start_index = 2; // Skip the command argument
+    // Scan all arguments to find a command (flexible positioning)
+    CommandType found_command = CommandType::EXTRACT;
+    int command_index = -1;
+    
+    for (int i = 1; i < argc; ++i) {
+        CommandType potential_command = parse_command(argv[i]);
+        if (potential_command != CommandType::EXTRACT || std::string(argv[i]) == "extract") {
+            found_command = potential_command;
+            command_index = i;
+            break;
+        }
     }
+    
+    context.command = found_command;
 
-    // Parse remaining arguments
-    for (int i = start_index; i < argc; ++i) {
+    // Parse all arguments, skipping the command if found
+    for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
+        
+        // Skip the command argument itself
+        if (i == command_index) {
+            continue;
+        }
 
         if (arg == "-h" || arg == "--help") {
             if (context.command == CommandType::EXTRACT) {
@@ -75,7 +85,9 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
         parse_common_options(context, i, argc, argv);
 
         // Parse command-specific options
-        if (context.command == CommandType::EXTRACT) {
+        if (context.command == CommandType::EXTRACT || 
+            context.command == CommandType::HIGH_LEVEL_KJ || 
+            context.command == CommandType::HIGH_LEVEL_AU) {
             parse_extract_options(context, i, argc, argv);
         } else {
             parse_checker_options(context, i, argc, argv);
@@ -92,11 +104,11 @@ CommandType CommandParser::parse_command(const std::string& cmd) {
     if (cmd == "errors") return CommandType::CHECK_ERRORS;
     if (cmd == "pcm") return CommandType::CHECK_PCM;
     if (cmd == "check") return CommandType::CHECK_ALL;
-    if (cmd == "high-kj") return CommandType::HIGH_LEVEL_KJ;
-    if (cmd == "high-au") return CommandType::HIGH_LEVEL_AU;
+    if (cmd == "high-kj" || cmd == "--high-level-kj") return CommandType::HIGH_LEVEL_KJ;
+    if (cmd == "high-au" || cmd == "--high-level-au") return CommandType::HIGH_LEVEL_AU;
 
     // If it starts with '-', it's probably an option, not a command
-    if (cmd.front() == '-') return CommandType::EXTRACT;
+    if (!cmd.empty() && cmd.front() == '-') return CommandType::EXTRACT;
 
     // Default to extract for backward compatibility
     return CommandType::EXTRACT;
@@ -224,10 +236,10 @@ void CommandParser::parse_extract_options(CommandContext& context, int& i, int a
         if (++i < argc) {
             try {
                 int col = std::stoi(argv[i]);
-                if (col >= 2 && col <= 10) {
+                if (col >= 1 && col <= 10) {
                     context.sort_column = col;
                 } else {
-                    add_warning(context, "Error: Column must be between 2-10. Using default column 2.");
+                    add_warning(context, "Error: Column must be between 1-10. Using default column 2.");
                 }
             } catch (const std::exception& e) {
                 add_warning(context, "Error: Invalid column format. Using default column 2.");
@@ -418,7 +430,9 @@ void CommandParser::print_help(const std::string& program_name) {
     std::cout << "  pcm               Check and move PCM convergence failures to PCMMkU/\n";
     std::cout << "  check             Run all job checks (done, errors, pcm)\n";
     std::cout << "  high-kj           Calculate high-level energies with output in kJ/mol\n";
-    std::cout << "  high-au           Calculate high-level energies with detailed output in atomic units\n\n";
+    std::cout << "  --high-level-kj   (same as high-kj)\n";
+    std::cout << "  high-au           Calculate high-level energies with detailed output in atomic units\n";
+    std::cout << "  --high-level-au   (same as high-au)\n\n";
 
     std::cout << "Common Options:\n";
     auto output_exts = g_config_manager.get_output_extensions();
@@ -437,7 +451,7 @@ void CommandParser::print_help(const std::string& program_name) {
     std::cout << "Extract Command Options:\n";
     std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: " << g_config_manager.get_default_temperature() << ")\n";
     std::cout << "  -c, --cm <M>          Concentration in M (default: " << g_config_manager.get_default_concentration() << ")\n";
-    std::cout << "  -col, --column <N>    Sort column 2-10 (default: " << g_config_manager.get_int("default_sort_column") << ")\n";
+    std::cout << "  -col, --column <N>    Sort column 1-10 (default: " << g_config_manager.get_int("default_sort_column") << ")\n";
     std::cout << "  -f, --format <fmt>    Output format: text|csv (default: " << g_config_manager.get_default_output_format() << ")\n";
     std::cout << "  --memory-limit <MB>   Memory limit in MB (default: auto-calculated)\n";
     std::cout << "  --resource-info       Show resource information\n\n";
@@ -501,7 +515,10 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
             std::cout << "thermodynamic quantities. Output format focuses on final Gibbs energies.\n\n";
             std::cout << "Additional Options:\n";
             std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: from input or 298.15)\n";
-            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n\n";
+            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n";
+            std::cout << "  -f, --format <fmt>    Output format: text|csv (default: text)\n";
+            std::cout << "  -col, --column <N>    Sort column 1-7 (default: 2)\n";
+            std::cout << "                        1=Name, 2=G kJ/mol, 3=G a.u, 4=G eV, 5=LowFQ, 6=Status, 7=PhCorr\n\n";
             break;
 
         case CommandType::HIGH_LEVEL_AU:
@@ -512,7 +529,10 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
             std::cout << "energy component breakdown including ZPE, TC, TS, H, and G values.\n\n";
             std::cout << "Additional Options:\n";
             std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: from input or 298.15)\n";
-            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n\n";
+            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n";
+            std::cout << "  -f, --format <fmt>    Output format: text|csv (default: text)\n";
+            std::cout << "  -col, --column <N>    Sort column 1-10 (default: 2)\n";
+            std::cout << "                        1=Name, 2=E high, 3=E low, 4=ZPE, 5=TC, 6=TS, 7=H, 8=G, 9=LowFQ, 10=PhCorr\n\n";
             break;
 
         default:
@@ -544,6 +564,15 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
     std::cout << "Examples:\n";
     std::cout << "  " << program_name << " " << cmd_name << "              # Basic usage\n";
     std::cout << "  " << program_name << " " << cmd_name << " -q           # Quiet mode\n";
+    if (command == CommandType::HIGH_LEVEL_KJ) {
+        std::cout << "  " << program_name << " " << cmd_name << " -col 5       # Sort by frequency\n";
+        std::cout << "  " << program_name << " " << cmd_name << " -t 300 -col 2 -f csv  # Custom temp, sort by G kJ/mol, CSV\n";
+    } else if (command == CommandType::HIGH_LEVEL_AU) {
+        std::cout << "  " << program_name << " " << cmd_name << " -col 8       # Sort by Gibbs energy\n";
+        std::cout << "  " << program_name << " " << cmd_name << " -t 273 -col 4 -f csv  # Custom temp, sort by ZPE, CSV\n";
+    } else {
+
+    }
     std::cout << "  " << program_name << " " << cmd_name << " -nt 4        # Use 4 threads\n";
 
     if (command == CommandType::CHECK_DONE) {

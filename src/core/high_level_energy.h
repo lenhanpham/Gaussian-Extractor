@@ -35,6 +35,11 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <thread>
+#include <future>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
 #include "gaussian_extractor.h"
 
 /**
@@ -180,6 +185,11 @@ struct HighLevelEnergyData {
     /** @} */
     
     /**
+     * @brief Default constructor for container operations
+     */
+    HighLevelEnergyData() = default;
+    
+    /**
      * @brief Constructor with filename initialization
      * @param fname Name of the log file for this calculation
      */
@@ -233,7 +243,22 @@ public:
      * Temperature affects thermal corrections and phase corrections, while
      * concentration affects phase corrections for solution-phase calculations.
      */
-    HighLevelEnergyCalculator(double temp = 298.15, double concentration_m = 1.0);
+    HighLevelEnergyCalculator(double temp = 298.15, double concentration_m = 1.0, int sort_column = 2, bool is_au_format = false);
+
+    /**
+     * @brief Constructor with processing context for advanced resource management
+     * @param context Shared processing context with resource managers
+     * @param temp Temperature for thermodynamic calculations (K, default: 298.15)
+     * @param concentration_m Concentration in mol/L for phase corrections (default: 1.0)
+     * 
+     * Initializes the calculator with a complete processing context that includes:
+     * - Memory monitoring for large-scale processing
+     * - File handle management for efficient I/O
+     * - Thread-safe error collection
+     * - Job scheduler integration
+     */
+    HighLevelEnergyCalculator(std::shared_ptr<ProcessingContext> context, 
+                             double temp = 298.15, double concentration_m = 1.0, int sort_column = 2, bool is_au_format = false);
     
     /**
      * @defgroup MainCalculation Main Calculation Functions
@@ -269,6 +294,39 @@ public:
      * capability for large sets of calculations.
      */
     std::vector<HighLevelEnergyData> process_directory(const std::string& extension = ".log");
+
+    /**
+     * @brief Process entire directory with parallel processing
+     * @param extension File extension to process (default: ".log")
+     * @param thread_count Number of threads to use (0 = auto-detect, default: 0)
+     * @return Vector of HighLevelEnergyData for all processed files
+     * 
+     * Parallel version of process_directory that uses multiple threads for
+     * improved performance on large datasets. Includes:
+     * - Thread-safe memory management
+     * - File handle resource management
+     * - Error collection across threads
+     * - Progress tracking and reporting
+     */
+    std::vector<HighLevelEnergyData> process_directory_parallel(const std::string& extension = ".log", 
+                                                               unsigned int thread_count = 0,
+                                                               bool quiet = false);
+
+    /**
+     * @brief Process files with custom resource limits
+     * @param files Vector of specific files to process
+     * @param thread_count Number of threads to use
+     * @param memory_limit_mb Memory limit in MB (0 = auto-calculate)
+     * @return Vector of HighLevelEnergyData for processed files
+     * 
+     * Advanced processing function that allows fine-grained control over
+     * resource usage. Useful for large-scale computational workflows.
+     */
+    std::vector<HighLevelEnergyData> process_files_with_limits(
+        const std::vector<std::string>& files,
+        unsigned int thread_count,
+        size_t memory_limit_mb = 0,
+        bool quiet = false);
     
     /** @} */ // end of MainCalculation group
     
@@ -303,6 +361,30 @@ public:
      */
     void print_components_format(const std::vector<HighLevelEnergyData>& results, 
                                 bool quiet = false, std::ostream* output_file = nullptr);
+    
+    /**
+     * @brief Print results in CSV format optimized for Gibbs energies
+     * @param results Vector of calculation results to display
+     * @param quiet Suppress header and summary information (default: false)
+     * @param output_file Optional file stream for output (default: nullptr for console)
+     * 
+     * Outputs results in comma-separated values format suitable for spreadsheet
+     * import and data analysis. Focuses on Gibbs free energies in multiple units.
+     */
+    void print_gibbs_csv_format(const std::vector<HighLevelEnergyData>& results, 
+                               bool quiet = false, std::ostream* output_file = nullptr);
+    
+    /**
+     * @brief Print results in CSV format with detailed energy components
+     * @param results Vector of calculation results to display
+     * @param quiet Suppress header and summary information (default: false)
+     * @param output_file Optional file stream for output (default: nullptr for console)
+     * 
+     * Outputs comprehensive energy breakdown in CSV format including all
+     * high-level and low-level contributions, thermal corrections, etc.
+     */
+    void print_components_csv_format(const std::vector<HighLevelEnergyData>& results, 
+                                    bool quiet = false, std::ostream* output_file = nullptr);
     
     /** @} */ // end of OutputFunctions group
     
@@ -345,12 +427,43 @@ public:
      */
     double get_concentration_m() const { return concentration_m_; }
     
+    /**
+     * @brief Set sort column for results ordering
+     * @param column Column number for sorting (2-10)
+     * 
+     * Sets which column to use for sorting results (visual column numbers):
+     * 
+     * High-KJ format (1-7):
+     * - 1: Output name  - 2: G kJ/mol  - 3: G a.u  - 4: G eV  - 5: LowFQ  - 6: Status  - 7: PhCorr
+     * 
+     * High-AU format (1-10):
+     * - 1: Output name  - 2: E high a.u  - 3: E low a.u  - 4: ZPE a.u  - 5: TC a.u
+     * - 6: TS a.u  - 7: H a.u  - 8: G a.u  - 9: LowFQ  - 10: PhaseCorr
+     */
+    void set_sort_column(int column) { 
+        if (column >= 1 && column <= 10) {
+            sort_column_ = column; 
+        }
+    }
+    
+    /**
+     * @brief Get current sort column setting
+     * @return Sort column number (2-10)
+     */
+    int get_sort_column() const { return sort_column_; }
+    
     /** @} */ // end of Configuration group
     
 private:
     double temperature_;           ///< Temperature for calculations (K)
     double concentration_m_;       ///< Concentration in mol/L
     double concentration_mol_m3_;  ///< Concentration in mol/m³ (for calculations)
+    int sort_column_;              ///< Column for sorting results (visual column numbers)
+    bool is_au_format_;            ///< Whether using AU format (affects column mapping)
+    
+    // Enhanced resource management
+    std::shared_ptr<ProcessingContext> context_;  ///< Processing context with resource managers
+    bool has_context_;                           ///< Whether enhanced context is available
     
     /**
      * @defgroup EnergyExtraction Energy Extraction Helper Functions
@@ -374,7 +487,7 @@ private:
      * @return Extracted energy value
      */
     double extract_value_from_file(const std::string& filename, const std::string& pattern, 
-                                  int field_index, int occurrence = -1);
+                                  int field_index, int occurrence = -1, bool warn_if_missing = true);
     
     /**
      * @brief Extract thermal correction data from low-level calculation
@@ -597,6 +710,137 @@ private:
     void print_components_header_dynamic(const std::vector<int>& column_widths, std::ostream* output_file = nullptr);
     
     /** @} */ // end of DynamicFormatting group
+
+    /**
+     * @defgroup ParallelProcessing Parallel Processing Functions
+     * @brief Private functions for parallel file processing
+     * @{
+     */
+    
+    /**
+     * @brief Compare two HighLevelEnergyData entries for sorting
+     * @param a First data entry
+     * @param b Second data entry
+     * @param column Column number to sort by (2-10)
+     * @return true if a should come before b in sorted order
+     * 
+     * Compares entries based on visual column numbers:
+     * 
+     * High-KJ format: 2=G kJ/mol, 3=G a.u, 4=G eV, 5=LowFQ, 6=Status, 7=PhCorr
+     * High-AU format: 2=E high a.u, 3=E low a.u, 4=ZPE a.u, 5=TC a.u, 6=TS a.u, 7=H a.u, 8=G a.u, 9=LowFQ, 10=PhaseCorr
+     */
+    bool compare_results(const HighLevelEnergyData& a, const HighLevelEnergyData& b, int column);
+
+    /**
+     * @brief Worker function for parallel file processing
+     * @param files Vector of files to process
+     * @param start_index Starting index for this worker
+     * @param end_index Ending index for this worker
+     * @param results Shared results vector (thread-safe access required)
+     * @param results_mutex Mutex for results vector access
+     * @param progress_counter Atomic counter for progress tracking
+     * 
+     * Processes a subset of files assigned to this worker thread.
+     * Includes proper resource management and error handling.
+     */
+    void process_files_worker(const std::vector<std::string>& files,
+                             size_t start_index, size_t end_index,
+                             std::vector<HighLevelEnergyData>& results,
+                             std::mutex& results_mutex,
+                             std::atomic<size_t>& progress_counter);
+
+    /**
+     * @brief Calculate optimal number of threads for processing
+     * @param file_count Number of files to process
+     * @param available_memory Available memory in MB
+     * @return Optimal thread count
+     * 
+     * Determines the best number of threads based on:
+     * - Available CPU cores
+     * - Memory constraints
+     * - File count and estimated processing complexity
+     */
+    unsigned int calculate_optimal_threads(size_t file_count, size_t available_memory);
+
+    /**
+     * @brief Validate and prepare files for processing
+     * @param files Vector of files to validate
+     * @return Vector of validated, accessible files
+     * 
+     * Pre-processes file list to:
+     * - Check file existence and accessibility
+     * - Estimate memory requirements
+     * - Sort by processing priority
+     */
+    std::vector<std::string> validate_and_prepare_files(const std::vector<std::string>& files);
+
+    /**
+     * @brief Monitor processing progress and resource usage
+     * @param total_files Total number of files to process
+     * @param progress_counter Atomic counter tracking completed files
+     * @param start_time Processing start time
+     * @return true to continue monitoring, false to stop
+     * 
+     * Provides real-time monitoring of:
+     * - Processing progress
+     * - Memory usage
+     * - Estimated completion time
+     * - Error rates
+     */
+    bool monitor_progress(size_t total_files, 
+                         const std::atomic<size_t>& progress_counter,
+                         std::chrono::steady_clock::time_point start_time,
+                         bool quiet = false);
+
+    /** @} */ // end of ParallelProcessing group
+
+    /**
+     * @defgroup SafetyHelpers Safety and Validation Helpers
+     * @brief Private functions for enhanced safety checks and validation
+     * @{
+     */
+
+    /**
+     * @brief Safe file reading with memory and handle management
+     * @param filename Path to file to read
+     * @param max_size_mb Maximum file size to read (MB)
+     * @return File content or empty string on error
+     * 
+     * Enhanced file reading that includes:
+     * - File size validation
+     * - Memory allocation checking
+     * - File handle management
+     * - Error reporting to context collector
+     */
+    std::string safe_read_file(const std::string& filename, size_t max_size_mb = 100);
+
+    /**
+     * @brief Safe energy value parsing with validation
+     * @param value_str String containing energy value
+     * @param context_info Context information for error reporting
+     * @return Parsed energy value or 0.0 on error
+     * 
+     * Enhanced parsing with:
+     * - Range validation
+     * - NaN/infinity checking
+     * - Error reporting
+     * - Context-aware logging
+     */
+    double safe_parse_energy(const std::string& value_str, const std::string& context_info);
+
+    /**
+     * @brief Validate processing context and resources
+     * @return true if context is valid and resources available
+     * 
+     * Comprehensive validation of:
+     * - Memory availability
+     * - File handle availability
+     * - Processing context integrity
+     * - System resource status
+     */
+    bool validate_processing_context();
+
+    /** @} */ // end of SafetyHelpers group
 };
 
 /**

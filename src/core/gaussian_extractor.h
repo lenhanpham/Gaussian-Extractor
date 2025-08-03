@@ -551,6 +551,7 @@ struct ProcessingContext {
     bool use_input_temp;        ///< Whether to use temperature from input files
     std::string extension;      ///< File extension to process
     unsigned int requested_threads; ///< Number of requested processing threads
+    size_t max_file_size_mb;    ///< Maximum individual file size in MB
     JobResources job_resources; ///< Job scheduler resource information
     
     /**
@@ -560,6 +561,7 @@ struct ProcessingContext {
      * @param use_temp Whether to use temperatures from input files
      * @param thread_count Number of processing threads to use
      * @param ext File extension to process (default: ".log")
+     * @param max_file_mb Maximum individual file size in MB (default: 100)
      * @param job_res Job scheduler resource information
      * 
      * Creates a complete processing context with:
@@ -572,7 +574,8 @@ struct ProcessingContext {
      *       and available system resources
      */
     ProcessingContext(double temp, int C, bool use_temp, unsigned int thread_count = 1, 
-                     const std::string& ext = ".log", const JobResources& job_res = JobResources{})
+                     const std::string& ext = ".log", size_t max_file_mb = DEFAULT_MAX_FILE_SIZE_MB,
+                     const JobResources& job_res = JobResources{})
         : memory_monitor(std::make_shared<MemoryMonitor>(MemoryMonitor::calculate_optimal_memory_limit(thread_count)))
         , file_manager(std::make_shared<FileHandleManager>())
         , error_collector(std::make_shared<ThreadSafeErrorCollector>())
@@ -581,6 +584,7 @@ struct ProcessingContext {
         , use_input_temp(use_temp)
         , extension(ext)
         , requested_threads(thread_count)
+        , max_file_size_mb(max_file_mb)
         , job_resources(job_res) {}
 };
 

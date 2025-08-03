@@ -1,5 +1,5 @@
 # Makefile for Gaussian Extractor
-# Enhanced Safety Edition v0.4.0
+# Enhanced Safety Edition v0.4.1
 
 # Directory structure
 SRC_DIR = src
@@ -18,7 +18,7 @@ ifeq ($(CXX),)
     CXX = g++
 endif
 $(info Using compiler: $(CXX)) 
-CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR) -I$(CORE_DIR)
+CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR) -I$(CORE_DIR) -fp-model=precise 
 DEBUGFLAGS = -g -DDEBUG_BUILD -fsanitize=address -fno-omit-frame-pointer
 LDFLAGS = -pthread
 

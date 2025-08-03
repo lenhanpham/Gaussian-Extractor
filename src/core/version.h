@@ -3,24 +3,24 @@
  * @brief Version information and build metadata for Gaussian Extractor
  * @author Le Nhan Pham
  * @date 2025
- * 
+ *
  * This header file contains all version-related constants, macros, and utility
  * functions for the Gaussian Extractor application. It provides centralized
  * version management and build information that can be used throughout the
  * application for display, logging, and compatibility checking.
- * 
+ *
  * @section Version Management
  * Version information is defined using semantic versioning (MAJOR.MINOR.PATCH):
  * - MAJOR: Incremented for incompatible API changes
  * - MINOR: Incremented for backward-compatible functionality additions
  * - PATCH: Incremented for backward-compatible bug fixes
- * 
+ *
  * @section Build Information
  * Additional build metadata includes:
  * - Application name and description
  * - Copyright and author information
  * - Repository URL for source code
- * 
+ *
  * @note When updating version numbers, ensure CMakeLists.txt PROJECT(VERSION)
  *       is also updated to maintain consistency across build systems
  */
@@ -39,7 +39,7 @@
 
 /**
  * @brief Major version number
- * 
+ *
  * Incremented when incompatible API changes are made.
  * Breaking changes that require user intervention.
  */
@@ -47,7 +47,7 @@
 
 /**
  * @brief Minor version number
- * 
+ *
  * Incremented when backward-compatible functionality is added.
  * New features that don't break existing usage.
  */
@@ -55,19 +55,19 @@
 
 /**
  * @brief Patch version number
- * 
+ *
  * Incremented for backward-compatible bug fixes.
  * No new features, only corrections to existing functionality.
  */
-#define GAUSSIAN_EXTRACTOR_VERSION_PATCH 0
+#define GAUSSIAN_EXTRACTOR_VERSION_PATCH 1
 
 /**
  * @brief Complete version string
- * 
+ *
  * Human-readable version string combining all version components.
  * Format: "vMAJOR.MINOR.PATCH"
  */
-#define GAUSSIAN_EXTRACTOR_VERSION_STRING "v0.4.0"
+#define GAUSSIAN_EXTRACTOR_VERSION_STRING "v0.4.1"
 
 /** @} */ // end of VersionConstants group
 
@@ -122,11 +122,11 @@ namespace GaussianExtractor {
      * @brief Functions for retrieving and manipulating version information
      * @{
      */
-    
+
     /**
      * @brief Get the version string
      * @return Version string in format "vMAJOR.MINOR.PATCH"
-     * 
+     *
      * Returns just the version number without application name or other metadata.
      * Useful for version comparisons and logging where only the version is needed.
      */
@@ -137,7 +137,7 @@ namespace GaussianExtractor {
     /**
      * @brief Get the full version with application name
      * @return Application name followed by version string
-     * 
+     *
      * Returns a combination of the application name and version suitable for
      * display in headers, about dialogs, or command-line version output.
      */
@@ -149,13 +149,13 @@ namespace GaussianExtractor {
     /**
      * @brief Get comprehensive version information
      * @return Multi-line string with complete version and build information
-     * 
+     *
      * Returns a formatted multi-line string containing:
      * - Application name and version
      * - Description
      * - Copyright notice
      * - Repository URL
-     * 
+     *
      * Suitable for detailed version displays or help output.
      */
     inline std::string get_version_info() {
@@ -169,7 +169,7 @@ namespace GaussianExtractor {
     /**
      * @brief Get header information for program output
      * @return Single-line header with name, version, and author
-     * 
+     *
      * Returns a concise single-line string suitable for program headers
      * or banner displays. Contains application name, version, and author.
      */
@@ -182,14 +182,14 @@ namespace GaussianExtractor {
     /**
      * @brief Check if current version meets minimum requirements
      * @param major Minimum required major version
-     * @param minor Minimum required minor version  
+     * @param minor Minimum required minor version
      * @param patch Minimum required patch version (default: 0)
      * @return true if current version >= required version, false otherwise
-     * 
+     *
      * Performs semantic version comparison to determine if the current
      * application version meets or exceeds the specified minimum version.
      * Useful for compatibility checks and feature availability testing.
-     * 
+     *
      * @note Version comparison follows semantic versioning rules:
      *       - Major version takes precedence
      *       - Minor version compared only if major versions equal
@@ -202,7 +202,7 @@ namespace GaussianExtractor {
         if (GAUSSIAN_EXTRACTOR_VERSION_MINOR < minor) return false;
         return GAUSSIAN_EXTRACTOR_VERSION_PATCH >= patch;
     }
-    
+
     /** @} */ // end of VersionFunctions group
 }
 

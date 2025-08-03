@@ -917,7 +917,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
         }
 
         // Create processing context with job-aware memory limit
-        ProcessingContext context(temp, C, use_input_temp, num_threads, extension, job_resources);
+        ProcessingContext context(temp, C, use_input_temp, num_threads, extension, max_file_size_mb, job_resources);
 
         // Apply calculated memory limit
         context.memory_monitor->set_memory_limit(calculated_memory_limit);
