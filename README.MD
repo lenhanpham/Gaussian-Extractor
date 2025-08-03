@@ -1,4 +1,4 @@
-# **Gaussian Extractor v0.4.0
+# **Gaussian Extractor v0.4.1
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
@@ -10,7 +10,7 @@
 * **Energy Extraction**: Extracts Gibbs free energies with phase correction (gas phase 1 atm → 1M solution)
 * **Gibbs Free Energy Calculation**: Calculates Gibbs free energies from output files with improved electronic energy (single point) from higher levels of theory
 * **Automatic Sorting**: Results sorted by energy values for easy analysis
-* **Important note**: **Large files (>100MB) automatically skipped by default**. Users need to set flag --max-file-size xxxxx to increase the size limit 
+* **Important note**: **Large files (>100MB) automatically skipped by default**. Users need to set flag --max-file-size xxxxx to increase the size limit
 
 ## Installation and Compilation
 
