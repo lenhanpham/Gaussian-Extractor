@@ -17,8 +17,13 @@ ifeq ($(CXX),)
     $(warning "No supported compiler (icpx, icpc, icc, g++) found in PATH. Defaulting to g++.")
     CXX = g++
 endif
-$(info Using compiler: $(CXX)) 
-CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR) -I$(CORE_DIR) -fp-model=precise 
+$(info Using compiler: $(CXX))
+CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR) -I$(CORE_DIR)
+
+# Add Intel-specific flags if using Intel compiler
+ifneq ($(filter icpx icpc icc,$(CXX)),)
+    CXXFLAGS += -fp-model=precise
+endif
 DEBUGFLAGS = -g -DDEBUG_BUILD -fsanitize=address -fno-omit-frame-pointer
 LDFLAGS = -pthread
 

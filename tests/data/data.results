@@ -1,0 +1,16 @@
+                                                             
+*************************************************************
+* Gaussian Extractor v0.4.1 developed by Le Nhan Pham       *
+* https://github.com/lenhanpham/gaussian-extractor          *
+*************************************************************
+                                                             
+Default temperature for files without specified temp: 298.150 K
+The concentration for phase correction: 1 M or 1000 mol/m3
+Representative Gibbs free correction for phase changing at 298.150 K: 0.003019 au
+Using 2 threads for processing.
+Successfully processed 2/2 files.
+Peak memory usage: 2.78 MB
+Output name                                                  ETG kJ/mol    Low FC           ETG a.u      Nuclear E au              SCFE      ZPE   Status PCorr Round
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test-2.log                                             -11674920.598344   -103.63      -4446.741462       7138.810422      -4447.307389  0.641455    DONE   YES     3
+test-1.log                                              -3239867.246800    -40.31      -1234.000000       5678.901200      -1234.567800  0.123456    DONE    NO     0

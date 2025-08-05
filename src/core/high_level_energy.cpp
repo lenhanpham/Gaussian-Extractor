@@ -15,16 +15,94 @@
 #include <chrono>
 #include <exception>
 
+// System-specific headers for memory detection
+#ifdef _WIN32
+#include <windows.h>
+#include <psapi.h>
+#else
+#include <unistd.h>
+#include <sys/sysinfo.h>
+#endif
+
+// =============================================================================
+// ThreadPool Implementation
+// =============================================================================
+
+/**
+ * @brief ThreadPool constructor implementation
+ */
+ThreadPool::ThreadPool(size_t num_threads) {
+    for(size_t i = 0; i < num_threads; ++i) {
+        workers_.emplace_back([this] {
+            for(;;) {
+                std::function<void()> task;
+                
+                {
+                    std::unique_lock<std::mutex> lock(queue_mutex_);
+                    condition_.wait(lock, [this]{ return stop_flag_ || !tasks_.empty(); });
+                    
+                    if(stop_flag_ && tasks_.empty()) {
+                        return;
+                    }
+                    
+                    task = std::move(tasks_.front());
+                    tasks_.pop();
+                }
+                
+                active_tasks_.fetch_add(1);
+                try {
+                    task();
+                } catch(...) {
+                    // Task exceptions are handled by the future mechanism
+                }
+                active_tasks_.fetch_sub(1);
+            }
+        });
+    }
+}
+
+/**
+ * @brief ThreadPool destructor implementation
+ */
+ThreadPool::~ThreadPool() {
+    {
+        std::unique_lock<std::mutex> lock(queue_mutex_);
+        stop_flag_.store(true);
+    }
+    condition_.notify_all();
+    
+    for(std::thread &worker: workers_) {
+        if(worker.joinable()) {
+            worker.join();
+        }
+    }
+}
+
+// Template method implementation moved to header file for proper instantiation
+
+/**
+ * @brief Wait for all tasks to complete implementation
+ */
+void ThreadPool::wait_for_completion() {
+    while(active_tasks_.load() > 0 || !tasks_.empty()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+// =============================================================================
+// HighLevelEnergyCalculator Implementation
+// =============================================================================
+
 // Basic constructor
 HighLevelEnergyCalculator::HighLevelEnergyCalculator(double temp, double concentration_m, int sort_column, bool is_au_format)
-    : temperature_(temp), concentration_m_(concentration_m), sort_column_(sort_column), is_au_format_(is_au_format), context_(nullptr), has_context_(false) {
+    : temperature_(temp), concentration_m_(concentration_m), sort_column_(sort_column), is_au_format_(is_au_format), context_(nullptr), has_context_(false), thread_pool_(nullptr) {
     concentration_mol_m3_ = concentration_m * 1000.0;
 }
 
 // Enhanced constructor with processing context
 HighLevelEnergyCalculator::HighLevelEnergyCalculator(std::shared_ptr<ProcessingContext> context,
                                                    double temp, double concentration_m, int sort_column, bool is_au_format)
-    : temperature_(temp), concentration_m_(concentration_m), sort_column_(sort_column), is_au_format_(is_au_format), context_(context), has_context_(true) {
+    : temperature_(temp), concentration_m_(concentration_m), sort_column_(sort_column), is_au_format_(is_au_format), context_(context), has_context_(true), thread_pool_(nullptr) {
     concentration_mol_m3_ = concentration_m * 1000.0;
 
     if (context_) {
@@ -204,8 +282,8 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_directory_pa
             thread_count = calculate_optimal_threads(validated_files.size(), available_memory);
         }
 
-        // Process files in parallel
-        return process_files_with_limits(validated_files, thread_count, 0, quiet);
+        // Process files using enhanced thread pool approach
+        return process_files_with_thread_pool(validated_files, thread_count, 0, quiet);
 
     } catch (const std::exception& e) {
         if (has_context_ && context_->error_collector) {
@@ -253,7 +331,13 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_l
             }
         }
     } else {
-        // Parallel processing
+        // Enhanced parallel processing with thread pool
+        if (files.size() > 50) {
+            // Use optimized thread pool for large datasets
+            return process_files_with_thread_pool(files, thread_count, memory_limit_mb, quiet);
+        }
+        
+        // Use original approach for smaller datasets to avoid thread pool overhead
         results.resize(files.size());
         std::vector<std::thread> workers;
         std::mutex results_mutex;
@@ -268,7 +352,7 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_l
             monitor_thread = std::thread([this, &progress_counter, &should_stop, start_time, files, quiet]() {
                 while (!should_stop.load() && progress_counter.load() < files.size()) {
                     monitor_progress(files.size(), progress_counter, start_time, quiet);
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Faster updates
                 }
             });
         }
@@ -1468,3 +1552,247 @@ bool validate_energy_data(const HighLevelEnergyData& data) {
 }
 
 } // namespace HighLevelEnergyUtils
+
+// =============================================================================
+// Enhanced Parallel Processing Implementation
+// =============================================================================
+
+std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_thread_pool(
+    const std::vector<std::string>& files,
+    unsigned int thread_count,
+    size_t memory_limit_mb,
+    bool quiet) {
+
+    std::vector<HighLevelEnergyData> results;
+    
+    if (files.empty()) {
+        return results;
+    }
+
+    // Enhanced memory limit calculation
+    if (memory_limit_mb == 0) {
+        if (has_context_ && context_->memory_monitor) {
+            // Get actual available memory instead of max usage
+            size_t system_memory_mb = 4096; // Default fallback
+            try {
+                // Try to get system memory info
+                #ifdef _WIN32
+                MEMORYSTATUSEX statex;
+                statex.dwLength = sizeof(statex);
+                if (GlobalMemoryStatusEx(&statex)) {
+                    system_memory_mb = static_cast<size_t>(statex.ullAvailPhys / (1024 * 1024));
+                }
+                #else
+                long pages = sysconf(_SC_PHYS_PAGES);
+                long page_size = sysconf(_SC_PAGE_SIZE);
+                if (pages > 0 && page_size > 0) {
+                    system_memory_mb = (pages * page_size) / (1024 * 1024);
+                }
+                #endif
+            } catch (...) {
+                // Use fallback value
+            }
+            
+            // Use 30-60% of system memory based on thread count
+            double memory_fraction = 0.3 + (thread_count / 48.0) * 0.3; // 30% to 60%
+            memory_limit_mb = static_cast<size_t>(system_memory_mb * memory_fraction);
+            
+            if (!quiet) {
+                std::cout << "Auto-detected memory limit: " << memory_limit_mb << " MB" << std::endl;
+            }
+        } else {
+            memory_limit_mb = 2048; // Default 2GB
+        }
+    }
+
+    // Optimize thread count
+    thread_count = std::min(thread_count, std::thread::hardware_concurrency());
+    thread_count = std::max(1u, thread_count); // Minimum 1 thread
+    
+    if (!quiet) {
+        std::cout << "Processing " << files.size() << " files with " << thread_count 
+                  << " threads (Memory limit: " << memory_limit_mb << " MB)" << std::endl;
+    }
+
+    // Get or create thread pool
+    ThreadPool& pool = get_thread_pool(thread_count);
+    
+    // Batch read file metadata for optimization
+    std::vector<std::pair<std::string, size_t>> file_sizes;
+    for (const auto& file : files) {
+        try {
+            auto file_size = std::filesystem::file_size(file);
+            file_sizes.emplace_back(file, file_size);
+        } catch (...) {
+            file_sizes.emplace_back(file, 0);
+        }
+    }
+    
+    // Sort files by size (process smaller files first for better load balancing)
+    std::sort(file_sizes.begin(), file_sizes.end(),
+              [](const auto& a, const auto& b) { return a.second < b.second; });
+
+    // Submit all tasks to thread pool
+    std::vector<std::future<HighLevelEnergyData>> futures;
+    futures.reserve(files.size());
+    
+    std::atomic<size_t> progress_counter{0};
+    auto start_time = std::chrono::steady_clock::now();
+    
+    // Start progress monitor thread
+    std::atomic<bool> should_stop{false};
+    std::thread monitor_thread;
+    if (!quiet && files.size() > 5) {
+        monitor_thread = std::thread([&]() {
+            while (!should_stop.load()) {
+                monitor_progress(files.size(), progress_counter, start_time, quiet);
+                std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Faster updates
+            }
+        });
+    }
+
+    // Submit tasks to thread pool
+    for (const auto& file_pair : file_sizes) {
+        const std::string& filename = file_pair.first;
+        
+        auto future = pool.enqueue([this, filename, &progress_counter]() -> HighLevelEnergyData {
+            try {
+                auto data = calculate_high_level_energy(filename);
+                progress_counter.fetch_add(1);
+                return data;
+            } catch (const std::exception& e) {
+                if (has_context_ && context_->error_collector) {
+                    context_->error_collector->add_error("Failed to process " + filename + ": " + e.what());
+                }
+                progress_counter.fetch_add(1);
+                HighLevelEnergyData error_data(filename);
+                error_data.status = "ERROR";
+                return error_data;
+            }
+        });
+        
+        futures.push_back(std::move(future));
+    }
+
+    // Collect results
+    results.reserve(futures.size());
+    for (auto& future : futures) {
+        try {
+            auto data = future.get();
+            if (!data.filename.empty() && data.status != "ERROR") {
+                results.push_back(std::move(data));
+            }
+        } catch (const std::exception& e) {
+            if (has_context_ && context_->error_collector) {
+                context_->error_collector->add_error("Error retrieving result: " + std::string(e.what()));
+            }
+        }
+    }
+
+    // Stop progress monitor
+    should_stop.store(true);
+    if (monitor_thread.joinable()) {
+        monitor_thread.join();
+    }
+
+    // Sort results using parallel sort if available
+    #ifdef __cpp_lib_execution
+    if (results.size() > 100) {
+        std::sort(std::execution::par, results.begin(), results.end(),
+                  [this](const HighLevelEnergyData& a, const HighLevelEnergyData& b) {
+                      return compare_results(a, b, sort_column_);
+                  });
+    } else {
+        std::sort(results.begin(), results.end(),
+                  [this](const HighLevelEnergyData& a, const HighLevelEnergyData& b) {
+                      return compare_results(a, b, sort_column_);
+                  });
+    }
+    #else
+    std::sort(results.begin(), results.end(),
+              [this](const HighLevelEnergyData& a, const HighLevelEnergyData& b) {
+                  return compare_results(a, b, sort_column_);
+              });
+    #endif
+
+    if (!quiet) {
+        auto end_time = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        std::cout << "Completed processing " << results.size() << " files in " 
+                  << duration.count() << " ms" << std::endl;
+    }
+
+    return results;
+}
+
+std::unordered_map<std::string, std::string> HighLevelEnergyCalculator::batch_read_files(
+    const std::vector<std::string>& filenames) {
+    
+    std::unordered_map<std::string, std::string> file_contents;
+    
+    // Pre-allocate with expected size
+    file_contents.reserve(filenames.size());
+    
+    for (const auto& filename : filenames) {
+        try {
+            // Check file size first
+            auto file_size = std::filesystem::file_size(filename);
+            if (file_size > 500 * 1024 * 1024) { // Skip files > 500MB
+                if (has_context_ && context_->error_collector) {
+                    context_->error_collector->add_warning("Skipping large file: " + filename);
+                }
+                continue;
+            }
+            
+            // Use the enhanced safe_read_file method
+            std::string content = has_context_ ? safe_read_file(filename) : read_file_content(filename);
+            if (!content.empty()) {
+                file_contents[filename] = std::move(content);
+            }
+        } catch (const std::exception& e) {
+            if (has_context_ && context_->error_collector) {
+                context_->error_collector->add_error("Failed to read " + filename + ": " + e.what());
+            }
+        }
+    }
+    
+    return file_contents;
+}
+
+HighLevelEnergyData HighLevelEnergyCalculator::process_single_file_enhanced(
+    const std::string& filename,
+    const std::string& file_content) {
+    
+    try {
+        // If content is provided, we can avoid duplicate file reading
+        if (!file_content.empty()) {
+            // This would require modifying calculate_high_level_energy to accept content
+            // For now, fall back to standard processing
+            return calculate_high_level_energy(filename);
+        } else {
+            return calculate_high_level_energy(filename);
+        }
+    } catch (const std::exception& e) {
+        if (has_context_ && context_->error_collector) {
+            context_->error_collector->add_error("Enhanced processing failed for " + filename + ": " + e.what());
+        }
+        
+        HighLevelEnergyData error_data(filename);
+        error_data.status = "ERROR";
+        return error_data;
+    }
+}
+
+ThreadPool& HighLevelEnergyCalculator::get_thread_pool(unsigned int thread_count) {
+    if (!thread_pool_ || thread_pool_->is_shutting_down()) {
+        // Adjust thread count for cluster safety
+        if (has_context_ && context_->job_resources.scheduler_type != SchedulerType::NONE) {
+            // More conservative on clusters - use half of allocated CPUs
+            thread_count = std::min(thread_count, context_->job_resources.allocated_cpus / 2);
+            thread_count = std::max(1u, thread_count);
+        }
+        
+        thread_pool_ = std::make_unique<ThreadPool>(thread_count);
+    }
+    return *thread_pool_;
+}

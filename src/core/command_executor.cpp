@@ -405,7 +405,7 @@ int execute_high_level_kj_command(const CommandContext& context) {
         // Create processing context with resource management using ALL CommandContext parameters
         JobResources job_resources;
         job_resources.allocated_memory_mb = context.memory_limit_mb > 0 ? context.memory_limit_mb :
-            calculateSafeMemoryLimit(0, thread_count, context.job_resources) / (1024 * 1024);
+            calculateSafeMemoryLimit(0, thread_count, context.job_resources);
         job_resources.allocated_cpus = thread_count;
 
         if (!context.quiet) {
@@ -573,7 +573,7 @@ int execute_high_level_au_command(const CommandContext& context) {
         // Create processing context with resource management using ALL CommandContext parameters
         JobResources job_resources;
         job_resources.allocated_memory_mb = context.memory_limit_mb > 0 ? context.memory_limit_mb :
-            calculateSafeMemoryLimit(0, thread_count, context.job_resources) / (1024 * 1024);
+            calculateSafeMemoryLimit(0, thread_count, context.job_resources);
         job_resources.allocated_cpus = thread_count;
 
         if (!context.quiet) {

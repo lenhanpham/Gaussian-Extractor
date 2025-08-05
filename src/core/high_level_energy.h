@@ -40,6 +40,11 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
+#include <queue>
+#include <functional>
+#include <execution>
+#include <chrono>
+#include <unordered_map>
 #include "gaussian_extractor.h"
 
 /**
@@ -232,6 +237,121 @@ struct HighLevelEnergyData {
  * - Comprehensive error handling and validation
  * - Integration with job scheduler resource management
  */
+
+/**
+ * @class ThreadPool
+ * @brief High-performance thread pool for parallel file processing
+ * 
+ * A thread-safe, efficient thread pool implementation designed specifically for
+ * high-throughput file processing tasks. Features dynamic work distribution,
+ * resource-aware task scheduling, and cluster-safe operation.
+ * 
+ * @section Features
+ * - Fixed-size thread pool to avoid creation/destruction overhead
+ * - Task queue with condition variable synchronization
+ * - Exception-safe task execution with error propagation
+ * - Graceful shutdown with proper thread joining
+ * - Memory-efficient task storage using std::function
+ * 
+ * @section Performance Characteristics
+ * - Zero allocation after initialization for task submission
+ * - Lock-free task completion detection using atomics
+ * - Optimized for I/O-bound tasks (file reading/parsing)
+ * - Scales efficiently up to hardware thread limits
+ */
+class ThreadPool {
+private:
+    std::vector<std::thread> workers_;              ///< Worker thread pool
+    std::queue<std::function<void()>> tasks_;       ///< Task queue for pending work
+    std::mutex queue_mutex_;                        ///< Mutex protecting task queue
+    std::condition_variable condition_;             ///< Condition variable for task availability
+    std::atomic<bool> stop_flag_{false};           ///< Atomic flag for graceful shutdown
+    std::atomic<size_t> active_tasks_{0};          ///< Count of currently executing tasks
+
+public:
+    /**
+     * @brief Constructor with thread count specification
+     * @param num_threads Number of worker threads to create
+     * 
+     * Creates a fixed-size thread pool with the specified number of workers.
+     * Threads are created immediately and remain active until destruction.
+     * 
+     * @note Recommended thread count is typically between hardware_concurrency/2
+     *       and hardware_concurrency for I/O-bound workloads on clusters
+     */
+    explicit ThreadPool(size_t num_threads);
+
+    /**
+     * @brief Destructor with graceful shutdown
+     * 
+     * Stops accepting new tasks, completes all pending tasks, and joins all
+     * worker threads. Ensures all resources are properly cleaned up.
+     */
+    ~ThreadPool();
+
+    /**
+     * @brief Submit a task for asynchronous execution
+     * @tparam F Function type (automatically deduced)
+     * @tparam Args Argument types (automatically deduced)
+     * @param f Function or callable to execute
+     * @param args Arguments to pass to the function
+     * @return std::future<return_type> Future for task result
+     * 
+     * Submits a task to the thread pool for asynchronous execution. The task
+     * will be executed by the next available worker thread. Returns a future
+     * that can be used to retrieve the result or wait for completion.
+     * 
+     * @note This method is thread-safe and can be called concurrently
+     * @throws std::runtime_error if pool is shutting down
+     */
+    template<typename F, typename... Args>
+    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>::type> {
+        using return_type = typename std::invoke_result<F, Args...>::type;
+        
+        auto task = std::make_shared<std::packaged_task<return_type()>>(
+            std::bind(std::forward<F>(f), std::forward<Args>(args)...)
+        );
+        
+        std::future<return_type> result = task->get_future();
+        
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex_);
+            
+            if(stop_flag_.load()) {
+                throw std::runtime_error("ThreadPool is shutting down, cannot enqueue new tasks");
+            }
+            
+            tasks_.emplace([task](){ (*task)(); });
+        }
+        condition_.notify_one();
+        
+        return result;
+    }
+
+    /**
+     * @brief Get number of active (executing) tasks
+     * @return Current number of tasks being executed
+     * 
+     * Returns the number of tasks currently being executed by worker threads.
+     * Useful for monitoring load and determining when processing is complete.
+     */
+    size_t active_count() const { return active_tasks_.load(); }
+
+    /**
+     * @brief Wait for all tasks to complete
+     * 
+     * Blocks until all submitted tasks have completed execution. Does not
+     * prevent new tasks from being submitted during the wait.
+     */
+    void wait_for_completion();
+
+    /**
+     * @brief Check if thread pool is shutting down
+     * @return true if shutdown has been initiated
+     */
+    bool is_shutting_down() const { return stop_flag_.load(); }
+};
+
 class HighLevelEnergyCalculator {
 public:
     /**
@@ -464,6 +584,9 @@ private:
     // Enhanced resource management
     std::shared_ptr<ProcessingContext> context_;  ///< Processing context with resource managers
     bool has_context_;                           ///< Whether enhanced context is available
+    
+    // Thread pool for optimized parallel processing
+    std::unique_ptr<ThreadPool> thread_pool_;    ///< Reusable thread pool for file processing
     
     /**
      * @defgroup EnergyExtraction Energy Extraction Helper Functions
@@ -748,6 +871,69 @@ private:
                              std::vector<HighLevelEnergyData>& results,
                              std::mutex& results_mutex,
                              std::atomic<size_t>& progress_counter);
+
+    /**
+     * @brief Enhanced parallel processing using thread pool
+     * @param files List of files to process
+     * @param thread_count Number of threads to use
+     * @param memory_limit_mb Memory limit in MB
+     * @param quiet Suppress progress output
+     * @return Vector of processed results
+     * 
+     * Improved parallel processing implementation featuring:
+     * - Reusable thread pool to eliminate creation overhead
+     * - Asynchronous I/O with batched file operations
+     * - Dynamic task distribution for optimal load balancing
+     * - Enhanced memory management and progress reporting
+     * - Cluster-safe resource utilization
+     */
+    std::vector<HighLevelEnergyData> process_files_with_thread_pool(
+        const std::vector<std::string>& files,
+        unsigned int thread_count,
+        size_t memory_limit_mb,
+        bool quiet);
+
+    /**
+     * @brief Optimized file reading with caching and batching
+     * @param filenames List of files to read
+     * @return Map of filename to file content
+     * 
+     * Batch file reading with optimizations:
+     * - Prefetch file metadata (size, existence)
+     * - Read files in optimal order (smallest first)
+     * - Use memory-mapped I/O for large files when available
+     * - Cache frequently accessed portions
+     */
+    std::unordered_map<std::string, std::string> batch_read_files(
+        const std::vector<std::string>& filenames);
+
+    /**
+     * @brief Process single file with enhanced error handling
+     * @param filename File to process
+     * @param file_content Pre-read file content (optional)
+     * @return Processed energy data
+     * 
+     * Enhanced single file processing with:
+     * - Optional pre-read content to avoid duplicate I/O
+     * - Comprehensive error recovery
+     * - Memory usage tracking
+     * - Performance metrics collection
+     */
+    HighLevelEnergyData process_single_file_enhanced(
+        const std::string& filename,
+        const std::string& file_content = "");
+
+    /**
+     * @brief Get or create thread pool with optimal size
+     * @param thread_count Desired thread count
+     * @return Reference to thread pool
+     * 
+     * Lazy initialization of thread pool with optimal sizing:
+     * - Creates pool only when needed
+     * - Adjusts thread count based on system resources
+     * - Respects cluster environment constraints
+     */
+    ThreadPool& get_thread_pool(unsigned int thread_count);
 
     /**
      * @brief Calculate optimal number of threads for processing

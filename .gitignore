@@ -11,5 +11,6 @@ Thermo-component-analysis-with-improved-Electronic-higher-level-of-theory.shell
 git-clon-key.txt
 Makefile_work_for_all_old
 devdocs
-*.sh 
-*.shell 
+*.sh
+*.shell
+.serena
