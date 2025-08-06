@@ -27,6 +27,18 @@ endif
 DEBUGFLAGS = -g -DDEBUG_BUILD -fsanitize=address -fno-omit-frame-pointer
 LDFLAGS = -pthread
 
+# Add Intel-specific linking flags after LDFLAGS definition
+ifneq ($(filter icpx icpc icc,$(CXX)),)
+    # Intel compilers often require explicit TBB linking for parallel algorithms
+    # Add TBB library if available, with error handling
+    LDFLAGS += -ltbb
+
+    # Note: If TBB is not available, the compilation will fail with a clear error
+    # In such cases, users should install Intel TBB or use GCC instead
+    $(info Intel compiler detected. Adding TBB library linking.)
+    $(info If compilation fails with TBB errors, please install Intel TBB or use GCC.)
+endif
+
 # Platform detection
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -155,12 +167,19 @@ help:
 	@echo "  dist         - Create distribution package"
 	@echo "  help         - Show this help message"
 	@echo ""
+	@echo "Compiler Support:"
+	@echo "  Auto-detects: icpx, icpc, icc, g++ (in order of preference)"
+	@echo "  Force GCC:    make CXX=g++"
+	@echo "  Intel issues: Requires TBB library. If compilation fails with"
+	@echo "                'execution' or TBB errors, use: make CXX=g++"
+	@echo ""
 	@echo "Version Management:"
 	@echo "  scripts/update_version.sh <version>  - Update version across all files"
 	@echo "  ./gaussian_extractor.x --version     - Check current version"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make                    # Build with default settings"
+	@echo "  make CXX=g++            # Force GCC compilation"
 	@echo "  make debug              # Build debug version"
 	@echo "  make cluster            # Build for cluster deployment"
 	@echo "  make clean install-user # Clean build and install to user bin"

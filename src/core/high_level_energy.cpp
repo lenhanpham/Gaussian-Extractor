@@ -1698,10 +1698,18 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_t
     // Sort results using parallel sort if available
     #ifdef __cpp_lib_execution
     if (results.size() > 100) {
+#if HAS_EXECUTION_POLICIES
         std::sort(std::execution::par, results.begin(), results.end(),
                   [this](const HighLevelEnergyData& a, const HighLevelEnergyData& b) {
                       return compare_results(a, b, sort_column_);
                   });
+#else
+        // Fallback to sequential sort if parallel execution policies are not available
+        std::sort(results.begin(), results.end(),
+                  [this](const HighLevelEnergyData& a, const HighLevelEnergyData& b) {
+                      return compare_results(a, b, sort_column_);
+                  });
+#endif
     } else {
         std::sort(results.begin(), results.end(),
                   [this](const HighLevelEnergyData& a, const HighLevelEnergyData& b) {

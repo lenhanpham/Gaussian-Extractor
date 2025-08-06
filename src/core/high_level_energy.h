@@ -42,7 +42,29 @@
 #include <condition_variable>
 #include <queue>
 #include <functional>
-#include <execution>
+// Conditional include for execution policies
+#ifdef __has_include
+    #if __has_include(<execution>)
+        #include <execution>
+        #define HAS_EXECUTION_POLICIES 1
+    #else
+        #define HAS_EXECUTION_POLICIES 0
+    #endif
+#else
+    // Fallback for older compilers that don't support __has_include
+    #if defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 1900
+        #include <execution>
+        #define HAS_EXECUTION_POLICIES 1
+    #elif defined(__GNUC__) && __GNUC__ >= 9
+        #include <execution>
+        #define HAS_EXECUTION_POLICIES 1
+    #elif defined(_MSC_VER) && _MSC_VER >= 1914
+        #include <execution>
+        #define HAS_EXECUTION_POLICIES 1
+    #else
+        #define HAS_EXECUTION_POLICIES 0
+    #endif
+#endif
 #include <chrono>
 #include <unordered_map>
 #include "gaussian_extractor.h"
