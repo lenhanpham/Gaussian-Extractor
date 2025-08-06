@@ -31,8 +31,8 @@
 
 ```bash
 # Load your preferred compiler module if on a cluster
-module load intel-compiler-llvm        # For Intel compilers
-module load intel-tbb 				   # For intel Threading Building Blocks
+module load intel-compiler-llvm			# For Intel compilers
+module load intel-tbb					# For intel Threading Building Blocks
 # OR
 module load gcc             			  # For GCC
 
