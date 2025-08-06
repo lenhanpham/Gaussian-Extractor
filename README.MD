@@ -17,6 +17,7 @@
 ### Prerequisites
 
 **Compiler Requirements:**
+
 * **C++20 or newer**: GCC 10+, Intel oneAPI, Intel Classic, Clang 10+, or MSVC 2019+
 * **Threading Support**: pthread library (Linux/macOS) or Windows threading
 * **Filesystem Support**: std::filesystem (included in modern compilers)
@@ -31,16 +32,17 @@
 
 ```bash
 # Load your preferred compiler module if on a cluster
-module load intel-compiler-llvm			# For Intel compilers
-module load intel-tbb					# For intel Threading Building Blocks
+module load intel-compiler-llvm         # For Intel compilers
+module load intel-tbb                   # For intel Threading Building Blocks
 # OR
-module load gcc             			  # For GCC
+module load gcc                         # For GCC
 
 # Build with auto-detected compiler (priority: icpx > icpc > icc > g++)
 make -j 10                  # Automatically selects best available compiler
 ```
 
 **Build Variants:**
+
 ```bash
 make cluster -j 8           # Cluster-optimized build
 make debug                  # Debug build with safety checks
@@ -48,6 +50,7 @@ make release                # High-performance release
 ```
 
 **Force Specific Compiler:**
+
 ```bash
 # Intel oneAPI compiler
 CXX=icpx make -j 8
@@ -62,12 +65,13 @@ CXX=g++ make -j 8
 #### Option 2: CMake (Cross-platform)
 
 **Basic CMake Build (Auto-detects Compiler):**
+
 ```bash
 # Load your preferred compiler module if on a cluster
 module load intel-compiler-llvm         # For Intel compilers
 module load intel-tbb                   # For intel Threading Building Blocks
 # OR
-module load gcc            				  # For GCC
+module load gcc                              # For GCC
 
 # Create build directory
 mkdir build && cd build
@@ -78,8 +82,6 @@ cmake ..
 # Build with parallel jobs
 cmake --build . -j 10
 ```
-
-
 
 ```bash
 # System-wide installation (requires sudo)
@@ -112,6 +114,7 @@ gaussian_extractor.x
 ```
 
 **Default behavior:**
+
 * **Temperature**: Read from files (default: 298.15 K if not found)
 * **Concentration**: 1 M for phase correction
 * **Threads**: Half of available CPU cores (cluster-safe)
@@ -136,6 +139,7 @@ gaussian_extractor.x -nt 2 -q -f csv
 ### You can specify the number of threads
 
 **Thread Control:**
+
 ```bash
 gaussian_extractor.x -nt 4        # Use exactly 4 threads
 gaussian_extractor.x -nt half     # Use half cores (default, safest)
@@ -156,6 +160,7 @@ gaussian_extractor.x --resource-info  # Show system resources before running
 ```
 
 **Quiet Mode (Recommended for Batch Jobs):**
+
 ```bash
 gaussian_extractor.x -q              # Minimal output, perfect for scripts
 ```
@@ -163,11 +168,13 @@ gaussian_extractor.x -q              # Minimal output, perfect for scripts
 ### Output Formats
 
 **Text Format (Default):**
+
 ```bash
 gaussian_extractor.x                  # A table of text
 ```
 
 **CSV Format:**
+
 ```bash
 gaussian_extractor.x -f csv          # CSV
 gaussian_extractor.x -f csv -q       # CSV with minimal console output on your terminal
@@ -210,28 +217,30 @@ Memory usage: 256.7 MB / 4.0 GB
 
 ### Complete Options Reference
 
-| Option | Description | Values | Default |
-|--------|-------------|---------|---------|
-| `-t, --temp` | Temperature (K) | Positive number | 298.15 |
-| `-c, --cm` | Concentration (M) | Positive value | 1 |
-| `-col, --column` | Sort column | 2-10 | 2 (ETG kJ/mol) |
-| `-e, --ext` | File extension | log, out | log |
-| `-f, --format` | Output format | text, csv | text |
-| `-nt, --threads` | Thread count | number, half, max | half |
-| `-q, --quiet` | Quiet mode | - | false |
-| `--max-file-size` | Max file size (MB) | Positive integer | 100 |
-| `--memory-limit` | Memory limit (MB) | Positive integer | Auto-calculated |
-| `--resource-info` | Show resources | - | false |
-| `-h, --help` | Show help | - | false |
+| Option            | Description        | Values            | Default         |
+| ----------------- | ------------------ | ----------------- | --------------- |
+| `-t, --temp`      | Temperature (K)    | Positive number   | 298.15          |
+| `-c, --cm`        | Concentration (M)  | Positive value    | 1               |
+| `-col, --column`  | Sort column        | 2-10              | 2 (ETG kJ/mol)  |
+| `-e, --ext`       | File extension     | log, out          | log             |
+| `-f, --format`    | Output format      | text, csv         | text            |
+| `-nt, --threads`  | Thread count       | number, half, max | half            |
+| `-q, --quiet`     | Quiet mode         | -                 | false           |
+| `--max-file-size` | Max file size (MB) | Positive integer  | 100             |
+| `--memory-limit`  | Memory limit (MB)  | Positive integer  | Auto-calculated |
+| `--resource-info` | Show resources     | -                 | false           |
+| `-h, --help`      | Show help          | -                 | false           |
 
 ### Important Notes
 
 **Temperature Setting (`-t, --temp`):**
+
 - **Consistency Critical**: When specified, applies to ALL files for consistent phase correction
 - **Entropy Warning**: Ensure Gaussian inputs use same temperature for proper entropy corrections
 - **File Override**: Without `-t`, program reads temperature from each file individually
 
 **Column Sorting (`-col, --column`):**
+
 - **2**: ETG kJ/mol (Gibbs free energy) - **Default**
 - **3**: Lowest frequency (for transition state analysis)
 - **4**: ETG a.u (Gibbs free energy in atomic units)
@@ -243,6 +252,7 @@ Memory usage: 256.7 MB / 4.0 GB
 ### Usage Examples
 
 #### Basic Examples
+
 ```bash
 # Simple processing with defaults
 gaussian_extractor.x
@@ -258,7 +268,9 @@ gaussian_extractor.x -f csv -q
 ```
 
 ### Check if gaussian jobs are done and errors
+
 Jobs (log, chk, input) will be move to a directory dependending on their status
+
 ```bash
 gaussian_extractor.x done      # completed jobs will be moved to base_name_dir-done
 gaussian_extractor.x errors    # all general errors causing jobs killed will be moved to errorJobs
@@ -266,9 +278,11 @@ gaussian_extractor.x pcm       # errors related to pcm convergence will be moved
 ```
 
 ### Calculate Gibbs free energy using high-level electronic energy
+
 Single point calculations are done at a higher level of theory and electronic energy is used to improve the accuracy of the final Gibbs free energy.
 
 **Directory Structure:**
+
 - Current directory: Geometrical optimizations and frequency calculations (Opt Freq)
 - Subdirectory (e.g., `higher_level`): Single point calculations at higher theory level
 - Log files must have the same names in both directories
@@ -276,6 +290,7 @@ Single point calculations are done at a higher level of theory and electronic en
 ![dirs](./docs/tree_dir.png)
 
 **Basic Usage:**
+
 ```bash
 cd higher_level
 gaussian_extractor.x high-kj    # Improved Gibbs free energy in kJ/mol
@@ -283,6 +298,7 @@ gaussian_extractor.x high-au    # Improved Gibbs free energy in hartree
 ```
 
 **Enhanced Parallel Processing:**
+
 ```bash
 # Automatic parallel processing (recommended)
 gaussian_extractor.x --high-level-kj --threads=8
@@ -298,6 +314,7 @@ gaussian_extractor.x --high-level-kj --temp=323.15 --cm=2 --threads=8
 ```
 
 **Performance Benefits:**
+
 - **4 threads**: ~3-4x speedup over sequential processing
 - **8 threads**: ~6-7x speedup for typical workloads
 - **16+ threads**: Up to 13x speedup for large datasets
@@ -305,15 +322,17 @@ gaussian_extractor.x --high-level-kj --temp=323.15 --cm=2 --threads=8
 - **Automatic optimization**: Adapts to system resources and workload
 
 **Safety Features:**
+
 - Automatic memory limit detection and enforcement
 - File size validation (500MB limit per file)
 - Graceful degradation under resource constraints
 - Thread-safe error handling and reporting
 - Resource cleanup on completion or interruption
 
-
 ### Some examples where you have massive number of outputs files
+
 #### Production Examples
+
 ```bash
 # Cluster-safe processing
 gaussian_extractor.x -nt 4 -q -f csv -t 298.15
@@ -332,6 +351,7 @@ gaussian_extractor.x --memory-limit 8192 -nt 16
 ```
 
 #### Advanced Examples
+
 ```bash
 # Complete parameter specification
 gaussian_extractor.x -t 310.15 -c 5 -col 4 -nt 6 -f csv -q
@@ -346,18 +366,18 @@ gaussian_extractor.x --max-file-size 200 -nt 4
 gaussian_extractor.x --memory-limit 16384 -nt 20 --max-file-size 500
 ```
 
-
-
 ## Safety and Performance Guidelines
 
 ### Dynamic Memory Management
 
 The program now **automatically calculates optimal memory limits** based on:
+
 - **System RAM**: Detects total available memory
 - **Thread Count**: More threads = higher memory allocation
 - **Environment**: Conservative limits in cluster environments
 
 **Memory Allocation Strategy:**
+
 - **1-4 threads**: 30% of system RAM
 - **5-8 threads**: 40% of system RAM
 - **9-16 threads**: 50% of system RAM
@@ -365,6 +385,7 @@ The program now **automatically calculates optimal memory limits** based on:
 - **Cluster environments**: 70% of calculated amount
 
 **Example on 32GB system:**
+
 ```bash
 gaussian_extractor.x -nt 4   # Uses ~9.6GB (30% of 32GB)
 gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)
@@ -373,6 +394,7 @@ gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
 ```
 
 ### For Cluster Head Nodes
+
 ```bash
 # RECOMMENDED: Conservative settings
 gaussian_extractor.x -nt 2 -q -f csv
@@ -385,6 +407,7 @@ gaussian_extractor.x -nt max  # DON'T USE ON HEAD NODES
 ```
 
 ### For Compute Nodes
+
 ```bash
 # Optimal performance settings
 gaussian_extractor.x -nt half    # Usually optimal
@@ -396,6 +419,7 @@ gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 ```
 
 ### Error Handling and Recovery
+
 - **Automatic**: Continues processing if individual files fail
 - **Reporting**: Comprehensive error and warning collection
 - **Graceful Shutdown**: Responds properly to Ctrl+C and job termination signals
@@ -406,6 +430,7 @@ gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 ### Common Issues
 
 **Build Errors:**
+
 ```bash
 # Check compiler version
 g++ --version                # Need GCC 10+ for C++20
@@ -449,6 +474,7 @@ gaussian_extractor.x --resource-info
 - Reduce threads if memory pressure occurs
 
 ### Getting Help
+
 ```bash
 gaussian_extractor.x --help        # Complete help
 gaussian_extractor.x --resource-info  # System information
@@ -464,6 +490,7 @@ gaussian_extractor.x --resource-info  # System information
 ## Contributing and Issues
 
 For bug reports, feature requests, or safety concerns, please create an issue at the project repository. When reporting issues, include:
+
 - System specifications (OS, compiler, cluster environment)
 - Command used and error messages
 - Sample files (if possible)
