@@ -15,3 +15,4 @@ devdocs
 *.shell
 .serena
 build
+.gitignore
