@@ -14,3 +14,4 @@ devdocs
 *.sh
 *.shell
 .serena
+build
