@@ -14,6 +14,7 @@
 #include <mutex>
 #include <chrono>
 #include <exception>
+#include <unordered_map>
 
 // System-specific headers for memory detection
 #ifdef _WIN32
@@ -36,19 +37,19 @@ ThreadPool::ThreadPool(size_t num_threads) {
         workers_.emplace_back([this] {
             for(;;) {
                 std::function<void()> task;
-                
+
                 {
                     std::unique_lock<std::mutex> lock(queue_mutex_);
                     condition_.wait(lock, [this]{ return stop_flag_ || !tasks_.empty(); });
-                    
+
                     if(stop_flag_ && tasks_.empty()) {
                         return;
                     }
-                    
+
                     task = std::move(tasks_.front());
                     tasks_.pop();
                 }
-                
+
                 active_tasks_.fetch_add(1);
                 try {
                     task();
@@ -70,7 +71,7 @@ ThreadPool::~ThreadPool() {
         stop_flag_.store(true);
     }
     condition_.notify_all();
-    
+
     for(std::thread &worker: workers_) {
         if(worker.joinable()) {
             worker.join();
@@ -88,6 +89,96 @@ void ThreadPool::wait_for_completion() {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
+
+// =============================================================================
+// Pre-compiled Regex Patterns for Performance
+// =============================================================================
+
+struct RegexPatterns {
+    std::regex scf_done{"SCF Done"};
+    std::regex cis_energy{"Total Energy, E\\(CIS"};
+    std::regex pcm_correction{"After PCM corrections, the energy is"};
+    std::regex clr_correction{"Total energy after correction"};
+    std::regex zero_point{"Zero-point correction"};
+    std::regex thermal_enthalpy{"Thermal correction to Enthalpy"};
+    std::regex thermal_gibbs{"Thermal correction to Gibbs Free Energy"};
+    std::regex thermal_energy{"Thermal correction to Energy"};
+    std::regex entropy_total{"Total\\s+S"};
+    std::regex temperature_pattern{"Kelvin\\.\\s+Pressure"};
+    std::regex frequencies_pattern{"Frequencies"};
+    std::regex normal_termination{"Normal"};
+    std::regex error_pattern{"Error"};
+    std::regex error_on_pattern{"Error on"};
+    std::regex scrf_pattern{"scrf"};
+
+    static RegexPatterns& get_instance() {
+        static RegexPatterns instance;
+        return instance;
+    }
+
+private:
+    RegexPatterns() = default;
+};
+
+// =============================================================================
+// File Content Cache for Reducing I/O
+// =============================================================================
+
+class FileContentCache {
+private:
+    mutable std::unordered_map<std::string, std::string> cache_;
+    mutable std::mutex cache_mutex_;
+    size_t max_cache_size_mb_;
+    size_t current_size_bytes_;
+
+public:
+    FileContentCache(size_t max_cache_mb = 500)
+        : max_cache_size_mb_(max_cache_mb), current_size_bytes_(0) {}
+
+    std::string get_or_read(const std::string& filename) {
+        std::lock_guard<std::mutex> lock(cache_mutex_);
+
+        auto it = cache_.find(filename);
+        if (it != cache_.end()) {
+            return it->second;
+        }
+
+        // Read file
+        std::ifstream file(filename, std::ios::binary | std::ios::ate);
+        if (!file.is_open()) {
+            return "";
+        }
+
+        auto file_size = file.tellg();
+        file.seekg(0, std::ios::beg);
+
+        // Check cache size limit
+        if (current_size_bytes_ + file_size > max_cache_size_mb_ * 1024 * 1024) {
+            // Cache is full, don't cache this file
+            std::string content(file_size, '\0');
+            file.read(&content[0], file_size);
+            return content;
+        }
+
+        std::string content(file_size, '\0');
+        file.read(&content[0], file_size);
+
+        // Cache the content
+        cache_[filename] = content;
+        current_size_bytes_ += content.size();
+
+        return content;
+    }
+
+    void clear() {
+        std::lock_guard<std::mutex> lock(cache_mutex_);
+        cache_.clear();
+        current_size_bytes_ = 0;
+    }
+};
+
+// Global file cache instance
+static FileContentCache g_file_cache(500); // 500MB cache
 
 // =============================================================================
 // HighLevelEnergyCalculator Implementation
@@ -336,7 +427,7 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_l
             // Use optimized thread pool for large datasets
             return process_files_with_thread_pool(files, thread_count, memory_limit_mb, quiet);
         }
-        
+
         // Use original approach for smaller datasets to avoid thread pool overhead
         results.resize(files.size());
         std::vector<std::thread> workers;
@@ -487,39 +578,60 @@ void HighLevelEnergyCalculator::print_components_csv_format(const std::vector<Hi
     }
 }
 
-// Helper function implementations
+
+// Optimized helper function with file caching and pre-compiled regex
 double HighLevelEnergyCalculator::extract_value_from_file(const std::string& filename,
                                                          const std::string& pattern,
                                                          int field_index,
                                                          int occurrence,
                                                          bool warn_if_missing) {
     try {
-        // Use enhanced file reading if context is available
-        std::unique_ptr<FileHandleManager::FileGuard> file_guard;
-        if (has_context_ && context_->file_manager) {
-            file_guard = std::make_unique<FileHandleManager::FileGuard>(context_->file_manager->acquire());
-            if (!file_guard->is_acquired()) {
-                if (context_->error_collector) {
-                    context_->error_collector->add_warning("No file handles available for: " + filename);
-                }
-                return 0.0;
-            }
-        }
-
-        std::ifstream file(filename);
-        if (!file.is_open()) {
+        // Use cached file content to avoid redundant I/O
+        std::string file_content = g_file_cache.get_or_read(filename);
+        if (file_content.empty()) {
             if (has_context_ && context_->error_collector) {
-                context_->error_collector->add_warning("Cannot open file: " + filename);
+                context_->error_collector->add_warning("Cannot read file: " + filename);
             }
             return 0.0;
         }
 
-        std::vector<std::string> matches;
-        std::string line;
-        std::regex regex_pattern(pattern);
+        // Get pre-compiled regex pattern
+        const RegexPatterns& patterns = RegexPatterns::get_instance();
+        const std::regex* regex_ptr = nullptr;
 
-        while (std::getline(file, line)) {
-            if (std::regex_search(line, regex_pattern)) {
+        // Map pattern strings to pre-compiled regex
+        if (pattern == "SCF Done") {
+            regex_ptr = &patterns.scf_done;
+        } else if (pattern == "Total Energy, E\\(CIS") {
+            regex_ptr = &patterns.cis_energy;
+        } else if (pattern == "After PCM corrections, the energy is") {
+            regex_ptr = &patterns.pcm_correction;
+        } else if (pattern == "Total energy after correction") {
+            regex_ptr = &patterns.clr_correction;
+        } else if (pattern == "Zero-point correction") {
+            regex_ptr = &patterns.zero_point;
+        } else if (pattern == "Thermal correction to Enthalpy") {
+            regex_ptr = &patterns.thermal_enthalpy;
+        } else if (pattern == "Thermal correction to Gibbs Free Energy") {
+            regex_ptr = &patterns.thermal_gibbs;
+        } else if (pattern == "Thermal correction to Energy") {
+            regex_ptr = &patterns.thermal_energy;
+        } else if (pattern == "Total\\s+S") {
+            regex_ptr = &patterns.entropy_total;
+        } else if (pattern == "Kelvin\\.\\s+Pressure") {
+            regex_ptr = &patterns.temperature_pattern;
+        } else {
+            // Fallback to runtime compilation for unknown patterns
+            std::regex runtime_pattern(pattern);
+            regex_ptr = &runtime_pattern;
+        }
+
+        std::vector<std::string> matches;
+        std::istringstream stream(file_content);
+        std::string line;
+
+        while (std::getline(stream, line)) {
+            if (std::regex_search(line, *regex_ptr)) {
                 matches.push_back(line);
             }
         }
@@ -564,6 +676,7 @@ double HighLevelEnergyCalculator::extract_value_from_file(const std::string& fil
 
     return 0.0;
 }
+
 
 bool HighLevelEnergyCalculator::extract_low_level_thermal_data(const std::string& parent_file,
                                                               HighLevelEnergyData& data) {
@@ -691,32 +804,29 @@ bool HighLevelEnergyCalculator::file_exists(const std::string& filename) {
 }
 
 std::string HighLevelEnergyCalculator::read_file_content(const std::string& filename) {
-    // Use enhanced file reading if context is available
-    if (has_context_) {
-        return safe_read_file(filename, 100); // 100MB limit
-    }
-
-    // Fallback to basic file reading
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        return "";
-    }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
+    // Use file cache for better performance
+    return g_file_cache.get_or_read(filename);
 }
 
 std::string HighLevelEnergyCalculator::read_file_tail(const std::string& filename, int lines) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Cannot open file: " + filename);
+    // Use cached content when possible
+    std::string content = g_file_cache.get_or_read(filename);
+    if (content.empty()) {
+        throw std::runtime_error("Cannot read file: " + filename);
     }
 
+    // Efficiently extract last N lines
     std::vector<std::string> all_lines;
+    all_lines.reserve(lines * 2); // Pre-allocate for efficiency
+
+    std::istringstream stream(content);
     std::string line;
-    while (std::getline(file, line)) {
+    while (std::getline(stream, line)) {
         all_lines.push_back(line);
+        // Keep only the last 'lines' entries for memory efficiency
+        if (all_lines.size() > static_cast<size_t>(lines * 2)) {
+            all_lines.erase(all_lines.begin(), all_lines.begin() + lines);
+        }
     }
 
     std::ostringstream result;
@@ -808,7 +918,7 @@ void HighLevelEnergyCalculator::print_summary_info(const std::string& last_paren
 
 // Dynamic formatting implementations
 std::vector<int> HighLevelEnergyCalculator::calculate_gibbs_column_widths(const std::vector<HighLevelEnergyData>& results) {
-    // Column order: filename, G kJ/mol, G a.u, G eV, LowFQ, Status, PhCorr
+    // Calculate optimal column widths for Gibbs format output
     std::vector<int> widths(7);
 
     // Initialize with header lengths + 3 spaces padding
@@ -820,30 +930,31 @@ std::vector<int> HighLevelEnergyCalculator::calculate_gibbs_column_widths(const 
     widths[5] = std::max(6, 8);   // "Status"
     widths[6] = std::max(6, 8);   // "PhCorr"
 
+    // Use faster formatting with pre-allocated buffer
+    char buffer[64];
     for (const auto& data : results) {
         // Check filename length (limited to reasonable max)
         std::string formatted_name = format_filename(data.filename, 70);
         widths[0] = std::max(widths[0], static_cast<int>(formatted_name.length()) + 3);
 
+        // Use snprintf for faster formatting
+        int len;
+
         // Check G kJ/mol length
-        std::ostringstream ss1;
-        ss1 << std::fixed << std::setprecision(6) << data.gibbs_kj_mol;
-        widths[1] = std::max(widths[1], static_cast<int>(ss1.str().length()) + 3);
+        len = snprintf(buffer, sizeof(buffer), "%.6f", data.gibbs_kj_mol);
+        widths[1] = std::max(widths[1], len + 3);
 
         // Check G a.u length
-        std::ostringstream ss2;
-        ss2 << std::fixed << std::setprecision(6) << data.gibbs_hartree_corrected;
-        widths[2] = std::max(widths[2], static_cast<int>(ss2.str().length()) + 3);
+        len = snprintf(buffer, sizeof(buffer), "%.6f", data.gibbs_hartree_corrected);
+        widths[2] = std::max(widths[2], len + 3);
 
         // Check G eV length
-        std::ostringstream ss3;
-        ss3 << std::fixed << std::setprecision(6) << data.gibbs_ev;
-        widths[3] = std::max(widths[3], static_cast<int>(ss3.str().length()) + 3);
+        len = snprintf(buffer, sizeof(buffer), "%.6f", data.gibbs_ev);
+        widths[3] = std::max(widths[3], len + 3);
 
         // Check LowFQ length
-        std::ostringstream ss4;
-        ss4 << std::fixed << std::setprecision(4) << data.lowest_frequency;
-        widths[4] = std::max(widths[4], static_cast<int>(ss4.str().length()) + 3);
+        len = snprintf(buffer, sizeof(buffer), "%.4f", data.lowest_frequency);
+        widths[4] = std::max(widths[4], len + 3);
 
         // Check Status length
         widths[5] = std::max(widths[5], static_cast<int>(data.status.length()) + 3);
@@ -1564,10 +1675,13 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_t
     bool quiet) {
 
     std::vector<HighLevelEnergyData> results;
-    
+
     if (files.empty()) {
         return results;
     }
+
+    // Clear file cache at the beginning for fresh processing
+    g_file_cache.clear();
 
     // Enhanced memory limit calculation
     if (memory_limit_mb == 0) {
@@ -1592,11 +1706,11 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_t
             } catch (...) {
                 // Use fallback value
             }
-            
+
             // Use 30-60% of system memory based on thread count
             double memory_fraction = 0.3 + (thread_count / 48.0) * 0.3; // 30% to 60%
             memory_limit_mb = static_cast<size_t>(system_memory_mb * memory_fraction);
-            
+
             if (!quiet) {
                 std::cout << "Auto-detected memory limit: " << memory_limit_mb << " MB" << std::endl;
             }
@@ -1608,86 +1722,70 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_t
     // Optimize thread count
     thread_count = std::min(thread_count, std::thread::hardware_concurrency());
     thread_count = std::max(1u, thread_count); // Minimum 1 thread
-    
+
     if (!quiet) {
-        std::cout << "Processing " << files.size() << " files with " << thread_count 
+        std::cout << "Processing " << files.size() << " files with " << thread_count
                   << " threads (Memory limit: " << memory_limit_mb << " MB)" << std::endl;
     }
 
-    // Get or create thread pool
-    ThreadPool& pool = get_thread_pool(thread_count);
-    
-    // Batch read file metadata for optimization
-    std::vector<std::pair<std::string, size_t>> file_sizes;
-    for (const auto& file : files) {
-        try {
-            auto file_size = std::filesystem::file_size(file);
-            file_sizes.emplace_back(file, file_size);
-        } catch (...) {
-            file_sizes.emplace_back(file, 0);
-        }
-    }
-    
-    // Sort files by size (process smaller files first for better load balancing)
-    std::sort(file_sizes.begin(), file_sizes.end(),
-              [](const auto& a, const auto& b) { return a.second < b.second; });
-
-    // Submit all tasks to thread pool
-    std::vector<std::future<HighLevelEnergyData>> futures;
-    futures.reserve(files.size());
-    
+    // Optimized work-stealing approach instead of thread pool for better performance
+    std::atomic<size_t> file_index{0};
+    results.resize(files.size());
     std::atomic<size_t> progress_counter{0};
     auto start_time = std::chrono::steady_clock::now();
-    
+
+    // Worker function with work stealing
+    auto worker = [&]() {
+        while (true) {
+            size_t idx = file_index.fetch_add(1);
+            if (idx >= files.size()) break;
+
+            try {
+                // Process with cached file reading
+                results[idx] = calculate_high_level_energy(files[idx]);
+                progress_counter.fetch_add(1);
+            } catch (const std::exception& e) {
+                if (has_context_ && context_->error_collector) {
+                    context_->error_collector->add_error("Failed to process " + files[idx] + ": " + e.what());
+                }
+                results[idx] = HighLevelEnergyData(files[idx]);
+                results[idx].status = "ERROR";
+                progress_counter.fetch_add(1);
+            }
+        }
+    };
+
     // Start progress monitor thread
     std::atomic<bool> should_stop{false};
     std::thread monitor_thread;
     if (!quiet && files.size() > 5) {
         monitor_thread = std::thread([&]() {
-            while (!should_stop.load()) {
+            while (!should_stop.load() && progress_counter.load() < files.size()) {
                 monitor_progress(files.size(), progress_counter, start_time, quiet);
-                std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Faster updates
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
         });
     }
 
-    // Submit tasks to thread pool
-    for (const auto& file_pair : file_sizes) {
-        const std::string& filename = file_pair.first;
-        
-        auto future = pool.enqueue([this, filename, &progress_counter]() -> HighLevelEnergyData {
-            try {
-                auto data = calculate_high_level_energy(filename);
-                progress_counter.fetch_add(1);
-                return data;
-            } catch (const std::exception& e) {
-                if (has_context_ && context_->error_collector) {
-                    context_->error_collector->add_error("Failed to process " + filename + ": " + e.what());
-                }
-                progress_counter.fetch_add(1);
-                HighLevelEnergyData error_data(filename);
-                error_data.status = "ERROR";
-                return error_data;
-            }
-        });
-        
-        futures.push_back(std::move(future));
+    // Launch worker threads
+    std::vector<std::thread> workers;
+    workers.reserve(thread_count);
+    for (unsigned i = 0; i < thread_count; ++i) {
+        workers.emplace_back(worker);
     }
 
-    // Collect results
-    results.reserve(futures.size());
-    for (auto& future : futures) {
-        try {
-            auto data = future.get();
-            if (!data.filename.empty() && data.status != "ERROR") {
-                results.push_back(std::move(data));
-            }
-        } catch (const std::exception& e) {
-            if (has_context_ && context_->error_collector) {
-                context_->error_collector->add_error("Error retrieving result: " + std::string(e.what()));
-            }
+    // Wait for all workers to complete
+    for (auto& w : workers) {
+        if (w.joinable()) {
+            w.join();
         }
     }
+
+    // Remove any failed results (empty entries)
+    results.erase(std::remove_if(results.begin(), results.end(),
+                               [](const HighLevelEnergyData& data) {
+                                   return data.filename.empty();
+                               }), results.end());
 
     // Stop progress monitor
     should_stop.store(true);
@@ -1726,7 +1824,7 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_t
     if (!quiet) {
         auto end_time = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-        std::cout << "Completed processing " << results.size() << " files in " 
+        std::cout << "Completed processing " << results.size() << " files in "
                   << duration.count() << " ms" << std::endl;
     }
 
@@ -1735,12 +1833,12 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_files_with_t
 
 std::unordered_map<std::string, std::string> HighLevelEnergyCalculator::batch_read_files(
     const std::vector<std::string>& filenames) {
-    
+
     std::unordered_map<std::string, std::string> file_contents;
-    
+
     // Pre-allocate with expected size
     file_contents.reserve(filenames.size());
-    
+
     for (const auto& filename : filenames) {
         try {
             // Check file size first
@@ -1751,7 +1849,7 @@ std::unordered_map<std::string, std::string> HighLevelEnergyCalculator::batch_re
                 }
                 continue;
             }
-            
+
             // Use the enhanced safe_read_file method
             std::string content = has_context_ ? safe_read_file(filename) : read_file_content(filename);
             if (!content.empty()) {
@@ -1763,14 +1861,14 @@ std::unordered_map<std::string, std::string> HighLevelEnergyCalculator::batch_re
             }
         }
     }
-    
+
     return file_contents;
 }
 
 HighLevelEnergyData HighLevelEnergyCalculator::process_single_file_enhanced(
     const std::string& filename,
     const std::string& file_content) {
-    
+
     try {
         // If content is provided, we can avoid duplicate file reading
         if (!file_content.empty()) {
@@ -1784,7 +1882,7 @@ HighLevelEnergyData HighLevelEnergyCalculator::process_single_file_enhanced(
         if (has_context_ && context_->error_collector) {
             context_->error_collector->add_error("Enhanced processing failed for " + filename + ": " + e.what());
         }
-        
+
         HighLevelEnergyData error_data(filename);
         error_data.status = "ERROR";
         return error_data;
@@ -1799,7 +1897,7 @@ ThreadPool& HighLevelEnergyCalculator::get_thread_pool(unsigned int thread_count
             thread_count = std::min(thread_count, context_->job_resources.allocated_cpus / 2);
             thread_count = std::max(1u, thread_count);
         }
-        
+
         thread_pool_ = std::make_unique<ThreadPool>(thread_count);
     }
     return *thread_pool_;
