@@ -1,4 +1,4 @@
-# **Gaussian Extractor v0.4.1
+# **Gaussian Extractor v0.4.2
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
@@ -40,6 +40,14 @@ module load gcc                         # For GCC
 # Build with auto-detected compiler (priority: icpx > icpc > icc > g++)
 make -j 10                  # Automatically selects best available compiler
 ```
+
+If Gaussian Extractor is complied with intel compilers (icpx for example), Threading Building Blocks (tbb) library should be loaded. Users might need to export this library to their LD_PATH:
+
+```
+export LD_LIBRARY_PATH=/path/to/tbb/lib:$LD_LIBRARY_PATH
+```
+
+
 
 **Build Variants:**
 
