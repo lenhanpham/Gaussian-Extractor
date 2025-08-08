@@ -41,10 +41,11 @@ module load gcc                         # For GCC
 make -j 10                  # Automatically selects best available compiler
 ```
 
-If Gaussian Extractor is complied with intel compilers (icpx for example), Threading Building Blocks (tbb) library should be loaded. Users might need to export this library to their LD_PATH:
+If Gaussian Extractor is complied with intel compilers (icpx for example), Threading Building Blocks (tbb) library should be loaded. Users might need to export this library to their LD_LIBRARY_PATH:
 
 ```
-export LD_LIBRARY_PATH=/path/to/tbb/lib:$LD_LIBRARY_PATH
+echo 'export LD_LIBRARY_PATH=/path/to/tbb/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 **Build Variants:**
