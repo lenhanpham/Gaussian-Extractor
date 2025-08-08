@@ -47,8 +47,6 @@ If Gaussian Extractor is complied with intel compilers (icpx for example), Threa
 export LD_LIBRARY_PATH=/path/to/tbb/lib:$LD_LIBRARY_PATH
 ```
 
-
-
 **Build Variants:**
 
 ```bash
