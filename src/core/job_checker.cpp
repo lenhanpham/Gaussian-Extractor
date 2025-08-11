@@ -687,10 +687,10 @@ JobCheckResult JobChecker::check_pcm_directly(const std::string& log_file) {
         // This will read tail first, and only read full if pattern might be elsewhere
         std::string content = read_file_unified(log_file, FileReadMode::TAIL, 100);
         
-        // If not found in tail, check full file
-        if (!check_pcm_failure(content)) {
-            content = read_file_unified(log_file, FileReadMode::FULL);
-        }
+        //// If not found in tail, check full file
+        //if (!check_pcm_failure(content)) {
+        //    content = read_file_unified(log_file, FileReadMode::FULL);
+        //}
         
         if (check_pcm_failure(content)) {
             result.status = JobStatus::PCM_FAILED;
