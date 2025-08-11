@@ -3,32 +3,32 @@
  * @brief Implementation of core Gaussian log file processing and data extraction
  * @author Le Nhan Pham
  * @date 2025
- * 
+ *
  * This file implements the core functionality for extracting thermodynamic data
  * from Gaussian computational chemistry log files. It provides multi-threaded
  * processing with comprehensive resource management, thread-safe operations,
  * and integration with job scheduler systems for HPC environments.
- * 
+ *
  * @section Key Implementations
  * - MemoryMonitor: Thread-safe memory usage tracking and limiting
- * - FileHandleManager: RAII-based file handle resource management  
+ * - FileHandleManager: RAII-based file handle resource management
  * - ThreadSafeErrorCollector: Centralized error collection across threads
  * - Result extraction: Core data parsing from Gaussian log files
  * - Multi-threaded processing: Parallel file processing with coordination
- * 
+ *
  * @section Threading Architecture
  * The implementation uses a producer-consumer model:
  * - Main thread: File discovery, validation, and result coordination
  * - Worker threads: Parallel file processing with resource management
  * - Shared resources: Memory monitor, file handle manager, error collector
- * 
+ *
  * @section Resource Management
  * Comprehensive resource management prevents system overload:
  * - Memory usage monitoring with configurable limits
  * - File handle limiting to prevent system exhaustion
  * - Thread-safe error collection and reporting
  * - Integration with job scheduler resource limits
- * 
+ *
  * @section Platform Support
  * The implementation supports multiple platforms:
  * - Windows: Using Windows API for system information
@@ -100,7 +100,7 @@ extern std::atomic<bool> g_shutdown_requested;
 /**
  * @brief Constructor initializes memory monitor with specified limit
  * @param max_memory_mb Maximum memory usage limit in megabytes
- * 
+ *
  * Converts megabyte limit to internal byte representation for efficient
  * atomic operations. The limit should account for other system processes.
  */
@@ -111,7 +111,7 @@ MemoryMonitor::MemoryMonitor(size_t max_memory_mb)
  * @brief Check if allocation would exceed memory limit
  * @param bytes Number of bytes to potentially allocate
  * @return true if allocation is within limits, false if would exceed
- * 
+ *
  * Thread-safe check using atomic load operation. Should be called before
  * large allocations to prevent memory exhaustion.
  */
@@ -122,7 +122,7 @@ bool MemoryMonitor::can_allocate(size_t bytes) {
 /**
  * @brief Record memory allocation and update peak usage tracking
  * @param bytes Number of bytes allocated
- * 
+ *
  * Atomically updates current usage and peak usage statistics. Uses
  * compare-and-swap to handle concurrent peak updates correctly.
  */
@@ -139,7 +139,7 @@ void MemoryMonitor::add_usage(size_t bytes) {
 /**
  * @brief Record memory deallocation
  * @param bytes Number of bytes freed
- * 
+ *
  * Atomically decreases current usage counter. Should be called when
  * memory is freed or objects are destroyed.
  */
@@ -150,7 +150,7 @@ void MemoryMonitor::remove_usage(size_t bytes) {
 /**
  * @brief Get current memory usage
  * @return Current memory usage in bytes
- * 
+ *
  * Thread-safe atomic read of current memory usage.
  */
 size_t MemoryMonitor::get_current_usage() const {
@@ -160,7 +160,7 @@ size_t MemoryMonitor::get_current_usage() const {
 /**
  * @brief Get peak memory usage since monitor creation
  * @return Peak memory usage in bytes
- * 
+ *
  * Thread-safe atomic read of peak memory usage for performance analysis.
  */
 size_t MemoryMonitor::get_peak_usage() const {
@@ -178,7 +178,7 @@ size_t MemoryMonitor::get_max_usage() const {
 /**
  * @brief Update memory limit during runtime
  * @param max_memory_mb New memory limit in megabytes
- * 
+ *
  * Allows dynamic adjustment of memory limits based on system conditions
  * or user preferences. Not thread-safe for concurrent limit changes.
  */
@@ -189,7 +189,7 @@ void MemoryMonitor::set_memory_limit(size_t max_memory_mb) {
 /**
  * @brief Detect total system memory capacity
  * @return Total system memory in megabytes
- * 
+ *
  * Platform-specific implementation for detecting available system memory.
  * Uses Windows API on Windows and POSIX/Linux interfaces on Unix-like systems.
  * Provides fallback values if detection fails.
@@ -428,35 +428,78 @@ bool validateFileSize(const std::string& filename, size_t max_size_mb) {
     }
 }
 
-std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb) {
-    std::vector<std::string> log_files;
+// This function is implemented in a way that is not that efficient when dealing with a large number of files.
+//std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb) {
+//    std::vector<std::string> log_files;
+//
+//    try {
+//        for (const auto& entry : std::filesystem::directory_iterator(".")) {
+//            if (g_shutdown_requested.load()) {
+//                break;
+//            }
+//
+//            if (entry.is_regular_file() && entry.path().extension() == extension) {
+//                std::string filename = entry.path().string();
+//
+//                // Validate file size before adding
+//                if (validateFileSize(filename, max_file_size_mb)) {
+//                    log_files.push_back(filename);
+//                } else {
+//                    std::cerr << "Warning: Skipping oversized file: " << filename
+//                              << " (>" << max_file_size_mb << "MB)" << std::endl;
+//                }
+//            }
+//        }
+//    } catch (const std::filesystem::filesystem_error& e) {
+//        throw std::runtime_error("Error accessing directory: " + std::string(e.what()));
+//    }
+//
+//    // Sort files for consistent processing order
+//    // Skip sorting to improve performance
+//    //std::sort(log_files.begin(), log_files.end());
+//    return log_files;
+//}
+
+// A better version of findLogfiles
+// Helper to collect all files using batches
+std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb, size_t batch_size) {
+    std::vector<std::string> all_files;
+    all_files.reserve(batch_size * 10); // Estimate to reduce reallocations
+
+    std::filesystem::directory_iterator dir_iter(".");
+    std::filesystem::directory_iterator end_iter;
 
     try {
-        for (const auto& entry : std::filesystem::directory_iterator(".")) {
-            if (g_shutdown_requested.load()) {
-                break;
+        while (dir_iter != end_iter && !g_shutdown_requested.load()) {
+            std::vector<std::string> batch;
+            batch.reserve(batch_size);
+
+            // Process one batch
+            for (size_t i = 0; i < batch_size && dir_iter != end_iter; ++i) {
+                const auto& entry = *dir_iter;
+                if (entry.is_regular_file() && entry.path().extension() == extension) {
+                    auto file_size = entry.file_size();
+                    if (file_size <= max_file_size_mb * 1024 * 1024) {
+                        batch.push_back(entry.path().string());
+                    }
+                }
+                ++dir_iter;
             }
 
-            if (entry.is_regular_file() && entry.path().extension() == extension) {
-                std::string filename = entry.path().string();
-
-                // Validate file size before adding
-                if (validateFileSize(filename, max_file_size_mb)) {
-                    log_files.push_back(filename);
-                } else {
-                    std::cerr << "Warning: Skipping oversized file: " << filename
-                              << " (>" << max_file_size_mb << "MB)" << std::endl;
-                }
+            // Sort and merge batch
+            if (!batch.empty()) {
+                std::sort(batch.begin(), batch.end());
+                all_files.insert(all_files.end(), batch.begin(), batch.end());
             }
         }
+
+        return all_files;
+
     } catch (const std::filesystem::filesystem_error& e) {
         throw std::runtime_error("Error accessing directory: " + std::string(e.what()));
     }
-
-    // Sort files for consistent processing order
-    std::sort(log_files.begin(), log_files.end());
-    return log_files;
 }
+
 
 void printResourceUsage(const ProcessingContext& context, bool quiet) {
     if (quiet) return;
@@ -1015,7 +1058,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
 
         // Prepare header information
         std::ostringstream params;
-        
+
         // Create dynamic header with proper formatting
         auto create_header_line = [](const std::string& content) -> std::string {
             const size_t total_width = 61;  // Including asterisks
@@ -1024,7 +1067,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
             line += " *";
             return line;
         };
-        
+
         params << "                                                             \n"
                << "*************************************************************\n"
                << create_header_line(GaussianExtractor::get_header_info()) << "\n"
