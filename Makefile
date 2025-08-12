@@ -32,6 +32,8 @@ ifneq ($(filter icpx icpc icc,$(CXX)),)
     # Intel compilers often require explicit TBB linking for parallel algorithms
     # Add TBB library if available, with error handling
     LDFLAGS += -ltbb
+	# Use -static-libstdc++ to avoid loading library
+    #LDFLAGS += -ltbb -static-libstdc++ 
 
     # Note: If TBB is not available, the compilation will fail with a clear error
     # In such cases, users should install Intel TBB or use GCC instead
@@ -56,6 +58,7 @@ SOURCES = $(SRC_DIR)/main.cpp \
           $(CORE_DIR)/job_checker.cpp \
           $(CORE_DIR)/command_executor.cpp \
           $(CORE_DIR)/config_manager.cpp \
+          $(CORE_DIR)/metadata.cpp \
           $(CORE_DIR)/high_level_energy.cpp
 
 HEADERS = $(CORE_DIR)/gaussian_extractor.h \
@@ -63,6 +66,7 @@ HEADERS = $(CORE_DIR)/gaussian_extractor.h \
           $(CORE_DIR)/command_system.h \
           $(CORE_DIR)/job_checker.h \
           $(CORE_DIR)/config_manager.h \
+          $(CORE_DIR)/metadata.h \
           $(CORE_DIR)/version.h \
           $(CORE_DIR)/high_level_energy.h
 

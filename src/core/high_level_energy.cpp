@@ -1,4 +1,6 @@
 #include "high_level_energy.h"
+#include "gaussian_extractor.h"
+#include "metadata.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -184,6 +186,9 @@ static FileContentCache g_file_cache(500); // 500MB cache
 // HighLevelEnergyCalculator Implementation
 // =============================================================================
 
+// Delegate header printing to Metadata module
+static void print_header_box(std::ostream& out) { out << Metadata::header(); }
+
 // Basic constructor
 HighLevelEnergyCalculator::HighLevelEnergyCalculator(double temp, double concentration_m, int sort_column, bool is_au_format)
     : temperature_(temp), concentration_m_(concentration_m), sort_column_(sort_column), is_au_format_(is_au_format), context_(nullptr), has_context_(false), thread_pool_(nullptr) {
@@ -308,13 +313,15 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_directory(co
     std::vector<HighLevelEnergyData> results;
 
     try {
-        auto log_files = HighLevelEnergyUtils::find_log_files(".");
+        // Use extension and limits from shared ProcessingContext when available
+        const std::string& effective_extension = has_context_ ? context_->extension : extension;
+        const size_t effective_max_file_size_mb = has_context_ ? context_->max_file_size_mb : DEFAULT_MAX_FILE_SIZE_MB;
+
+        std::vector<std::string> log_files = findLogFiles(effective_extension, effective_max_file_size_mb);
 
         for (const auto& file : log_files) {
-            if (file.find(extension) != std::string::npos) {
-                auto data = calculate_high_level_energy(file);
-                results.push_back(data);
-            }
+            auto data = calculate_high_level_energy(file);
+            results.push_back(data);
         }
 
         // Sort by specified column
@@ -340,19 +347,16 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_directory_pa
     std::vector<HighLevelEnergyData> results;
 
     try {
-        // Find all log files
-        auto log_files = HighLevelEnergyUtils::find_log_files(".");
+        // Use extension and limits from shared ProcessingContext when available
+        const std::string& effective_extension = has_context_ ? context_->extension : extension;
+        const size_t effective_max_file_size_mb = has_context_ ? context_->max_file_size_mb : DEFAULT_MAX_FILE_SIZE_MB;
 
-        // Filter by extension
-        std::vector<std::string> filtered_files;
-        std::copy_if(log_files.begin(), log_files.end(), std::back_inserter(filtered_files),
-                    [&extension](const std::string& file) {
-                        return file.find(extension) != std::string::npos;
-                    });
+        // Find all log files using the effective extension
+        std::vector<std::string> filtered_files = findLogFiles(effective_extension, effective_max_file_size_mb);
 
         if (filtered_files.empty()) {
             if (has_context_ && context_->error_collector) {
-                context_->error_collector->add_warning("No files found with extension: " + extension);
+                context_->error_collector->add_warning("No files found with extension: " + effective_extension);
             }
             return results;
         }
@@ -524,6 +528,9 @@ void HighLevelEnergyCalculator::print_gibbs_csv_format(const std::vector<HighLev
 
     std::ostream& out = output_file ? *output_file : std::cout;
 
+    // Header box
+    print_header_box(out);
+
     if (!quiet && !results.empty()) {
         print_summary_info(get_parent_file(results[0].filename), output_file);
     }
@@ -553,6 +560,9 @@ void HighLevelEnergyCalculator::print_components_csv_format(const std::vector<Hi
     }
 
     std::ostream& out = output_file ? *output_file : std::cout;
+
+    // Header box
+    print_header_box(out);
 
     if (!quiet && !results.empty()) {
         print_summary_info(get_parent_file(results[0].filename), output_file);
@@ -1092,6 +1102,9 @@ void HighLevelEnergyCalculator::print_gibbs_format_dynamic(const std::vector<Hig
 
     std::ostream& out = output_file ? *output_file : std::cout;
 
+    // Header box
+    print_header_box(out);
+
     if (!quiet && !results.empty()) {
         print_summary_info(get_parent_file(results[0].filename), output_file);
     }
@@ -1120,6 +1133,9 @@ void HighLevelEnergyCalculator::print_components_format_dynamic(const std::vecto
     }
 
     std::ostream& out = output_file ? *output_file : std::cout;
+
+    // Header box
+    print_header_box(out);
 
     if (!quiet && !results.empty()) {
         print_summary_info(get_parent_file(results[0].filename), output_file);
@@ -1154,6 +1170,9 @@ void HighLevelEnergyCalculator::print_gibbs_format_static(const std::vector<High
 
     std::ostream& out = output_file ? *output_file : std::cout;
 
+    // Header box
+    print_header_box(out);
+
     if (!quiet && !results.empty()) {
         print_summary_info(get_parent_file(results[0].filename), output_file);
     }
@@ -1181,6 +1200,9 @@ void HighLevelEnergyCalculator::print_components_format_static(const std::vector
     }
 
     std::ostream& out = output_file ? *output_file : std::cout;
+
+    // Header box
+    print_header_box(out);
 
     if (!quiet && !results.empty()) {
         print_summary_info(get_parent_file(results[0].filename), output_file);
@@ -1552,23 +1574,25 @@ bool HighLevelEnergyCalculator::compare_results(const HighLevelEnergyData& a, co
 // Utility namespace implementations
 namespace HighLevelEnergyUtils {
 
-std::vector<std::string> find_log_files(const std::string& directory) {
-    std::vector<std::string> log_files;
-
-    try {
-        for (const auto& entry : std::filesystem::directory_iterator(directory)) {
-            if (entry.is_regular_file() && entry.path().extension() == ".log") {
-                log_files.push_back(entry.path().filename().string());
-            }
-        }
-
-        std::sort(log_files.begin(), log_files.end());
-    } catch (const std::exception& e) {
-        std::cerr << "Error finding log files: " << e.what() << std::endl;
-    }
-
-    return log_files;
-}
+// This function needs to be improved to handle larger numbers of files and support more extensions such as .out
+// This function is replaced by the function findLogFiles in gaussian_extractor.cpp
+//std::vector<std::string> find_log_files(const std::string& directory) {
+//    std::vector<std::string> log_files;
+//
+//    try {
+//        for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+//            if (entry.is_regular_file() && entry.path().extension() == ".log") {
+//                log_files.push_back(entry.path().filename().string());
+//            }
+//        }
+//
+//        std::sort(log_files.begin(), log_files.end());
+//    } catch (const std::exception& e) {
+//        std::cerr << "Error finding log files: " << e.what() << std::endl;
+//    }
+//
+//    return log_files;
+//}
 
 std::string get_current_directory_name() {
     try {
@@ -1579,10 +1603,20 @@ std::string get_current_directory_name() {
 }
 
 bool is_valid_high_level_directory() {
-    // Check if current directory has .log files and parent directory exists
-    auto log_files = find_log_files(".");
+    // Default to configured extension and size via common command defaults
+    // Fallbacks: ".log" and DEFAULT_MAX_FILE_SIZE_MB if config is not available here
+    std::string default_ext = ".log";
+    size_t default_max_mb = DEFAULT_MAX_FILE_SIZE_MB;
+
+    std::vector<std::string> filtered_files = findLogFiles(default_ext, default_max_mb);
     bool has_parent = std::filesystem::exists("../");
-    return !log_files.empty() && has_parent;
+    return !filtered_files.empty() && has_parent;
+}
+
+bool is_valid_high_level_directory(const std::string& extension, size_t max_file_size_mb) {
+    std::vector<std::string> filtered_files = findLogFiles(extension, max_file_size_mb);
+    bool has_parent = std::filesystem::exists("../");
+    return !filtered_files.empty() && has_parent;
 }
 
 double parse_energy_value(const std::string& line, int field_index) {

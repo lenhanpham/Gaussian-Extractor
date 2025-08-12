@@ -6,7 +6,6 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-
 #include <memory>
 #include <csignal>
 #include <thread>
@@ -350,14 +349,14 @@ int execute_high_level_kj_command(const CommandContext& context) {
 
     try {
         // Validate that we're in a high-level directory
-        if (!HighLevelEnergyUtils::is_valid_high_level_directory()) {
+        if (!HighLevelEnergyUtils::is_valid_high_level_directory(context.extension, context.max_file_size_mb)) {
             std::cerr << "Error: This command must be run from a directory containing high-level .log files" << std::endl;
             std::cerr << "       with a parent directory containing low-level thermal data." << std::endl;
             return 1;
         }
 
         // Find and count log files
-        auto log_files = HighLevelEnergyUtils::find_log_files(".");
+        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
         std::vector<std::string> filtered_files;
         std::copy_if(log_files.begin(), log_files.end(), std::back_inserter(filtered_files),
                     [&context](const std::string& file) {
@@ -447,18 +446,6 @@ int execute_high_level_kj_command(const CommandContext& context) {
             }
         }
 
-        if (!context.quiet) {
-            std::cout << "\n*************************************************************" << std::endl;
-            std::cout << "* " << GaussianExtractor::get_header_info() << " *" << std::endl;
-            std::cout << "* " << GAUSSIAN_EXTRACTOR_REPOSITORY << " *" << std::endl;
-            std::cout << "*************************************************************" << std::endl;
-            std::cout << std::endl;
-            std::cout << "Default temperature for files without specified temp: " << std::fixed << std::setprecision(3)
-                     << context.temp << " K" << std::endl;
-            std::cout << "The concentration for phase correction: " << context.concentration/1000.0 << " M or "
-                     << context.concentration << " mol/m3" << std::endl;
-        }
-
         if (results.empty()) {
             if (!context.quiet) {
                 std::cout << "No valid " << context.extension << " files processed." << std::endl;
@@ -518,14 +505,14 @@ int execute_high_level_au_command(const CommandContext& context) {
 
     try {
         // Validate that we're in a high-level directory
-        if (!HighLevelEnergyUtils::is_valid_high_level_directory()) {
+        if (!HighLevelEnergyUtils::is_valid_high_level_directory(context.extension, context.max_file_size_mb)) {
             std::cerr << "Error: This command must be run from a directory containing high-level .log files" << std::endl;
             std::cerr << "       with a parent directory containing low-level thermal data." << std::endl;
             return 1;
         }
 
         // Find and count log files
-        auto log_files = HighLevelEnergyUtils::find_log_files(".");
+        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
         std::vector<std::string> filtered_files;
         std::copy_if(log_files.begin(), log_files.end(), std::back_inserter(filtered_files),
                     [&context](const std::string& file) {
@@ -613,18 +600,6 @@ int execute_high_level_au_command(const CommandContext& context) {
             for (const auto& warning : warnings) {
                 std::cout << "  " << warning << std::endl;
             }
-        }
-
-        if (!context.quiet) {
-            std::cout << "\n*************************************************************" << std::endl;
-            std::cout << "* " << GaussianExtractor::get_header_info() << " *" << std::endl;
-            std::cout << "* " << GAUSSIAN_EXTRACTOR_REPOSITORY << " *" << std::endl;
-            std::cout << "*************************************************************" << std::endl;
-            std::cout << std::endl;
-            std::cout << "Default temperature for files without specified temp: " << std::fixed << std::setprecision(3)
-                     << context.temp << " K" << std::endl;
-            std::cout << "The concentration for phase correction: " << context.concentration/1000.0 << " M or "
-                     << context.concentration << " mol/m3" << std::endl;
         }
 
         if (results.empty()) {

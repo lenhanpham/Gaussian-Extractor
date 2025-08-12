@@ -1,5 +1,4 @@
 #include "command_system.h"
-
 #include "config_manager.h"
 #include "version.h"
 #include <iostream>

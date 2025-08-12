@@ -37,7 +37,7 @@
  */
 
 #include "gaussian_extractor.h"
-#include "version.h"
+#include "metadata.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -1059,21 +1059,9 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
         // Prepare header information
         std::ostringstream params;
 
-        // Create dynamic header with proper formatting
-        auto create_header_line = [](const std::string& content) -> std::string {
-            const size_t total_width = 61;  // Including asterisks
-            std::string line = "* " + content;
-            while (line.length() < total_width - 2) line += " ";
-            line += " *";
-            return line;
-        };
 
-        params << "                                                             \n"
-               << "*************************************************************\n"
-               << create_header_line(GaussianExtractor::get_header_info()) << "\n"
-               << create_header_line(GAUSSIAN_EXTRACTOR_REPOSITORY) << "\n"
-               << "*************************************************************\n"
-               << "                                                             \n";
+        // Standard header from Metadata module
+        params << Metadata::header();
 
         if (use_input_temp) {
             params << "Using specified temperature for all files: " << std::fixed << std::setprecision(3) << temp << " K\n";
