@@ -16,9 +16,9 @@
 
 ## Windows
 
-- **A binary package is included in the release**. Just download this package and extract it to use the program. Users should add the program to PATH system variable and then interact with gaussian_extractor through Windows terminal 
+- **A binary package is included in the release**. Just download this package and extract it to use the program. Users should add the program to PATH system variable and then interact with gaussian_extractor through Windows terminal
 
-- Use windows terminal (powershell) to run gaussian_extractor.exe in a folder where your gaussian log files are available. 
+- Use windows terminal (powershell) to run gaussian_extractor.exe in a folder where your gaussian log files are available.
 
 ## Linux
 
@@ -32,7 +32,7 @@
 
 ### Compilation Options
 
-### Note that I do not MacOS computers or servers to test the program; I am not sure if it is going to work properly on these OSs. Only linux was tested well.
+### Note that I do not use MacOS computers or servers to test the program; I am not sure if it is going to work properly on MacOS. Only linux was tested well.
 
 #### Option 1: Automatic Build (Recommended)
 
