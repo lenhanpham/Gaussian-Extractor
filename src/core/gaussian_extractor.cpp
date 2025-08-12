@@ -1000,7 +1000,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
                     size_t completed = completed_files.fetch_add(1) + 1;
 
                     // Progress reporting (every 10% or every 100 files, whichever is smaller)
-                    size_t progress_interval = std::max(1UL, std::min(log_files.size() / 10, 100UL));
+                    size_t progress_interval = std::max(static_cast<size_t>(1), std::min(log_files.size() / 10, static_cast<size_t>(100)));
                     if (!quiet && completed % progress_interval == 0) {
                         std::cout << "Processed " << completed << "/" << log_files.size()
                                  << " files (" << (completed * 100 / log_files.size()) << "%)" << std::endl;
