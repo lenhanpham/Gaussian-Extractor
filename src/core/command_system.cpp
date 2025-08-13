@@ -190,6 +190,22 @@ void CommandParser::parse_common_options(CommandContext& context, int& i, int ar
             add_warning(context, "Error: Max file size value required after --max-file-size.");
         }
     }
+    else if (arg == "--batch-size") {
+        if (++i < argc) {
+            try {
+                int size = std::stoi(argv[i]);
+                if (size <= 0) {
+                    add_warning(context, "Error: Batch size must be positive. Using default (auto-detect).");
+                } else {
+                    context.batch_size = static_cast<size_t>(size);
+                }
+            } catch (const std::exception& e) {
+                add_warning(context, "Error: Invalid batch size format. Using default (auto-detect).");
+            }
+        } else {
+            add_warning(context, "Error: Batch size value required after --batch-size.");
+        }
+    }
 }
 
 void CommandParser::parse_extract_options(CommandContext& context, int& i, int argc, char* argv[]) {
@@ -444,6 +460,7 @@ void CommandParser::print_help(const std::string& program_name) {
     std::cout << "  -nt, --threads <N>    Thread count: number|max|half (default: " << g_config_manager.get_string("default_threads") << ")\n";
     std::cout << "  -q, --quiet           Quiet mode (default: " << (g_config_manager.get_bool("quiet_mode") ? "on" : "off") << ")\n";
     std::cout << "  --max-file-size <MB>  Maximum file size in MB (default: " << g_config_manager.get_default_max_file_size() << ")\n";
+    std::cout << "  --batch-size <N>      Batch size for large directories (default: auto)\n";
     std::cout << "  -h, --help            Show this help message\n";
     std::cout << "  -v, --version         Show version information\n\n";
 
@@ -543,6 +560,7 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
     std::cout << "  -nt, --threads <N>    Thread count: number|max|half (default: half)\n";
     std::cout << "  -q, --quiet           Quiet mode (minimal output)\n";
     std::cout << "  --max-file-size <MB>  Maximum file size in MB (default: 100)\n";
+    std::cout << "  --batch-size <N>      Batch size for large directories (default: auto)\n";
 
     if (command == CommandType::CHECK_DONE) {
         std::cout << "  --dir-suffix <suffix> Directory suffix (default: done)\n";

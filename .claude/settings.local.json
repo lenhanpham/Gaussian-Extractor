@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__serena__search_for_pattern"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

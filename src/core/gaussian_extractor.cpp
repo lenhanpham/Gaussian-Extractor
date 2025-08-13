@@ -462,42 +462,80 @@ bool validateFileSize(const std::string& filename, size_t max_size_mb) {
 
 // A better version of findLogfiles
 // Helper to collect all files using batches
-std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb, size_t batch_size) {
-    std::vector<std::string> all_files;
-    all_files.reserve(batch_size * 10); // Estimate to reduce reallocations
-
-    std::filesystem::directory_iterator dir_iter(".");
-    std::filesystem::directory_iterator end_iter;
+std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb) {
+    std::vector<std::string> log_files;
 
     try {
-        while (dir_iter != end_iter && !g_shutdown_requested.load()) {
-            std::vector<std::string> batch;
-            batch.reserve(batch_size);
-
-            // Process one batch
-            for (size_t i = 0; i < batch_size && dir_iter != end_iter; ++i) {
-                const auto& entry = *dir_iter;
-                if (entry.is_regular_file() && entry.path().extension() == extension) {
-                    auto file_size = entry.file_size();
-                    if (file_size <= max_file_size_mb * 1024 * 1024) {
-                        batch.push_back(entry.path().string());
-                    }
-                }
-                ++dir_iter;
+        // Use single directory iteration with direct push_back for better performance
+        for (const auto& entry : std::filesystem::directory_iterator(".")) {
+            if (g_shutdown_requested.load()) {
+                break;
             }
 
-            // Sort and merge batch
-            if (!batch.empty()) {
-                std::sort(batch.begin(), batch.end());
-                all_files.insert(all_files.end(), batch.begin(), batch.end());
+            if (entry.is_regular_file() && entry.path().extension() == extension) {
+                auto file_size = entry.file_size();
+                if (file_size <= max_file_size_mb * 1024 * 1024) {
+                    log_files.push_back(entry.path().string());
+                }
             }
         }
 
-        return all_files;
+        // Sort the files for consistent processing order
+        std::sort(log_files.begin(), log_files.end());
 
     } catch (const std::filesystem::filesystem_error& e) {
         throw std::runtime_error("Error accessing directory: " + std::string(e.what()));
     }
+
+    return log_files;
+}
+
+// Batch processing version for handling millions of files with controlled memory usage
+std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb, size_t batch_size) {
+    std::vector<std::string> all_log_files;
+    std::vector<std::string> batch_files;
+    batch_files.reserve(batch_size);
+
+    try {
+        // Process files in batches to control memory usage
+        for (const auto& entry : std::filesystem::directory_iterator(".")) {
+            if (g_shutdown_requested.load()) {
+                break;
+            }
+
+            if (entry.is_regular_file() && entry.path().extension() == extension) {
+                auto file_size = entry.file_size();
+                if (file_size <= max_file_size_mb * 1024 * 1024) {
+                    batch_files.push_back(entry.path().string());
+
+                    // When batch is full, sort and move to main vector
+                    if (batch_files.size() >= batch_size) {
+                        std::sort(batch_files.begin(), batch_files.end());
+                        all_log_files.insert(all_log_files.end(),
+                                           std::make_move_iterator(batch_files.begin()),
+                                           std::make_move_iterator(batch_files.end()));
+                        batch_files.clear();
+                    }
+                }
+            }
+        }
+
+        // Handle remaining files in last batch
+        if (!batch_files.empty()) {
+            std::sort(batch_files.begin(), batch_files.end());
+            all_log_files.insert(all_log_files.end(),
+                               std::make_move_iterator(batch_files.begin()),
+                               std::make_move_iterator(batch_files.end()));
+        }
+
+        // Final sort of all batches together to maintain global order
+        std::sort(all_log_files.begin(), all_log_files.end());
+
+    } catch (const std::filesystem::filesystem_error& e) {
+        throw std::runtime_error("Error accessing directory: " + std::string(e.what()));
+    }
+
+    return all_log_files;
 }
 
 
@@ -635,13 +673,13 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
         throw std::runtime_error("Could not acquire file handle for: " + file_name_param);
     }
 
-    // Estimate memory usage for this file
+    // Estimate memory usage for this file (simplified without content buffer overhead)
     size_t estimated_memory = 0;
     try {
         auto file_size = std::filesystem::file_size(file_name_param);
-        estimated_memory = file_size + (CONTENT_BUFFER_SIZE * 256); // Estimate line buffer overhead
+        estimated_memory = file_size / 10; // Rough estimate for processing overhead only
     } catch (const std::filesystem::filesystem_error&) {
-        estimated_memory = 1024 * 1024; // 1MB default estimate
+        estimated_memory = 102400; // 100KB default estimate
     }
 
     if (!context.memory_monitor->can_allocate(estimated_memory)) {
@@ -671,9 +709,6 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
     }
 
     std::string line;
-    std::vector<std::string> content;
-    content.reserve(CONTENT_BUFFER_SIZE); // Pre-allocate to avoid reallocations
-
     int copyright_count = 0;
     double scf = 0, zpe = 0, tcg = 0, etg = 0, ezpe = 0, nucleare = 0;
     double scfEqui = 0, scftd = 0;
@@ -681,6 +716,7 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
     std::vector<double> negative_freqs, positive_freqs;
     std::string status = "UNDONE";
     std::string phaseCorr = "NO";
+    bool normal_termination = false; // Simple flag for termination status
 
     // Pre-compile regex patterns for better performance
     static const std::regex scf_pattern(R"(SCF Done.*?=\s+(-?\d+\.\d+))");
@@ -693,12 +729,11 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
         while (std::getline(file, line) && !g_shutdown_requested.load()) {
             line_count++;
 
-            // Maintain rolling buffer of recent lines
-            context.memory_monitor->add_usage(line.capacity());
-            content.push_back(line);
-            if (content.size() > CONTENT_BUFFER_SIZE) {
-                context.memory_monitor->remove_usage(content.front().capacity());
-                content.erase(content.begin());
+            // Check for termination status immediately
+            if (line.find("Normal termination") != std::string::npos) {
+                normal_termination = true;
+            } else if (line.find("Error termination") != std::string::npos) {
+                status = "ERROR";
             }
 
             // Process line content
@@ -817,11 +852,6 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
 
     file.close();
 
-    // Release memory used by the content buffer
-    for (const auto& s : content) {
-        context.memory_monitor->remove_usage(s.capacity());
-    }
-
     // Process extracted data
     if (!scf_values.empty()) {
         scf = scf_values.back();
@@ -843,15 +873,9 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
     double GibbsFreeHartree = (phaseCorr == "YES" && etg != 0.0) ? etg + GphaseCorr : etg;
     double etgkj = GibbsFreeHartree * 2625.5002;
 
-    // Determine status from content buffer
-    for (const auto& content_line : content) {
-        if (content_line.find("Normal termination") != std::string::npos) {
-            status = "DONE";
-            break;
-        } else if (content_line.find("Error termination") != std::string::npos) {
-            status = "ERROR";
-            break;
-        }
+    // Set status based on termination flag
+    if (normal_termination && status != "ERROR") {
+        status = "DONE";
     }
 
     // Truncate filename if too long
@@ -872,7 +896,7 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
                            bool quiet, const std::string& format, bool use_input_temp,
                            unsigned int requested_threads, size_t max_file_size_mb,
                            size_t memory_limit_mb, const std::vector<std::string>& warnings,
-                           const JobResources& job_resources) {
+                           const JobResources& job_resources, size_t batch_size) {
 
     auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -886,8 +910,13 @@ void processAndOutputResults(double temp, int C, int column, const std::string& 
         // Print job information
         printJobResourceInfo(final_job_resources, quiet);
 
-        // Find and validate log files
-        std::vector<std::string> log_files = findLogFiles(extension, max_file_size_mb);
+        // Find and validate log files using batch processing if specified
+        std::vector<std::string> log_files;
+        if (batch_size > 0) {
+            log_files = findLogFiles(extension, max_file_size_mb, batch_size);
+        } else {
+            log_files = findLogFiles(extension, max_file_size_mb);
+        }
 
         if (log_files.empty()) {
             std::cerr << "No " << extension << " files found in the current directory." << std::endl;

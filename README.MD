@@ -243,6 +243,7 @@ Memory usage: 256.7 MB / 4.0 GB
 | `-q, --quiet`     | Quiet mode         | -                 | false           |
 | `--max-file-size` | Max file size (MB) | Positive integer  | 100             |
 | `--memory-limit`  | Memory limit (MB)  | Positive integer  | Auto-calculated |
+| `--batch-size`    | Batch size         | Positive integer  | false           |
 | `--resource-info` | Show resources     | -                 | false           |
 | `-h, --help`      | Show help          | -                 | false           |
 

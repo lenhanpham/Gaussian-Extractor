@@ -107,7 +107,6 @@ const size_t MIN_MEMORY_MB = 1024;            ///< Minimum safe memory limit: 1G
 const size_t MAX_MEMORY_MB = 32768;           ///< Maximum memory limit: 32GB
 const size_t MAX_FILE_HANDLES = 20;           ///< Maximum concurrent file operations
 const size_t DEFAULT_MAX_FILE_SIZE_MB = 100;  ///< Default maximum individual file size: 100MB
-const size_t CONTENT_BUFFER_SIZE = 50;        ///< Lines to keep in memory for processing
 
 /** @} */ // end of SafetyLimits group
 
@@ -694,7 +693,8 @@ void processAndOutputResults(double temp,
                            size_t max_file_size_mb,
                            size_t memory_limit_mb,
                            const std::vector<std::string>& warnings,
-                           const JobResources& job_resources = JobResources{});
+                           const JobResources& job_resources = JobResources{},
+                           size_t batch_size = 0);
 
 /** @} */ // end of CoreFunctions group
 
@@ -717,10 +717,10 @@ void processAndOutputResults(double temp,
  * @note The function filters out files that are too large to process safely
  *       based on available system resources
  */
-// This function can work but not that good for large directories
-//std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb = DEFAULT_MAX_FILE_SIZE_MB);
-// An improved version of findLogFiles that uses batch processing to handle large directories more efficiently
-std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb = DEFAULT_MAX_FILE_SIZE_MB, size_t batch_size = 1000);
+// Optimized version that uses direct iteration and sorting for consistent file processing order
+std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb = DEFAULT_MAX_FILE_SIZE_MB);
+// Batch processing version for handling millions of files with controlled memory usage
+std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb, size_t batch_size);
 /**
  * @brief Validate that a file size is within processing limits
  * @param filename Path to file to check

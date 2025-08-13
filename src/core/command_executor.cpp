@@ -88,7 +88,8 @@ int execute_extract_command(const CommandContext& context) {
             context.max_file_size_mb,
             context.memory_limit_mb,
             context.warnings,
-            context.job_resources
+            context.job_resources,
+            context.batch_size
         );
 
         return 0;
@@ -106,8 +107,13 @@ int execute_check_done_command(const CommandContext& context) {
     setup_signal_handlers();
 
     try {
-        // Find log files
-        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        // Find log files using batch processing if specified
+        std::vector<std::string> log_files;
+        if (context.batch_size > 0) {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+        } else {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        }
 
         if (log_files.empty()) {
             if (!context.quiet) {
@@ -170,8 +176,13 @@ int execute_check_errors_command(const CommandContext& context) {
     setup_signal_handlers();
 
     try {
-        // Find log files
-        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        // Find log files using batch processing if specified
+        std::vector<std::string> log_files;
+        if (context.batch_size > 0) {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+        } else {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        }
 
         if (log_files.empty()) {
             if (!context.quiet) {
@@ -233,8 +244,13 @@ int execute_check_pcm_command(const CommandContext& context) {
     setup_signal_handlers();
 
     try {
-        // Find log files
-        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        // Find log files using batch processing if specified
+        std::vector<std::string> log_files;
+        if (context.batch_size > 0) {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+        } else {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        }
 
         if (log_files.empty()) {
             if (!context.quiet) {
@@ -296,8 +312,13 @@ int execute_check_all_command(const CommandContext& context) {
     setup_signal_handlers();
 
     try {
-        // Find log files
-        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        // Find log files using batch processing if specified
+        std::vector<std::string> log_files;
+        if (context.batch_size > 0) {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+        } else {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        }
 
         if (log_files.empty()) {
             if (!context.quiet) {
@@ -355,8 +376,13 @@ int execute_high_level_kj_command(const CommandContext& context) {
             return 1;
         }
 
-        // Find and count log files
-        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        // Find and count log files using batch processing if specified
+        std::vector<std::string> log_files;
+        if (context.batch_size > 0) {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+        } else {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        }
         std::vector<std::string> filtered_files;
         std::copy_if(log_files.begin(), log_files.end(), std::back_inserter(filtered_files),
                     [&context](const std::string& file) {
@@ -511,8 +537,13 @@ int execute_high_level_au_command(const CommandContext& context) {
             return 1;
         }
 
-        // Find and count log files
-        std::vector<std::string> log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        // Find and count log files using batch processing if specified
+        std::vector<std::string> log_files;
+        if (context.batch_size > 0) {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+        } else {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        }
         std::vector<std::string> filtered_files;
         std::copy_if(log_files.begin(), log_files.end(), std::back_inserter(filtered_files),
                     [&context](const std::string& file) {

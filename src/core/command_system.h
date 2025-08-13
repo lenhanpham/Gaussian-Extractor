@@ -79,6 +79,7 @@ struct CommandContext {
     bool quiet;                       ///< Suppress non-essential output
     unsigned int requested_threads;   ///< Number of threads requested by user
     size_t max_file_size_mb;         ///< Maximum individual file size in MB
+    size_t batch_size;               ///< Batch size for processing large directories (0 = auto)
     std::string extension;           ///< File extension to process (default: ".log")
     std::vector<std::string> warnings; ///< Collected warnings from parsing
     JobResources job_resources;      ///< Job scheduler resource information
@@ -112,6 +113,7 @@ struct CommandContext {
         quiet(false),                     // Show normal output by default
         requested_threads(0),             // Auto-detect thread count
         max_file_size_mb(100),           // 100MB max file size
+        batch_size(0),                   // Auto-detect batch size (0 = disabled)
         extension(".log"),               // Process .log files
         temp(298.15),                    // Room temperature (25°C)
         concentration(1000),             // 1M concentration (1000 mM)
