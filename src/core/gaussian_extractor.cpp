@@ -710,13 +710,14 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
 
     std::string line;
     int copyright_count = 0;
+    int normal_count = 0;  // Count of "Normal termination" messages
+    int error_count = 0;   // Count of "Error termination" messages
     double scf = 0, zpe = 0, tcg = 0, etg = 0, ezpe = 0, nucleare = 0;
     double scfEqui = 0, scftd = 0;
     double temp = context.base_temp; // Local copy for this file
     std::vector<double> negative_freqs, positive_freqs;
     std::string status = "UNDONE";
     std::string phaseCorr = "NO";
-    bool normal_termination = false; // Simple flag for termination status
 
     // Pre-compile regex patterns for better performance
     static const std::regex scf_pattern(R"(SCF Done.*?=\s+(-?\d+\.\d+))");
@@ -729,11 +730,11 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
         while (std::getline(file, line) && !g_shutdown_requested.load()) {
             line_count++;
 
-            // Check for termination status immediately
+            // Count termination status messages
             if (line.find("Normal termination") != std::string::npos) {
-                normal_termination = true;
+                normal_count++;
             } else if (line.find("Error termination") != std::string::npos) {
-                status = "ERROR";
+                error_count++;
             }
 
             // Process line content
@@ -873,9 +874,55 @@ Result extract(const std::string& file_name_param, const ProcessingContext& cont
     double GibbsFreeHartree = (phaseCorr == "YES" && etg != 0.0) ? etg + GphaseCorr : etg;
     double etgkj = GibbsFreeHartree * 2625.5002;
 
-    // Set status based on termination flag
-    if (normal_termination && status != "ERROR") {
-        status = "DONE";
+    // Set status based on termination counts and final job state
+    // Gaussian jobs can have complex multi-step structures where:
+    // - Each section has a copyright statement
+    // - Each completed step generates a "Normal termination" message
+    // - Sometimes there are more "Normal termination" messages than sections
+    //
+    // Improved logic based on your suggestion:
+    // 1. If any errors found, mark as ERROR
+    // 2. If normal_count >= copyright_count AND "Normal termination" is in the last lines, mark as DONE
+    // 3. Otherwise, mark as UNDONE (incomplete job)
+    if (error_count > 0) {
+        status = "ERROR";
+    } else if (normal_count >= copyright_count && copyright_count > 0) {
+        // Reopen the file to read the tail
+        std::ifstream tail_file(file_name_param);
+        if (!tail_file.is_open()) {
+            context.error_collector->add_error("Could not reopen file for tail check: " + file_name_param);
+            status = "UNDONE";  // Fallback on error
+        } else {
+            tail_file.seekg(0, std::ios::end);
+            std::streampos file_size = tail_file.tellg();
+
+            // Read approximately last 2KB of file
+            std::streampos read_pos;
+            if (file_size > std::streampos(2048)) {
+                read_pos = file_size - std::streamoff(2048);
+            } else {
+                read_pos = std::streampos(0);
+            }
+            tail_file.seekg(read_pos);
+
+            std::string tail_content;
+            std::string tail_line;
+            while (std::getline(tail_file, tail_line)) {
+                tail_content += tail_line + "\n";
+            }
+
+            // Check if "Normal termination" appears in the final part of the file
+            // This confirms the job actually completed, not just had intermediate completions
+            if (tail_content.find("Normal termination") != std::string::npos) {
+                status = "DONE";
+            } else {
+                status = "UNDONE";
+            }
+
+            tail_file.close();
+        }
+    } else {
+        status = "UNDONE";
     }
 
     // Truncate filename if too long
