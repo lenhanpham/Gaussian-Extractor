@@ -475,7 +475,7 @@ std::vector<std::string> findLogFiles(const std::string& extension, size_t max_f
             if (entry.is_regular_file() && entry.path().extension() == extension) {
                 auto file_size = entry.file_size();
                 if (file_size <= max_file_size_mb * 1024 * 1024) {
-                    log_files.push_back(entry.path().string());
+                    log_files.push_back(entry.path().filename().string());
                 }
             }
         }
@@ -506,7 +506,7 @@ std::vector<std::string> findLogFiles(const std::string& extension, size_t max_f
             if (entry.is_regular_file() && entry.path().extension() == extension) {
                 auto file_size = entry.file_size();
                 if (file_size <= max_file_size_mb * 1024 * 1024) {
-                    batch_files.push_back(entry.path().string());
+                    batch_files.push_back(entry.path().filename().string());
 
                     // When batch is full, sort and move to main vector
                     if (batch_files.size() >= batch_size) {
