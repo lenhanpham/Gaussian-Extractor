@@ -53,6 +53,7 @@ enum class CommandType {
     CHECK_DONE,           ///< Check and organize completed job calculations
     CHECK_ERRORS,         ///< Check and organize jobs that terminated with errors
     CHECK_PCM,            ///< Check and organize jobs with PCM convergence failures
+    CHECK_IMAGINARY,      ///< Check and organize jobs with imaginary frequencies
     CHECK_ALL,            ///< Run comprehensive checks for all job types
     HIGH_LEVEL_KJ,        ///< Calculate high-level energies with output in kJ/mol units
     HIGH_LEVEL_AU         ///< Calculate high-level energies with detailed output in atomic units

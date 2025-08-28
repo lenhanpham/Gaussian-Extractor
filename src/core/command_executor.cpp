@@ -365,6 +365,61 @@ int execute_check_all_command(const CommandContext& context) {
     }
 }
 
+int execute_check_imaginary_command(const CommandContext& context) {
+    setup_signal_handlers();
+
+    try {
+        std::vector<std::string> log_files;
+        if (context.batch_size > 0) {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+        } else {
+            log_files = findLogFiles(context.extension, context.max_file_size_mb);
+        }
+
+        if (log_files.empty()) {
+            if (!context.quiet) {
+                std::cout << "No " << context.extension << " files found in current directory." << std::endl;
+            }
+            return 0;
+        }
+
+        auto processing_context = std::make_shared<ProcessingContext>(
+            298.15, 1000, context.use_input_temp, context.requested_threads,
+            context.extension, DEFAULT_MAX_FILE_SIZE_MB, context.job_resources
+        );
+
+        if (context.memory_limit_mb > 0) {
+            processing_context->memory_monitor->set_memory_limit(context.memory_limit_mb);
+        }
+
+        JobChecker checker(processing_context, context.quiet, false);
+
+        std::string target_dir = "imaginary_freqs";
+        if (!context.target_dir.empty()) {
+            target_dir = context.target_dir;
+        }
+
+        CheckSummary summary = checker.check_imaginary_frequencies(log_files, target_dir);
+
+        if (!context.quiet) {
+            checker.print_summary(summary, "Imaginary frequency check");
+        }
+
+        if (!context.quiet) {
+            printResourceUsage(*processing_context, context.quiet);
+        }
+
+        return (summary.errors.empty()) ? 0 : 1;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Fatal error: " << e.what() << std::endl;
+        return 1;
+    } catch (...) {
+        std::cerr << "Fatal error: Unknown exception occurred" << std::endl;
+        return 1;
+    }
+}
+
 int execute_high_level_kj_command(const CommandContext& context) {
     setup_signal_handlers();
 

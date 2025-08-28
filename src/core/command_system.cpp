@@ -102,6 +102,7 @@ CommandType CommandParser::parse_command(const std::string& cmd) {
     if (cmd == "done") return CommandType::CHECK_DONE;
     if (cmd == "errors") return CommandType::CHECK_ERRORS;
     if (cmd == "pcm") return CommandType::CHECK_PCM;
+    if (cmd == "imode" || cmd == "--imaginary") return CommandType::CHECK_IMAGINARY;
     if (cmd == "check") return CommandType::CHECK_ALL;
     if (cmd == "high-kj" || cmd == "--high-level-kj") return CommandType::HIGH_LEVEL_KJ;
     if (cmd == "high-au" || cmd == "--high-level-au") return CommandType::HIGH_LEVEL_AU;
@@ -119,6 +120,7 @@ std::string CommandParser::get_command_name(CommandType command) {
         case CommandType::CHECK_DONE: return std::string("done");
         case CommandType::CHECK_ERRORS: return std::string("errors");
         case CommandType::CHECK_PCM: return std::string("pcm");
+        case CommandType::CHECK_IMAGINARY: return std::string("imode");
         case CommandType::CHECK_ALL: return std::string("check");
         case CommandType::HIGH_LEVEL_KJ: return std::string("high-kj");
         case CommandType::HIGH_LEVEL_AU: return std::string("high-au");
@@ -443,6 +445,8 @@ void CommandParser::print_help(const std::string& program_name) {
     std::cout << "  done              Check and move completed jobs to {dir}-done/\n";
     std::cout << "  errors            Check and move error jobs to errorJobs/\n";
     std::cout << "  pcm               Check and move PCM convergence failures to PCMMkU/\n";
+    std::cout << "  imode             Check and move jobs with imaginary frequencies to imaginary_freqs/\n";
+    std::cout << "  --imaginary       (same as imode)\n";
     std::cout << "  check             Run all job checks (done, errors, pcm)\n";
     std::cout << "  high-kj           Calculate high-level energies with output in kJ/mol\n";
     std::cout << "  --high-level-kj   (same as high-kj)\n";

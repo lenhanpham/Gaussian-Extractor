@@ -111,6 +111,17 @@ int execute_check_pcm_command(const CommandContext& context);
 int execute_check_all_command(const CommandContext& context);
 
 /**
+ * @brief Execute the check-imaginary command for jobs with imaginary frequencies
+ * @param context Configured command context with checking parameters
+ * @return Exit code: 0 for success, non-zero for various error conditions
+ *
+ * Identifies Gaussian calculations that have imaginary (negative) vibrational
+ * frequencies and organizes them into a designated directory. This is useful
+ * for identifying transition states or failed optimizations.
+ */
+int execute_check_imaginary_command(const CommandContext& context);
+
+/**
  * @brief Execute high-level energy calculation with kJ/mol output
  * @param context Configured command context with calculation parameters
  * @return Exit code: 0 for success, non-zero for various error conditions

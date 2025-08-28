@@ -522,6 +522,122 @@ CheckSummary JobChecker::check_all_job_types_optimized(const std::vector<std::st
     return total_summary;
 }
 
+CheckSummary JobChecker::check_imaginary_frequencies(const std::vector<std::string>& log_files,
+                                                     const std::string& target_dir) {
+    CheckSummary summary;
+    summary.total_files = log_files.size();
+    auto start_time = std::chrono::high_resolution_clock::now();
+
+    if (!create_target_directory(target_dir)) {
+        summary.errors.push_back("Failed to create target directory: " + target_dir);
+        return summary;
+    }
+
+    if (!quiet_mode) {
+        std::cout << "Found " << log_files.size() << " " << context->extension << " files" << std::endl;
+        std::cout << "Checking for imaginary frequencies..." << std::endl;
+    }
+
+    std::vector<JobCheckResult> imag_freq_jobs;
+    std::mutex results_mutex;
+    std::atomic<size_t> file_index{0};
+
+    unsigned int num_threads = calculateSafeThreadCount(context->requested_threads,
+                                                       log_files.size(),
+                                                       context->job_resources);
+    if (!quiet_mode) {
+        std::cout << "Using " << num_threads << " threads" << std::endl;
+    }
+
+    std::vector<std::thread> threads;
+    for (unsigned int i = 0; i < num_threads; ++i) {
+        threads.emplace_back([&]() {
+            size_t index;
+            while ((index = file_index.fetch_add(1)) < log_files.size()) {
+                if (g_shutdown_requested.load()) break;
+
+                try {
+                    auto file_guard = context->file_manager->acquire();
+                    if (!file_guard.is_acquired()) continue;
+
+                    std::string content = read_file_unified(log_files[index], FileReadMode::FULL);
+                    std::istringstream stream(content);
+                    std::string line;
+                    bool has_imag_freq = false;
+
+                    while (std::getline(stream, line)) {
+                        if (line.find("Frequencies --") != std::string::npos) {
+                            std::string freqs_line = line.substr(line.find("--") + 2);
+                            std::istringstream freq_stream(freqs_line);
+                            double freq;
+                            while (freq_stream >> freq) {
+                                if (freq < 0) {
+                                    has_imag_freq = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (has_imag_freq) break;
+                    }
+
+                    std::lock_guard<std::mutex> lock(results_mutex);
+                    summary.processed_files++;
+
+                    if (has_imag_freq) {
+                        JobCheckResult result(log_files[index], JobStatus::UNKNOWN);
+                        result.related_files = find_related_files(log_files[index]);
+                        imag_freq_jobs.push_back(result);
+                        summary.matched_files++;
+                    }
+
+                    if (!quiet_mode && summary.processed_files % 50 == 0) {
+                        report_progress(summary.processed_files, summary.total_files, "checking");
+                    }
+
+                } catch (const std::exception& e) {
+                    std::lock_guard<std::mutex> lock(results_mutex);
+                    summary.errors.push_back("Error checking " + log_files[index] + ": " + e.what());
+                }
+            }
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    if (!quiet_mode && summary.processed_files > 0) {
+        report_progress(summary.processed_files, summary.total_files, "checking");
+        std::cout << std::endl;
+    }
+
+    if (!imag_freq_jobs.empty()) {
+        if (!quiet_mode) {
+            std::cout << "Found " << imag_freq_jobs.size() << " jobs with imaginary frequencies" << std::endl;
+            std::cout << "Moving files to " << target_dir << "/" << std::endl;
+        }
+
+        for (const auto& job : imag_freq_jobs) {
+            if (move_job_files(job, target_dir)) {
+                summary.moved_files++;
+                if (!quiet_mode) {
+                    std::cout << job.filename << " moved" << std::endl;
+                }
+            } else {
+                summary.failed_moves++;
+            }
+        }
+    } else if (!quiet_mode) {
+        std::cout << "No jobs with imaginary frequencies found" << std::endl;
+    }
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    summary.execution_time = std::chrono::duration<double>(end_time - start_time).count();
+
+    return summary;
+}
+
+
 JobCheckResult JobChecker::check_job_status(const std::string& log_file) {
     JobCheckResult result(log_file, JobStatus::UNKNOWN);
 

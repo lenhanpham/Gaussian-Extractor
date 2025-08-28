@@ -276,6 +276,20 @@ public:
      */
     CheckSummary check_all_job_types_optimized(const std::vector<std::string>& log_files);
     
+    /**
+     * @brief Check and organize jobs with imaginary frequencies
+     * @param log_files Vector of log file paths to check
+     * @param target_dir Target directory name (default: "imaginary_freqs")
+     * @return CheckSummary with statistics and results
+     * 
+     * Identifies Gaussian calculations that have imaginary frequencies (negative
+     * vibrational frequencies) and moves them to a target directory for further
+     * inspection. This is useful for identifying transition states or failed
+     * optimizations.
+     */
+    CheckSummary check_imaginary_frequencies(const std::vector<std::string>& log_files,
+                                             const std::string& target_dir = "imaginary_freqs");
+
     /** @} */ // end of MainChecking group
     
     /**

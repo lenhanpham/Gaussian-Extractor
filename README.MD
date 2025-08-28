@@ -1,4 +1,4 @@
-# Gaussian Extractor v0.4.2
+# Gaussian Extractor v0.4.3
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
@@ -161,7 +161,7 @@ gaussian_extractor.x -nt half     # Use half cores (default, safest)
 gaussian_extractor.x -nt max      # Use all cores (with safety limits)
 ```
 
-** Cluster Safety Warning:**
+**Cluster Safety Warning:**
 
 - Program automatically detects cluster environments (SLURM, PBS, SGE, LSF)
 - In clusters: Maximum threads = min(requested, cores/4, 8)
@@ -230,7 +230,7 @@ Memory usage: 256.7 MB / 4.0 GB
 
 ## Command-Line Options
 
-### Complete Options Reference
+### Options to extract data from output files (.log or .out)
 
 | Option            | Description        | Values            | Default         |
 | ----------------- | ------------------ | ----------------- | --------------- |
@@ -283,14 +283,15 @@ gaussian_extractor.x -c 2 -col 6
 gaussian_extractor.x -f csv -q
 ```
 
-### Check if gaussian jobs are done and errors
+### Options to seprate outputs to a directory (.log or .out)
 
-Jobs (log, chk, input) will be move to a directory dependending on their status
+Gaussian Extractor can check and move error, done, solvent-failed log files to their corresponding directories. Jobs (log, chk, input) will be moved to a directory dependending on their log file status too""
 
 ```bash
 gaussian_extractor.x done      # completed jobs will be moved to base_name_dir-done
 gaussian_extractor.x errors    # all general errors causing jobs killed will be moved to errorJobs
 gaussian_extractor.x pcm       # errors related to pcm convergence will be moved to PCMMkU
+gaussian_extractor.x imode     # outputs with imaginary modes will be moved to imaginary_freqs
 ```
 
 ### Calculate Gibbs free energy using high-level electronic energy
