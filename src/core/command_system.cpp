@@ -60,9 +60,9 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
 
         if (arg == "-h" || arg == "--help") {
             if (context.command == CommandType::EXTRACT) {
-                print_help(argv[0]);
+                print_help();  // Use default parameter
             } else {
-                print_command_help(context.command, argv[0]);
+                print_command_help(context.command);  // Use default parameter
             }
             std::exit(0);
         }
