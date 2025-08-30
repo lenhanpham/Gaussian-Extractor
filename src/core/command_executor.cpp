@@ -394,12 +394,12 @@ int execute_check_imaginary_command(const CommandContext& context) {
 
         JobChecker checker(processing_context, context.quiet, false);
 
-        std::string target_dir = "imaginary_freqs";
-        if (!context.target_dir.empty()) {
-            target_dir = context.target_dir;
+        std::string target_dir_suffix = "imaginary_freqs";
+            if (!context.target_dir.empty()) {
+            target_dir_suffix = context.target_dir;
         }
 
-        CheckSummary summary = checker.check_imaginary_frequencies(log_files, target_dir);
+        CheckSummary summary = checker.check_imaginary_frequencies(log_files, target_dir_suffix);
 
         if (!context.quiet) {
             checker.print_summary(summary, "Imaginary frequency check");

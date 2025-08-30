@@ -523,11 +523,13 @@ CheckSummary JobChecker::check_all_job_types_optimized(const std::vector<std::st
 }
 
 CheckSummary JobChecker::check_imaginary_frequencies(const std::vector<std::string>& log_files,
-                                                     const std::string& target_dir) {
+                                                     const std::string& target_dir_suffix) {
     CheckSummary summary;
     summary.total_files = log_files.size();
     auto start_time = std::chrono::high_resolution_clock::now();
 
+
+    std::string target_dir = get_current_directory_name() + "-" + target_dir_suffix;
     if (!create_target_directory(target_dir)) {
         summary.errors.push_back("Failed to create target directory: " + target_dir);
         return summary;

@@ -487,7 +487,7 @@ void CommandParser::print_help(const std::string& program_name) {
     std::cout << "  --config-help         Show configuration system help\n\n";
 
     std::cout << "Examples:\n";
-    std::cout << "  " << program_name << "                    # Extract energies (default)\n";
+    std::cout << "  " << program_name << "                   # Extract energies (default)\n";
     std::cout << "  " << program_name << " extract -t 300    # Extract with 300K temperature\n";
     std::cout << "  " << program_name << " done              # Move completed jobs\n";
     std::cout << "  " << program_name << " errors -q         # Check errors quietly\n";
