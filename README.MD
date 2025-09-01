@@ -113,9 +113,7 @@ export PATH=$PATH:/path/to/gaussian-extractor
 cp gaussian-extractor ~/bin/
 ```
 
-## Usage
-
-### Quick Start
+## Quick Start
 
 Suppose that you have gaussian_extractor.x in a dir where you have exported it to your PATH
 
@@ -222,9 +220,9 @@ Memory usage: 256.7 MB / 4.0 GB
 - **7**: Zero-point energy
 - **10**: Round count (number of Gaussian calculation rounds)
 
-### Usage Examples
+## Usage Examples of all features
 
-#### Extrac data from outputs
+### Extrac data from outputs
 
 ```bash
 # Simple processing with defaults
@@ -278,23 +276,9 @@ gaussian_extractor.x xyz                          # extract coordinates of all o
 gaussian_extractor.x xyz -f file or list of files    # all general errors causing jobs killed will be moved to errorJobs**Enhanced Parallel Processing:**
 ```
 
-**Performance Benefits:**
 
-- **4 threads**: ~3-4x speedup over sequential processing
-- **8 threads**: ~6-7x speedup for typical workloads
-- **16+ threads**: Up to 13x speedup for large datasets
-- **Memory efficiency**: ~50MB overhead per thread
-- **Automatic optimization**: Adapts to system resources and workload
 
-**Safety Features:**
-
-- Automatic memory limit detection and enforcement
-- File size validation (500MB limit per file)
-- Graceful degradation under resource constraints
-- Thread-safe error handling and reporting
-- Resource cleanup on completion or interruption
-
-### Some examples where you have massive number of outputs files
+### Some more examples
 
 #### Production Examples
 
@@ -333,7 +317,7 @@ gaussian_extractor.x --memory-limit 16384 -nt 20 --max-file-size 500
 
 ## Safety and Performance Guidelines
 
-Safety-First Usage for Clusters head node
+### Safety-First Usage for Clusters head node
 
 **Recommended usage if you run the program on your head node:**
 
@@ -377,31 +361,6 @@ gaussian_extractor.x --resource-info  # Show system resources before running
 gaussian_extractor.x -q              # Minimal output, perfect for scripts
 ```
 
-### Dynamic Memory Management
-
-The program now **automatically calculates optimal memory limits** based on:
-
-- **System RAM**: Detects total available memory
-- **Thread Count**: More threads = higher memory allocation
-- **Environment**: Conservative limits in cluster environments
-
-**Memory Allocation Strategy:**
-
-- **1-4 threads**: 30% of system RAM
-- **5-8 threads**: 40% of system RAM
-- **9-16 threads**: 50% of system RAM
-- **17+ threads**: 60% of system RAM
-- **Cluster environments**: 70% of calculated amount
-
-**Example on 32GB system:**
-
-```bash
-gaussian_extractor.x -nt 4   # Uses ~9.6GB (30% of 32GB)
-gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)
-gaussian_extractor.x -nt 16  # Uses ~16GB (50% of 32GB)
-gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
-```
-
 ### For Cluster Head Nodes
 
 ```bash
@@ -426,13 +385,6 @@ gaussian_extractor.x -nt max     # If node is dedicated to your job
 gaussian_extractor.x -nt 20 --memory-limit 16384  # 16GB limit, 20 threads
 gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 ```
-
-### Error Handling and Recovery
-
-- **Automatic**: Continues processing if individual files fail
-- **Reporting**: Comprehensive error and warning collection
-- **Graceful Shutdown**: Responds properly to Ctrl+C and job termination signals
-- **Memory Safety**: Automatically limits memory usage to prevent crashes
 
 ## Troubleshooting
 
@@ -485,9 +437,53 @@ gaussian_extractor.x --resource-info
 ### Getting Help
 
 ```bash
-gaussian_extractor.x --help        # Complete help
+gaussian_extractor.x --help           # Complete help
 gaussian_extractor.x --resource-info  # System information
+gaussian_extractor.x --help command   # Help for specific commands
 ```
+
+## Extra information
+
+### Dynamic Memory Management
+
+The program now **automatically calculates optimal memory limits** based on:
+
+- **System RAM**: Detects total available memory
+- **Thread Count**: More threads = higher memory allocation
+- **Environment**: Conservative limits in cluster environments
+
+**Memory Allocation Strategy:**
+
+- **1-4 threads**: 30% of system RAM
+- **5-8 threads**: 40% of system RAM
+- **9-16 threads**: 50% of system RAM
+- **17+ threads**: 60% of system RAM
+- **Cluster environments**: 70% of calculated amount
+
+**Example on 32GB system:**
+
+```bash
+gaussian_extractor.x -nt 4   # Uses ~9.6GB (30% of 32GB)
+gaussian_extractor.x -nt 8   # Uses ~12.8GB (40% of 32GB)
+gaussian_extractor.x -nt 16  # Uses ~16GB (50% of 32GB)
+gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
+```
+
+### **Performance Benefits:**
+
+- **4 threads**: ~3-4x speedup over sequential processing
+- **8 threads**: ~6-7x speedup for typical workloads
+- **16+ threads**: Up to 13x speedup for large datasets
+- **Memory efficiency**: ~50MB overhead per thread
+- **Automatic optimization**: Adapts to system resources and workload
+
+**Safety Features:**
+
+- Automatic memory limit detection and enforcement
+- File size validation (500MB limit per file)
+- Graceful degradation under resource constraints
+- Thread-safe error handling and reporting
+- Resource cleanup on completion or interruption
 
 ## Version History
 
