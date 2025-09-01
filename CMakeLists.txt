@@ -1,7 +1,7 @@
 # CMake configuration for Gaussian Extractor
 cmake_minimum_required(VERSION 3.16)
 project(GaussianExtractor
-    VERSION 0.4.1
+    VERSION 0.4.4
     DESCRIPTION "High-performance Gaussian log file processor"
     LANGUAGES CXX
 )
@@ -30,24 +30,29 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # Define source files
 set(SOURCES
     src/main.cpp
+    src/core/module_executor.cpp
     src/core/gaussian_extractor.cpp
     src/core/job_scheduler.cpp
     src/core/command_system.cpp
     src/core/job_checker.cpp
-    src/core/command_executor.cpp
     src/core/config_manager.cpp
-    src/core/metadata.cpp
     src/core/high_level_energy.cpp
+    src/core/coord_extractor.cpp
+    src/core/metadata.cpp
+    src/core/utils.cpp
 )
 
 set(HEADERS
+    src/core/module_executor.h
     src/core/gaussian_extractor.h
     src/core/job_scheduler.h
     src/core/command_system.h
     src/core/job_checker.h
     src/core/config_manager.h
-    src/core/metadata.h
     src/core/high_level_energy.h
+    src/core/coord_extractor.h
+    src/core/metadata.h
+    src/core/utils.h
     src/core/version.h
 )
 

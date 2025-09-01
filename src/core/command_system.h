@@ -49,14 +49,15 @@
  * functionality and has its own parameter requirements and execution flow.
  */
 enum class CommandType {
-    EXTRACT,               ///< Default command - extract thermodynamic data from log files
+    EXTRACT,              ///< Default command - extract thermodynamic data from log files
     CHECK_DONE,           ///< Check and organize completed job calculations
     CHECK_ERRORS,         ///< Check and organize jobs that terminated with errors
     CHECK_PCM,            ///< Check and organize jobs with PCM convergence failures
     CHECK_IMAGINARY,      ///< Check and organize jobs with imaginary frequencies
     CHECK_ALL,            ///< Run comprehensive checks for all job types
     HIGH_LEVEL_KJ,        ///< Calculate high-level energies with output in kJ/mol units
-    HIGH_LEVEL_AU         ///< Calculate high-level energies with detailed output in atomic units
+    HIGH_LEVEL_AU,        ///< Calculate high-level energies with detailed output in atomic units
+    EXTRACT_COORDS        ///< Extract coordinates from log files and organize XYZ files
 };
 
 /**
@@ -82,6 +83,7 @@ struct CommandContext {
     size_t max_file_size_mb;         ///< Maximum individual file size in MB
     size_t batch_size;               ///< Batch size for processing large directories (0 = auto)
     std::string extension;           ///< File extension to process (default: ".log")
+    std::vector<std::string> valid_extensions; ///< List of valid file extensions (e.g {".log", ".out"})
     std::vector<std::string> warnings; ///< Collected warnings from parsing
     JobResources job_resources;      ///< Job scheduler resource information
 
@@ -99,6 +101,9 @@ struct CommandContext {
     bool show_error_details;        ///< Display detailed error messages from log files
     std::string dir_suffix;         ///< Custom suffix for completed job directory
 
+    // Coordinate extraction-specific parameters
+    std::vector<std::string> specific_files; ///< List of specific files to process (empty for all files)
+
     /**
      * @brief Default constructor with built-in fallback values
      *
@@ -113,19 +118,20 @@ struct CommandContext {
         command(CommandType::EXTRACT),    // Default to extraction command
         quiet(false),                     // Show normal output by default
         requested_threads(0),             // Auto-detect thread count
-        max_file_size_mb(100),           // 100MB max file size
-        batch_size(0),                   // Auto-detect batch size (0 = disabled)
-        extension(".log"),               // Process .log files
-        temp(298.15),                    // Room temperature (25°C)
-        concentration(1000),             // 1M concentration (1000 mM)
-        sort_column(2),                  // Sort by second column (typically energy)
-        output_format("text"),           // Plain text output
-        use_input_temp(false),           // Use fixed temperature
-        memory_limit_mb(0),              // No memory limit (auto-detect)
-        show_resource_info(false),       // Don't show resource info by default
-        target_dir(""),                  // Use default directory names
-        show_error_details(false),       // Show minimal error info
-        dir_suffix("done") {}            // Default suffix for completed jobs
+        max_file_size_mb(100),            // 100MB max file size
+        batch_size(0),                    // Auto-detect batch size (0 = disabled)
+        extension(".log"),                // Process .log files
+        valid_extensions({".log", ".out"}), // Valid extensions
+        temp(298.15),                     // Room temperature (25°C)
+        concentration(1000),              // 1M concentration (1000 mM)
+        sort_column(2),                   // Sort by second column (typically energy)
+        output_format("text"),            // Plain text output
+        use_input_temp(false),            // Use fixed temperature
+        memory_limit_mb(0),               // No memory limit (auto-detect)
+        show_resource_info(false),        // Don't show resource info by default
+        target_dir(""),                   // Use default directory names
+        show_error_details(false),        // Show minimal error info
+        dir_suffix("done") {}             // Default suffix for completed jobs
 
     /**
      * @brief Apply configuration file defaults to context parameters
@@ -258,6 +264,17 @@ private:
      * Handles checker-specific options like --target-dir, --show-errors.
      */
     static void parse_checker_options(CommandContext& context, int& i, int argc, char* argv[]);
+
+    /**
+     * @brief Parse options specific to coordinate extraction command
+     * @param context CommandContext to populate
+     * @param i Current argument index (modified by reference)
+     * @param argc Total number of arguments
+     * @param argv Argument array
+     *
+     * Handles xyz-specific options like --files.
+     */
+    static void parse_xyz_options(CommandContext& context, int& i, int argc, char* argv[]);
 
     /**
      * @brief Add a warning message to the command context

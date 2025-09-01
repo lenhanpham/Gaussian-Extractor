@@ -19,7 +19,7 @@
  */
 
 #include "command_system.h"
-#include "command_executor.h"
+#include "module_executor.h"
 #include "gaussian_extractor.h"
 #include "job_scheduler.h"
 #include "config_manager.h"
@@ -151,6 +151,9 @@ int main(int argc, char* argv[]) {
 
             case CommandType::HIGH_LEVEL_AU:
                 return execute_high_level_au_command(context);
+
+            case CommandType::EXTRACT_COORDS:
+                return execute_extract_coords_command(context);
 
             default:
                 std::cerr << "Error: Unknown command type" << std::endl;

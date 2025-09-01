@@ -1,5 +1,5 @@
 # Makefile for Gaussian Extractor
-# Enhanced Safety Edition v0.4.1
+# Enhanced Safety Edition v0.4.4
 
 # Directory structure
 SRC_DIR = src
@@ -52,23 +52,28 @@ endif
 
 # Source files
 SOURCES = $(SRC_DIR)/main.cpp \
+          $(CORE_DIR)/module_executor.cpp \
           $(CORE_DIR)/gaussian_extractor.cpp \
           $(CORE_DIR)/job_scheduler.cpp \
           $(CORE_DIR)/command_system.cpp \
           $(CORE_DIR)/job_checker.cpp \
-          $(CORE_DIR)/command_executor.cpp \
           $(CORE_DIR)/config_manager.cpp \
           $(CORE_DIR)/metadata.cpp \
-          $(CORE_DIR)/high_level_energy.cpp
+          $(CORE_DIR)/high_level_energy.cpp \
+		  $(CORE_DIR)/coord_extractor.cpp \
+		  $(CORE_DIR)/utils.cpp
 
-HEADERS = $(CORE_DIR)/gaussian_extractor.h \
+HEADERS = $(CORE_DIR)/module_executor.h \
+          $(CORE_DIR)/gaussian_extractor.h \
           $(CORE_DIR)/job_scheduler.h \
           $(CORE_DIR)/command_system.h \
           $(CORE_DIR)/job_checker.h \
           $(CORE_DIR)/config_manager.h \
           $(CORE_DIR)/metadata.h \
-          $(CORE_DIR)/version.h \
-          $(CORE_DIR)/high_level_energy.h
+          $(CORE_DIR)/high_level_energy.h \
+		  $(CORE_DIR)/coord_extractor.h \
+		  $(CORE_DIR)/utils.h \
+          $(CORE_DIR)/version.h 
 
 OBJECTS = $(SOURCES:%.cpp=$(BUILD_DIR)/%.o)
 TARGET = gaussian_extractor.x

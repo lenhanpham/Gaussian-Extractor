@@ -1,14 +1,14 @@
 /**
- * @file command_executor.h
+ * @file module_executor.h
  * @brief Command execution functions for Gaussian Extractor
  * @author Le Nhan Pham
  * @date 2025
  *
- * This header defines the command execution functions that implement
+ * This header defines the module execution functions that implement
  * the actual functionality for each supported command in Gaussian Extractor.
  * These functions are called by the main application after command parsing.
  *
- * @section Command Execution Functions
+ * @section Module Execution Functions
  * - execute_extract_command: Process Gaussian log files and extract thermodynamic data
  * - execute_check_done_command: Identify and organize completed calculations
  * - execute_check_errors_command: Identify and organize failed calculations
@@ -18,14 +18,14 @@
  * - execute_high_level_au_command: Calculate high-level energies with atomic unit output
  */
 
-#ifndef COMMAND_EXECUTOR_H
-#define COMMAND_EXECUTOR_H
+#ifndef MODULE_EXECUTOR_H
+#define MODULE_EXECUTOR_H
 
 #include "command_system.h"
 
 /**
- * @defgroup CommandExecutors Command Execution Functions
- * @brief Functions for executing specific commands with given contexts
+ * @defgroup ModuleExecutors Module Execution Functions
+ * @brief Functions for executing specific modules with given contexts
  *
  * These functions implement the actual command logic for each supported
  * command type. They receive a fully configured CommandContext and
@@ -152,6 +152,18 @@ int execute_high_level_kj_command(const CommandContext& context);
  */
 int execute_high_level_au_command(const CommandContext& context);
 
-/** @} */ // end of CommandExecutors group
 
-#endif // COMMAND_EXECUTOR_H
+/**
+ * @brief Execute coordinate extraction from Gaussian log files
+ * @param context Configured command context
+ * @return Exit code: 0 for success, non-zero for errors
+ *
+ * Processes log files to extract final Cartesian coordinates
+ * and save them in XYZ format. Supports parallel processing
+ * with resource management.
+ */
+int execute_extract_coords_command(const CommandContext& context);
+
+/** @} */ // end of ModuleExecutors group
+
+#endif // MODULE_EXECUTOR_H

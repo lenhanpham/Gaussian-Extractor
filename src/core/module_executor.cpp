@@ -1,4 +1,5 @@
-#include "command_executor.h"
+#include "module_executor.h"
+#include "coord_extractor.h"
 #include "gaussian_extractor.h"
 #include "job_checker.h"
 #include "high_level_energy.h"
@@ -732,6 +733,82 @@ int execute_high_level_au_command(const CommandContext& context) {
         }
 
         return processing_context->error_collector->has_errors() ? 1 : 0;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Fatal error: " << e.what() << std::endl;
+        return 1;
+    } catch (...) {
+        std::cerr << "Fatal error: Unknown exception occurred" << std::endl;
+        return 1;
+    }
+}
+
+int execute_extract_coords_command(const CommandContext& context) {
+    setup_signal_handlers();
+
+    try {
+        std::vector<std::string> log_files;
+        if (!context.specific_files.empty()) {
+            // Use specified files
+            log_files = context.specific_files;
+            // Filter out invalid files and ensure they exist
+            log_files.erase(
+                std::remove_if(log_files.begin(), log_files.end(),
+                    [&](const std::string& file) {
+                        bool exists = std::filesystem::exists(file);
+                        if (!exists && !context.quiet) {
+                            std::cerr << "Warning: File not found: " << file << std::endl;
+                        }
+                        return !exists || !JobCheckerUtils::is_valid_log_file(file, context.max_file_size_mb);
+                    }),
+                log_files.end());
+        } else {
+            // Find all log files
+            if (context.batch_size > 0) {
+                log_files = findLogFiles(context.extension, context.max_file_size_mb, context.batch_size);
+            } else {
+                log_files = findLogFiles(context.extension, context.max_file_size_mb);
+            }
+        }
+
+        if (log_files.empty()) {
+            if (!context.quiet) {
+                std::cout << "No valid " << context.extension << " files found." << std::endl;
+            }
+            return 0;
+        }
+
+        auto processing_context = std::make_shared<ProcessingContext>(
+            298.15,  // Default temp, not used
+            1.0,     // Default conc, not used
+            false,   // use_input_temp not relevant
+            context.requested_threads,
+            context.extension,
+            context.max_file_size_mb,
+            context.job_resources
+        );
+
+        if (context.memory_limit_mb > 0) {
+            processing_context->memory_monitor->set_memory_limit(context.memory_limit_mb);
+        }
+
+        CoordExtractor extractor(processing_context, context.quiet);
+
+        ExtractSummary summary = extractor.extract_coordinates(log_files);
+
+        extractor.print_summary(summary, "Coordinate extraction");
+
+        if (!context.quiet) {
+            auto errors = processing_context->error_collector->get_errors();
+            if (!errors.empty()) {
+                std::cout << "\nErrors encountered:" << std::endl;
+                for (const auto& err : errors) {
+                    std::cout << "  " << err << std::endl;
+                }
+            }
+        }
+
+        return summary.failed_files > 0 || !processing_context->error_collector->get_errors().empty() ? 1 : 0;
 
     } catch (const std::exception& e) {
         std::cerr << "Fatal error: " << e.what() << std::endl;

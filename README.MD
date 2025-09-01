@@ -1,4 +1,4 @@
-# Gaussian Extractor v0.4.3
+# Gaussian Extractor v0.4.4
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
@@ -6,10 +6,11 @@
 
 ## Key Features
 
-* **Parallel Processing**: Efficiently processes multiple Gaussian output files simultaneously
-* **Energy Extraction**: Extracts Gibbs free energies with phase correction (gas phase 1 atm → 1M solution)
+* **Extract data in Parallel `**: Efficiently processes multiple Gaussian output files simultaneously
+* **Check status of gaussian jobs**: Status of gaussian outputs can be checked and isolated to correspoonding directories
 * **Gibbs Free Energy Calculation**: Calculates Gibbs free energies from output files with improved electronic energy (single point) from higher levels of theory
 * **Automatic Sorting**: Results sorted by energy values for easy analysis
+* **Extract coodinates**: Coordinates of gaussian outputs can be extracted
 * **Important note**: **Large files (>100MB) automatically skipped by default**. Users need to set flag --max-file-size xxxxx to increase the size limit
 
 ## Installation and Compilation
@@ -136,51 +137,7 @@ gaussian_extractor.x
 * **Output**: Sorted by Gibbs free energy (kJ/mol)
 * **Format**: A table of text
 
-### Safety-First Usage for Clusters head node
-
-**Recommended usage if you run the program on your head node:**
-
-```bash
-# Set a limit number of cores which will not over use your head node
-gaussian_extractor.x -nt 4 -q
-
-# You can check resource limits before running
-gaussian_extractor.x --resource-info
-
-# Maximum safety on shared head nodes
-gaussian_extractor.x -nt 2 -q -f csv
-```
-
-### You can specify the number of threads
-
-**Thread Control:**
-
-```bash
-gaussian_extractor.x -nt 4        # Use exactly 4 threads
-gaussian_extractor.x -nt half     # Use half cores (default, safest)
-gaussian_extractor.x -nt max      # Use all cores (with safety limits)
-```
-
-**Cluster Safety Warning:**
-
-- Program automatically detects cluster environments (SLURM, PBS, SGE, LSF)
-- In clusters: Maximum threads = min(requested, cores/4, 8)
-- On head nodes: **Never use "max"** - it can overload shared resources
-- Recommended: `-nt 2` or `-nt 4` for head nodes
-
-**Resource Monitoring:**
-
-```bash
-gaussian_extractor.x --resource-info  # Show system resources before running
-```
-
-**Quiet Mode (Recommended for Batch Jobs):**
-
-```bash
-gaussian_extractor.x -q              # Minimal output, perfect for scripts
-```
-
-### Output Formats
+###### Output Formats
 
 **Text Format (Default):**
 
@@ -267,7 +224,7 @@ Memory usage: 256.7 MB / 4.0 GB
 
 ### Usage Examples
 
-#### Basic Examples
+#### Basic extraction Examples
 
 ```bash
 # Simple processing with defaults
@@ -283,7 +240,7 @@ gaussian_extractor.x -c 2 -col 6
 gaussian_extractor.x -f csv -q
 ```
 
-### Options to seprate outputs to a directory (.log or .out)
+### Options to check and seprate outputs to a directory
 
 Gaussian Extractor can check and move error, done, solvent-failed log files to their corresponding directories. Jobs (log, chk, input) will be moved to a directory dependending on their log file status too""
 
@@ -314,20 +271,11 @@ gaussian_extractor.x high-kj    # Improved Gibbs free energy in kJ/mol
 gaussian_extractor.x high-au    # Improved Gibbs free energy in hartree
 ```
 
-**Enhanced Parallel Processing:**
+### Extract coordinates
 
-```bash
-# Automatic parallel processing (recommended)
-gaussian_extractor.x --high-level-kj --threads=8
-
-# Conservative cluster usage
-gaussian_extractor.x --high-level-kj --threads=4 --quiet
-
-# High-performance setup
-gaussian_extractor.x --high-level-au --threads=16 --memory-limit=8192
-
-# With custom temperature and concentration
-gaussian_extractor.x --high-level-kj --temp=323.15 --cm=2 --threads=8
+```
+gaussian_extractor.x xyz                          # extract coordinates of all ouput files 
+gaussian_extractor.x xyz -f file or list of files    # all general errors causing jobs killed will be moved to errorJobs**Enhanced Parallel Processing:**
 ```
 
 **Performance Benefits:**
@@ -384,6 +332,50 @@ gaussian_extractor.x --memory-limit 16384 -nt 20 --max-file-size 500
 ```
 
 ## Safety and Performance Guidelines
+
+Safety-First Usage for Clusters head node
+
+**Recommended usage if you run the program on your head node:**
+
+```bash
+# Set a limit number of cores which will not over use your head node
+gaussian_extractor.x -nt 4 -q
+
+# You can check resource limits before running
+gaussian_extractor.x --resource-info
+
+# Maximum safety on shared head nodes
+gaussian_extractor.x -nt 2 -q -f csv
+```
+
+### You can specify the number of threads
+
+**Thread Control:**
+
+```bash
+gaussian_extractor.x -nt 4        # Use exactly 4 threads
+gaussian_extractor.x -nt half     # Use half cores (default, safest)
+gaussian_extractor.x -nt max      # Use all cores (with safety limits)
+```
+
+**Cluster Safety Warning:**
+
+- Program automatically detects cluster environments (SLURM, PBS, SGE, LSF)
+- In clusters: Maximum threads = min(requested, cores/4, 8)
+- On head nodes: **Never use "max"** - it can overload shared resources
+- Recommended: `-nt 2` or `-nt 4` for head nodes
+
+**Resource Monitoring:**
+
+```bash
+gaussian_extractor.x --resource-info  # Show system resources before running
+```
+
+**Quiet Mode (Recommended for Batch Jobs):**
+
+```bash
+gaussian_extractor.x -q              # Minimal output, perfect for scripts
+```
 
 ### Dynamic Memory Management
 

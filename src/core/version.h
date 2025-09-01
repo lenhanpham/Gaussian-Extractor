@@ -59,7 +59,7 @@
  * Incremented for backward-compatible bug fixes.
  * No new features, only corrections to existing functionality.
  */
-#define GAUSSIAN_EXTRACTOR_VERSION_PATCH 3
+#define GAUSSIAN_EXTRACTOR_VERSION_PATCH 4
 
 /**
  * @brief Complete version string
@@ -67,7 +67,7 @@
  * Human-readable version string combining all version components.
  * Format: "vMAJOR.MINOR.PATCH"
  */
-#define GAUSSIAN_EXTRACTOR_VERSION_STRING "v0.4.3"
+#define GAUSSIAN_EXTRACTOR_VERSION_STRING "v0.4.4"
 
 /** @} */ // end of VersionConstants group
 

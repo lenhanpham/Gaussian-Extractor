@@ -1058,4 +1058,25 @@ bool file_exists(const std::string& path) {
     return std::filesystem::exists(path);
 }
 
+std::string get_file_extension(const std::string& filename) {
+    std::filesystem::path path(filename);
+    return path.extension().string();
+}
+
+bool is_valid_log_file(const std::string& filename, size_t max_size_mb) {
+    if (!file_exists(filename)) return false;
+
+    std::string extension = get_file_extension(filename);
+    if (extension != ".log" && extension != ".out") return false;
+
+    try {
+        std::uintmax_t size = std::filesystem::file_size(filename) / (1024 * 1024);  // Convert to MB
+        if (size > max_size_mb) return false;
+    } catch (...) {
+        return false;
+    }
+    // Check if readable
+    std::ifstream file(filename);
+    return file.good();
+}
 }

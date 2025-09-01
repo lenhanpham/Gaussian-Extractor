@@ -4,9 +4,10 @@
 #include <iostream>
 #include <algorithm>
 #include <thread>
-
 #include <string>
+#include <sstream>
 #include <cstdlib>
+#include <filesystem>
 
 CommandContext CommandParser::parse(int argc, char* argv[]) {
     // Early check for version before any other processing
@@ -37,7 +38,7 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
     // Scan all arguments to find a command (flexible positioning)
     CommandType found_command = CommandType::EXTRACT;
     int command_index = -1;
-    
+
     for (int i = 1; i < argc; ++i) {
         CommandType potential_command = parse_command(argv[i]);
         if (potential_command != CommandType::EXTRACT || std::string(argv[i]) == "extract") {
@@ -46,13 +47,13 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
             break;
         }
     }
-    
+
     context.command = found_command;
 
     // Parse all arguments, skipping the command if found
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        
+
         // Skip the command argument itself
         if (i == command_index) {
             continue;
@@ -84,10 +85,12 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
         parse_common_options(context, i, argc, argv);
 
         // Parse command-specific options
-        if (context.command == CommandType::EXTRACT || 
-            context.command == CommandType::HIGH_LEVEL_KJ || 
+        if (context.command == CommandType::EXTRACT ||
+            context.command == CommandType::HIGH_LEVEL_KJ ||
             context.command == CommandType::HIGH_LEVEL_AU) {
             parse_extract_options(context, i, argc, argv);
+        } else if (context.command == CommandType::EXTRACT_COORDS) {
+                parse_xyz_options(context, i, argc, argv);
         } else {
             parse_checker_options(context, i, argc, argv);
         }
@@ -106,6 +109,7 @@ CommandType CommandParser::parse_command(const std::string& cmd) {
     if (cmd == "check") return CommandType::CHECK_ALL;
     if (cmd == "high-kj" || cmd == "--high-level-kj") return CommandType::HIGH_LEVEL_KJ;
     if (cmd == "high-au" || cmd == "--high-level-au") return CommandType::HIGH_LEVEL_AU;
+    if (cmd == "xyz" || cmd == "--extract-coord") return CommandType::EXTRACT_COORDS;
 
     // If it starts with '-', it's probably an option, not a command
     if (!cmd.empty() && cmd.front() == '-') return CommandType::EXTRACT;
@@ -124,6 +128,7 @@ std::string CommandParser::get_command_name(CommandType command) {
         case CommandType::CHECK_ALL: return std::string("check");
         case CommandType::HIGH_LEVEL_KJ: return std::string("high-kj");
         case CommandType::HIGH_LEVEL_AU: return std::string("high-au");
+        case CommandType::EXTRACT_COORDS: return std::string("xyz");
         default: return std::string("unknown");
     }
 }
@@ -138,7 +143,7 @@ void CommandParser::parse_common_options(CommandContext& context, int& i, int ar
         if (++i < argc) {
             std::string ext = argv[i];
             std::string full_ext = (ext[0] == '.') ? ext : ("." + ext);
-            if (g_config_manager.is_valid_output_extension(full_ext)) {
+            if (full_ext == ".log" || full_ext == ".out") {
                 context.extension = full_ext;
             } else {
                 add_warning(context, "Error: Extension '" + ext + "' not in configured output extensions. Using default.");
@@ -327,9 +332,70 @@ void CommandParser::parse_checker_options(CommandContext& context, int& i, int a
     }
 }
 
+// In command_system.cpp, modify parse_xyz_options:
+void CommandParser::parse_xyz_options(CommandContext& context, int& i, int argc, char* argv[]) {
+    std::string arg = argv[i];
+
+    if (arg == "-f" || arg == "--files") {
+        bool files_found = false;
+        // Keep consuming arguments until we hit another option or the end
+        while (++i < argc) {
+            std::string file_arg = argv[i];
+            
+            // Check if the argument is another option
+            if (file_arg.length() > 1 && file_arg[0] == '-') {
+                // It's another option, so we're done with files.
+                // Decrement i so the main loop can process this new option.
+                i--;
+                break;
+            }
+
+            files_found = true;
+
+            // Process the argument, which may contain multiple filenames separated by commas
+            std::replace(file_arg.begin(), file_arg.end(), ',', ' ');
+            std::istringstream iss(file_arg);
+            std::string file;
+            while (iss >> file) {
+                if (!file.empty()) {
+                    // Trim whitespace (should be handled by stringstream, but good practice)
+                    file.erase(0, file.find_first_not_of(" "));
+                    file.erase(file.find_last_not_of(" ") + 1);
+
+                    if (file.empty()) continue;
+
+                    bool has_valid_extension = false;
+                    for (const auto& ext : context.valid_extensions) {
+                        if (file.size() >= ext.size() &&
+                            file.compare(file.size() - ext.size(), ext.size(), ext) == 0) {
+                            has_valid_extension = true;
+                            break;
+                        }
+                    }
+
+                    if (!has_valid_extension) {
+                        file += context.extension;
+                    }
+
+                    if (!std::filesystem::exists(file)) {
+                        add_warning(context, "Specified file does not exist: " + file);
+                    }
+                    
+                    context.specific_files.push_back(file);
+                }
+            }
+        }
+
+        if (!files_found) {
+             add_warning(context, "--files requires a filename or list of filenames");
+        }
+    }
+}
+
 void CommandParser::add_warning(CommandContext& context, const std::string& warning) {
     context.warnings.push_back(warning);
 }
+
 
 void CommandParser::validate_context(CommandContext& context) {
     // Set default threads if not specified
@@ -354,6 +420,7 @@ void CommandParser::apply_config_to_context(CommandContext& context) {
     context.requested_threads = g_config_manager.get_default_threads();
     context.max_file_size_mb = g_config_manager.get_default_max_file_size();
     context.extension = g_config_manager.get_default_output_extension();
+    context.valid_extensions = ConfigUtils::split_string(g_config_manager.get_string("output_extensions"), ',');
     context.temp = g_config_manager.get_default_temperature();
     context.concentration = static_cast<int>(g_config_manager.get_default_concentration() * 1000);
     context.sort_column = g_config_manager.get_int("default_sort_column");
@@ -438,89 +505,72 @@ std::unordered_map<std::string, std::string> CommandParser::extract_config_overr
 }
 
 void CommandParser::print_help(const std::string& program_name) {
-    std::cout << "Gaussian Extractor - Parallel Energy Extraction and Job Management Tool\n\n";
-    std::cout << "Usage: " << program_name << " [COMMAND] [OPTIONS]\n\n";
+    std::cout << "Gaussian Extractor (Version " << GaussianExtractor::get_version_info() << ")\n\n";
+    std::cout << "Usage: " << program_name << " [command] [options]\n\n";
     std::cout << "Commands:\n";
-    std::cout << "  extract           Extract energies from Gaussian log files (default)\n";
-    std::cout << "  done              Check and move completed jobs to {dir}-done/\n";
-    std::cout << "  errors            Check and move error jobs to errorJobs/\n";
-    std::cout << "  pcm               Check and move PCM convergence failures to PCMMkU/\n";
-    std::cout << "  imode             Check and move jobs with imaginary frequencies to imaginary_freqs/\n";
-    std::cout << "  --imaginary       (same as imode)\n";
+    std::cout << "  extract           Extract thermodynamic data from Gaussian log files (default)\n";
+    std::cout << "  done              Check and move completed Gaussian jobs\n";
+    std::cout << "  errors            Check and move jobs with errors\n";
+    std::cout << "  pcm               Check and move jobs with PCM convergence failures\n";
+    std::cout << "  imode             Check and move jobs with imaginary frequencies\n";
     std::cout << "  check             Run all job checks (done, errors, pcm)\n";
-    std::cout << "  high-kj           Calculate high-level energies with output in kJ/mol\n";
-    std::cout << "  --high-level-kj   (same as high-kj)\n";
-    std::cout << "  high-au           Calculate high-level energies with detailed output in atomic units\n";
-    std::cout << "  --high-level-au   (same as high-au)\n\n";
-
-    std::cout << "Common Options:\n";
-    auto output_exts = g_config_manager.get_output_extensions();
-    std::string ext_list;
-    for (size_t i = 0; i < output_exts.size(); ++i) {
-        if (i > 0) ext_list += ",";
-        ext_list += output_exts[i];
-    }
-    std::cout << "  -e, --ext <ext>       File extension (configured: " << ext_list << ")\n";
-    std::cout << "  -nt, --threads <N>    Thread count: number|max|half (default: " << g_config_manager.get_string("default_threads") << ")\n";
-    std::cout << "  -q, --quiet           Quiet mode (default: " << (g_config_manager.get_bool("quiet_mode") ? "on" : "off") << ")\n";
-    std::cout << "  --max-file-size <MB>  Maximum file size in MB (default: " << g_config_manager.get_default_max_file_size() << ")\n";
-    std::cout << "  --batch-size <N>      Batch size for large directories (default: auto)\n";
-    std::cout << "  -h, --help            Show this help message\n";
-    std::cout << "  -v, --version         Show version information\n\n";
-
-    std::cout << "Extract Command Options:\n";
-    std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: " << g_config_manager.get_default_temperature() << ")\n";
-    std::cout << "  -c, --cm <M>          Concentration in M (default: " << g_config_manager.get_default_concentration() << ")\n";
-    std::cout << "  -col, --column <N>    Sort column 1-10 (default: " << g_config_manager.get_int("default_sort_column") << ")\n";
-    std::cout << "  -f, --format <fmt>    Output format: text|csv (default: " << g_config_manager.get_default_output_format() << ")\n";
-    std::cout << "  --memory-limit <MB>   Memory limit in MB (default: auto-calculated)\n";
-    std::cout << "  --resource-info       Show resource information\n\n";
-
-    std::cout << "Job Checker Options:\n";
-    std::cout << "  --target-dir <name>   Custom target directory name\n";
-    std::cout << "  --dir-suffix <suffix> Custom suffix for done directory (default: " << g_config_manager.get_string("done_directory_suffix") << ")\n";
-    std::cout << "  --show-details        Show error details (default: " << (g_config_manager.get_bool("show_error_details") ? "on" : "off") << ")\n\n";
-
-    std::cout << "Configuration Options:\n";
-    std::cout << "  --show-config         Show current configuration settings\n";
-    std::cout << "  --create-config       Create default configuration file\n";
-    std::cout << "  --config-help         Show configuration system help\n\n";
-
-    std::cout << "Examples:\n";
-    std::cout << "  " << program_name << "                   # Extract energies (default)\n";
-    std::cout << "  " << program_name << " extract -t 300    # Extract with 300K temperature\n";
-    std::cout << "  " << program_name << " done              # Move completed jobs\n";
-    std::cout << "  " << program_name << " errors -q         # Check errors quietly\n";
-    std::cout << "  " << program_name << " pcm -nt 4         # Check PCM failures with 4 threads\n";
-    std::cout << "  " << program_name << " check             # Run all checks\n\n";
+    std::cout << "  high-kj           Calculate high-level energies in kJ/mol\n";
+    std::cout << "  high-au           Calculate high-level energies in atomic units\n";
+    std::cout << "  xyz               Extract final coordinates to XYZ and organize by status\n";
+    std::cout << "\nOptions:\n";
+    std::cout << "  -h, --help        Show this help message\n";
+    std::cout << "  -v, --version     Show version information\n";
+    std::cout << "  --config-help     Show configuration file help\n";
+    std::cout << "  --create-config   Create a default configuration file\n";
+    std::cout << "  --show-config     Show current configuration settings\n";
+    std::cout << "\nRun '" << program_name << " <command> --help' for command-specific help.\n";
+    std::cout << "\n";
 }
 
 void CommandParser::print_command_help(CommandType command, const std::string& program_name) {
     std::string cmd_name = get_command_name(command);
-
-    std::cout << "Gaussian Extractor - " << cmd_name << " command\n\n";
-    std::cout << "Usage: " << program_name << " " << cmd_name << " [OPTIONS]\n\n";
+    std::cout << "Help for command: " << cmd_name << "\n\n";
 
     switch (command) {
+        case CommandType::EXTRACT:
+            std::cout << "Description: Extract thermodynamic data from Gaussian log files\n\n";
+            std::cout << "This is the default command when no command is specified.\n";
+            std::cout << "Extracts electronic energies, thermal corrections, and other\n";
+            std::cout << "thermodynamic properties from Gaussian log files.\n\n";
+            std::cout << "Additional Options:\n";
+            std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: 298.15)\n";
+            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n";
+            std::cout << "  -f, --format <fmt>    Output format: text|csv (default: text)\n";
+            std::cout << "  -col, --column <N>    Sort column 1-7 (default: 2)\n";
+            std::cout << "                        1=Name, 2=G kJ/mol, 3=G a.u, 4=G eV, 5=LowFQ, 6=Status, 7=PhCorr\n";
+            std::cout << "  --input-temp          Use temperature from input files\n";
+            std::cout << "  --show-resources      Show system resource information\n";
+            std::cout << "  --memory-limit <MB>   Maximum memory usage in MB (default: auto)\n";
+            break;
+
         case CommandType::CHECK_DONE:
-            std::cout << "Description: Check for completed Gaussian jobs (normal termination)\n";
-            std::cout << "             and move them to {current_directory}-done/\n\n";
-            std::cout << "This command looks for 'Normal termination of Gaussian' in the last 10 lines\n";
-            std::cout << "of each log file and moves completed jobs along with their .gau and .chk files.\n\n";
+            std::cout << "Description: Check and organize completed Gaussian jobs\n\n";
+            std::cout << "This command looks for 'Normal termination' in log files\n";
+            std::cout << "and moves completed jobs along with their .gau and .chk files\n";
+            std::cout << "to a directory named {current_dir}-done/ by default.\n\n";
             break;
 
         case CommandType::CHECK_ERRORS:
-            std::cout << "Description: Check for Gaussian jobs that terminated with errors\n";
-            std::cout << "             and move them to errorJobs/\n\n";
-            std::cout << "This command looks for error messages in log files (excluding 'Error on' messages)\n";
-            std::cout << "and moves error jobs along with their .gau and .chk files.\n\n";
+            std::cout << "Description: Check and organize Gaussian jobs that failed\n\n";
+            std::cout << "This command looks for error terminations in log files and\n";
+            std::cout << "moves failed jobs along with their .gau and .chk files to errorJobs/\n\n";
             break;
 
         case CommandType::CHECK_PCM:
-            std::cout << "Description: Check for jobs that failed due to PCM convergence issues\n";
-            std::cout << "             and move them to PCMMkU/\n\n";
+            std::cout << "Description: Check and organize Gaussian jobs with PCM convergence failures\n\n";
             std::cout << "This command looks for 'failed in PCMMkU' messages in log files\n";
-            std::cout << "and moves failed jobs along with their .gau and .chk files.\n\n";
+            std::cout << "and moves failed jobs along with their .gau and .chk files to PCMMkU/\n\n";
+            break;
+
+        case CommandType::CHECK_IMAGINARY:
+            std::cout << "Description: Check and organize jobs with imaginary frequencies\n\n";
+            std::cout << "This command identifies Gaussian jobs with negative vibrational\n";
+            std::cout << "frequencies and moves them to a designated directory.\n\n";
             break;
 
         case CommandType::CHECK_ALL:
@@ -555,7 +605,17 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
             std::cout << "                        1=Name, 2=E high, 3=E low, 4=ZPE, 5=TC, 6=TS, 7=H, 8=G, 9=LowFQ, 10=PhCorr\n\n";
             break;
 
-        default:
+        case CommandType::EXTRACT_COORDS:
+            std::cout << "Description: Extract final Cartesian coordinates from Gaussian log files\n";
+            std::cout << "             Saves coordinates in XYZ format and organizes based on job status\n\n";
+            std::cout << "This command processes specified or all Gaussian log files in the current directory,\n";
+            std::cout << "extracts the last set of coordinates, converts to XYZ format, and moves\n";
+            std::cout << "the XYZ files to:\n";
+            std::cout << "  - {current_dir}_final_coord/   for completed jobs\n";
+            std::cout << "  - {current_dir}_running_coord/ for incomplete/failed jobs\n\n";
+            std::cout << "Directories are created only if needed.\n\n";
+            std::cout << "Additional Options:\n";
+            std::cout << "  -f, --files <file1[,file2,...]> Single file or comma-separated list of files to process\n";
             break;
     }
 
@@ -591,10 +651,11 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
     } else if (command == CommandType::HIGH_LEVEL_AU) {
         std::cout << "  " << program_name << " " << cmd_name << " -col 8       # Sort by Gibbs energy\n";
         std::cout << "  " << program_name << " " << cmd_name << " -t 273 -col 4 -f csv  # Custom temp, sort by ZPE, CSV\n";
+    } else if (command == CommandType::EXTRACT_COORDS) {
+        std::cout << "  " << program_name << " " << cmd_name << " -f file1.log,file2.log  # Process specific files\n";
     } else {
-
+        std::cout << "  " << program_name << " " << cmd_name << " -nt 4        # Use 4 threads\n";
     }
-    std::cout << "  " << program_name << " " << cmd_name << " -nt 4        # Use 4 threads\n";
 
     if (command == CommandType::CHECK_DONE) {
         std::cout << "  " << program_name << " " << cmd_name << " --dir-suffix completed  # Use 'completed' suffix\n";
