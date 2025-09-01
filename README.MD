@@ -6,7 +6,7 @@
 
 ## Key Features
 
-* **Extract data in Parallel `**: Efficiently processes multiple Gaussian output files simultaneously
+* **Extract data in Parallel**: Efficiently processes multiple Gaussian output files simultaneously
 * **Check status of gaussian jobs**: Status of gaussian outputs can be checked and isolated to correspoonding directories
 * **Gibbs Free Energy Calculation**: Calculates Gibbs free energies from output files with improved electronic energy (single point) from higher levels of theory
 * **Automatic Sorting**: Results sorted by energy values for easy analysis
@@ -123,7 +123,7 @@ Suppose that you have gaussian_extractor.x in a dir where you have exported it t
 cd to_the_dir_where_your_outputs_are_located
 ```
 
-**Basic execution** (processes all .log files in current directory):
+**Basic extraction** (processes all .log files in current directory):
 
 ```bash
 gaussian_extractor.x
@@ -224,13 +224,13 @@ Memory usage: 256.7 MB / 4.0 GB
 
 ### Usage Examples
 
-#### Basic extraction Examples
+#### Extrac data from outputs
 
 ```bash
 # Simple processing with defaults
 gaussian_extractor.x
 
-# Process with specific temperature
+# Process with specific temperature (not fully implemented)
 gaussian_extractor.x -t 300
 
 # Sort by SCF energy with 2M concentration
@@ -240,7 +240,7 @@ gaussian_extractor.x -c 2 -col 6
 gaussian_extractor.x -f csv -q
 ```
 
-### Options to check and seprate outputs to a directory
+### Check and seprate outputs to a directory
 
 Gaussian Extractor can check and move error, done, solvent-failed log files to their corresponding directories. Jobs (log, chk, input) will be moved to a directory dependending on their log file status too""
 
