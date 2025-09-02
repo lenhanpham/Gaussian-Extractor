@@ -36,21 +36,21 @@
 #ifndef GAUSSIAN_EXTRACTOR_H
 #define GAUSSIAN_EXTRACTOR_H
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <atomic>
-#include <mutex>
-#include <condition_variable>
 #include <algorithm>
+#include <atomic>
+#include <condition_variable>
 #include <cstddef>
 #include <functional>
-#if __cpp_lib_semaphore >= 201907L
-#include <semaphore>
-#else
-// Fallback for systems without C++20 semaphore support
+#include <memory>
 #include <mutex>
-#include <condition_variable>
+#include <string>
+#include <vector>
+#if __cpp_lib_semaphore >= 201907L
+    #include <semaphore>
+#else
+    // Fallback for systems without C++20 semaphore support
+    #include <condition_variable>
+    #include <mutex>
 #endif
 #include "job_scheduler.h"
 
@@ -95,20 +95,20 @@ extern const double Po;
  */
 extern const double kB;
 
-/** @} */ // end of PhysicsConstants group
+/** @} */  // end of PhysicsConstants group
 
 /**
  * @defgroup SafetyLimits Resource Safety Limits
  * @brief Constants defining safe operating limits for resource usage
  * @{
  */
-const size_t DEFAULT_MEMORY_MB = 4096;        ///< Default memory limit: 4GB
-const size_t MIN_MEMORY_MB = 1024;            ///< Minimum safe memory limit: 1GB
-const size_t MAX_MEMORY_MB = 32768;           ///< Maximum memory limit: 32GB
-const size_t MAX_FILE_HANDLES = 20;           ///< Maximum concurrent file operations
-const size_t DEFAULT_MAX_FILE_SIZE_MB = 100;  ///< Default maximum individual file size: 100MB
+const size_t DEFAULT_MEMORY_MB        = 4096;   ///< Default memory limit: 4GB
+const size_t MIN_MEMORY_MB            = 1024;   ///< Minimum safe memory limit: 1GB
+const size_t MAX_MEMORY_MB            = 32768;  ///< Maximum memory limit: 32GB
+const size_t MAX_FILE_HANDLES         = 20;     ///< Maximum concurrent file operations
+const size_t DEFAULT_MAX_FILE_SIZE_MB = 100;    ///< Default maximum individual file size: 100MB
 
-/** @} */ // end of SafetyLimits group
+/** @} */  // end of SafetyLimits group
 
 /**
  * @struct Result
@@ -129,17 +129,18 @@ const size_t DEFAULT_MAX_FILE_SIZE_MB = 100;  ///< Default maximum individual fi
  * - Thermal corrections: From frequency calculation sections
  * - Status information: From job termination sections
  */
-struct Result {
-    std::string file_name;        ///< Original log file name (without path)
-    double etgkj;                ///< Electronic + thermal energy in kJ/mol
-    double lf;                   ///< Lowest vibrational frequency (cm⁻¹)
-    double GibbsFreeHartree;     ///< Gibbs free energy in Hartree (with corrections)
-    double nucleare;             ///< Nuclear repulsion energy in Hartree
-    double scf;                  ///< Final SCF energy in Hartree
-    double zpe;                  ///< Zero-point energy correction in Hartree
-    std::string status;          ///< Job termination status ("DONE", "ERROR", etc.)
-    std::string phaseCorr;       ///< Phase correction applied ("Yes", "No", or value)
-    int copyright_count;         ///< Number of Gaussian copyright notices (job progress indicator)
+struct Result
+{
+    std::string file_name;         ///< Original log file name (without path)
+    double      etgkj;             ///< Electronic + thermal energy in kJ/mol
+    double      lf;                ///< Lowest vibrational frequency (cm⁻¹)
+    double      GibbsFreeHartree;  ///< Gibbs free energy in Hartree (with corrections)
+    double      nucleare;          ///< Nuclear repulsion energy in Hartree
+    double      scf;               ///< Final SCF energy in Hartree
+    double      zpe;               ///< Zero-point energy correction in Hartree
+    std::string status;            ///< Job termination status ("DONE", "ERROR", etc.)
+    std::string phaseCorr;         ///< Phase correction applied ("Yes", "No", or value)
+    int         copyright_count;   ///< Number of Gaussian copyright notices (job progress indicator)
 };
 
 /**
@@ -185,11 +186,12 @@ struct Result {
  * @note All methods are thread-safe and can be called from multiple threads
  *       simultaneously without external synchronization
  */
-class MemoryMonitor {
+class MemoryMonitor
+{
 private:
     std::atomic<size_t> current_usage_bytes{0};
     std::atomic<size_t> peak_usage_bytes{0};
-    size_t max_bytes;
+    size_t              max_bytes;
 
 public:
     /**
@@ -304,15 +306,16 @@ public:
  * @note The manager is designed to prevent system file handle exhaustion
  *       which can cause application crashes or system instability
  */
-class FileHandleManager {
+class FileHandleManager
+{
 private:
 #if __cpp_lib_semaphore >= 201907L
-    std::counting_semaphore<MAX_FILE_HANDLES> semaphore{MAX_FILE_HANDLES}; ///< C++20 semaphore for handle counting
+    std::counting_semaphore<MAX_FILE_HANDLES> semaphore{MAX_FILE_HANDLES};  ///< C++20 semaphore for handle counting
 #else
     // Fallback implementation using mutex and condition variable
-    mutable std::mutex mutex_;                    ///< Mutex for fallback synchronization
-    mutable std::condition_variable cv_;          ///< Condition variable for handle availability
-    std::atomic<int> available_handles{MAX_FILE_HANDLES}; ///< Available handle count
+    mutable std::mutex              mutex_;  ///< Mutex for fallback synchronization
+    mutable std::condition_variable cv_;     ///< Condition variable for handle availability
+    std::atomic<int>                available_handles{MAX_FILE_HANDLES};  ///< Available handle count
 #endif
 
 public:
@@ -333,10 +336,11 @@ public:
      * @note FileGuard objects should be short-lived and created immediately
      *       before file operations to minimize handle holding time
      */
-    class FileGuard {
+    class FileGuard
+    {
     private:
-        FileHandleManager* manager; ///< Pointer to managing FileHandleManager
-        bool acquired;              ///< Whether handle was successfully acquired
+        FileHandleManager* manager;   ///< Pointer to managing FileHandleManager
+        bool               acquired;  ///< Whether handle was successfully acquired
 
     public:
         /**
@@ -398,7 +402,10 @@ public:
          * Always check this before attempting file operations to ensure
          * a handle is available. If false, defer the operation or retry later.
          */
-        bool is_acquired() const { return acquired; }
+        bool is_acquired() const
+        {
+            return acquired;
+        }
     };
 
     /**
@@ -445,11 +452,12 @@ public:
  *       different handling and display strategies for each category
  */
 
-class ThreadSafeErrorCollector {
+class ThreadSafeErrorCollector
+{
 private:
-    mutable std::mutex error_mutex; ///< Mutex for thread-safe access to error collections
-    std::vector<std::string> errors;   ///< Collection of error messages
-    std::vector<std::string> warnings; ///< Collection of warning messages
+    mutable std::mutex       error_mutex;  ///< Mutex for thread-safe access to error collections
+    std::vector<std::string> errors;       ///< Collection of error messages
+    std::vector<std::string> warnings;     ///< Collection of warning messages
 
 public:
     /**
@@ -515,7 +523,7 @@ public:
     void clear();
 };
 
-/** @} */ // end of ResourceManagement group
+/** @} */  // end of ResourceManagement group
 
 /**
  * @struct ProcessingContext
@@ -541,17 +549,18 @@ public:
  * @note All resource managers are thread-safe and can be accessed
  *       simultaneously from multiple processing threads
  */
-struct ProcessingContext {
-    std::shared_ptr<MemoryMonitor> memory_monitor;     ///< Shared memory usage monitor
-    std::shared_ptr<FileHandleManager> file_manager;   ///< Shared file handle manager
-    std::shared_ptr<ThreadSafeErrorCollector> error_collector; ///< Shared error collector
-    double base_temp;           ///< Base temperature for calculations (K)
-    int concentration;          ///< Concentration for phase corrections (mM)
-    bool use_input_temp;        ///< Whether to use temperature from input files
-    std::string extension;      ///< File extension to process
-    unsigned int requested_threads; ///< Number of requested processing threads
-    size_t max_file_size_mb;    ///< Maximum individual file size in MB
-    JobResources job_resources; ///< Job scheduler resource information
+struct ProcessingContext
+{
+    std::shared_ptr<MemoryMonitor>            memory_monitor;     ///< Shared memory usage monitor
+    std::shared_ptr<FileHandleManager>        file_manager;       ///< Shared file handle manager
+    std::shared_ptr<ThreadSafeErrorCollector> error_collector;    ///< Shared error collector
+    double                                    base_temp;          ///< Base temperature for calculations (K)
+    int                                       concentration;      ///< Concentration for phase corrections (mM)
+    bool                                      use_input_temp;     ///< Whether to use temperature from input files
+    std::string                               extension;          ///< File extension to process
+    unsigned int                              requested_threads;  ///< Number of requested processing threads
+    size_t                                    max_file_size_mb;   ///< Maximum individual file size in MB
+    JobResources                              job_resources;      ///< Job scheduler resource information
 
     /**
      * @brief Constructor with parameter validation and resource setup
@@ -572,19 +581,19 @@ struct ProcessingContext {
      * @note Memory limits are automatically calculated based on thread count
      *       and available system resources
      */
-    ProcessingContext(double temp, int C, bool use_temp, unsigned int thread_count = 1,
-                     const std::string& ext = ".log", size_t max_file_mb = DEFAULT_MAX_FILE_SIZE_MB,
-                     const JobResources& job_res = JobResources{})
-        : memory_monitor(std::make_shared<MemoryMonitor>(MemoryMonitor::calculate_optimal_memory_limit(thread_count)))
-        , file_manager(std::make_shared<FileHandleManager>())
-        , error_collector(std::make_shared<ThreadSafeErrorCollector>())
-        , base_temp(temp)
-        , concentration(C)
-        , use_input_temp(use_temp)
-        , extension(ext)
-        , requested_threads(thread_count)
-        , max_file_size_mb(max_file_mb)
-        , job_resources(job_res) {}
+    ProcessingContext(double              temp,
+                      int                 C,
+                      bool                use_temp,
+                      unsigned int        thread_count = 1,
+                      const std::string&  ext          = ".log",
+                      size_t              max_file_mb  = DEFAULT_MAX_FILE_SIZE_MB,
+                      const JobResources& job_res      = JobResources{})
+        : memory_monitor(std::make_shared<MemoryMonitor>(MemoryMonitor::calculate_optimal_memory_limit(thread_count))),
+          file_manager(std::make_shared<FileHandleManager>()),
+          error_collector(std::make_shared<ThreadSafeErrorCollector>()), base_temp(temp), concentration(C),
+          use_input_temp(use_temp), extension(ext), requested_threads(thread_count), max_file_size_mb(max_file_mb),
+          job_resources(job_res)
+    {}
 };
 
 /**
@@ -639,8 +648,7 @@ bool compareResults(const Result& a, const Result& b, int column);
  * @note The function respects global shutdown requests and will terminate
  *       gracefully if g_shutdown_requested becomes true
  */
-Result extract(const std::string& file_name_param,
-               const ProcessingContext& context);
+Result extract(const std::string& file_name_param, const ProcessingContext& context);
 
 /**
  * @brief Process multiple files and output formatted results
@@ -682,21 +690,21 @@ Result extract(const std::string& file_name_param,
  * @note This function handles all aspects of multi-threaded processing
  *       including graceful shutdown, error collection, and resource cleanup
  */
-void processAndOutputResults(double temp,
-                           int C,
-                           int column,
-                           const std::string& extension,
-                           bool quiet,
-                           const std::string& format,
-                           bool use_input_temp,
-                           unsigned int requested_threads,
-                           size_t max_file_size_mb,
-                           size_t memory_limit_mb,
-                           const std::vector<std::string>& warnings,
-                           const JobResources& job_resources = JobResources{},
-                           size_t batch_size = 0);
+void processAndOutputResults(double                          temp,
+                             int                             C,
+                             int                             column,
+                             const std::string&              extension,
+                             bool                            quiet,
+                             const std::string&              format,
+                             bool                            use_input_temp,
+                             unsigned int                    requested_threads,
+                             size_t                          max_file_size_mb,
+                             size_t                          memory_limit_mb,
+                             const std::vector<std::string>& warnings,
+                             const JobResources&             job_resources = JobResources{},
+                             size_t                          batch_size    = 0);
 
-/** @} */ // end of CoreFunctions group
+/** @} */  // end of CoreFunctions group
 
 /**
  * @defgroup UtilityFunctions Utility Functions
@@ -721,6 +729,11 @@ void processAndOutputResults(double temp,
 std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb = DEFAULT_MAX_FILE_SIZE_MB);
 // Batch processing version for handling millions of files with controlled memory usage
 std::vector<std::string> findLogFiles(const std::string& extension, size_t max_file_size_mb, size_t batch_size);
+// Multiple extensions version
+std::vector<std::string> findLogFiles(const std::vector<std::string>& extensions, size_t max_file_size_mb);
+// Batch processing version for multiple extensions
+std::vector<std::string>
+findLogFiles(const std::vector<std::string>& extensions, size_t max_file_size_mb, size_t batch_size);
 /**
  * @brief Validate that a file size is within processing limits
  * @param filename Path to file to check
@@ -778,7 +791,7 @@ void printResourceUsage(const ProcessingContext& context, bool quiet = false);
  */
 void printJobResourceInfo(const JobResources& job_resources, bool quiet = false);
 
-/** @} */ // end of UtilityFunctions group
+/** @} */  // end of UtilityFunctions group
 
 /**
  * @defgroup ResourceCalculation Job-Aware Resource Calculation
@@ -808,9 +821,8 @@ void printJobResourceInfo(const JobResources& job_resources, bool quiet = false)
  *
  * @note Essential for proper resource usage in HPC cluster environments
  */
-unsigned int calculateSafeThreadCount(unsigned int requested_threads,
-                                     unsigned int file_count,
-                                     const JobResources& job_resources);
+unsigned int
+calculateSafeThreadCount(unsigned int requested_threads, unsigned int file_count, const JobResources& job_resources);
 
 /**
  * @brief Calculate safe memory limit considering job scheduler constraints
@@ -835,11 +847,10 @@ unsigned int calculateSafeThreadCount(unsigned int requested_threads,
  * @note Critical for preventing out-of-memory conditions that can
  *       crash jobs or entire cluster nodes
  */
-size_t calculateSafeMemoryLimit(size_t requested_memory_mb,
-                               unsigned int thread_count,
-                               const JobResources& job_resources);
+size_t
+calculateSafeMemoryLimit(size_t requested_memory_mb, unsigned int thread_count, const JobResources& job_resources);
 
-/** @} */ // end of ResourceCalculation group
+/** @} */  // end of ResourceCalculation group
 
 /**
  * @defgroup SafeParsing Safe String Parsing Functions
@@ -910,6 +921,6 @@ bool safe_stoi(const std::string& str, int& result);
  */
 bool safe_stoul(const std::string& str, unsigned long& result);
 
-/** @} */ // end of SafeParsing group
+/** @} */  // end of SafeParsing group
 
-#endif // GAUSSIAN_EXTRACTOR_H
+#endif  // GAUSSIAN_EXTRACTOR_H

@@ -42,6 +42,11 @@ set(SOURCES
     src/core/utils.cpp
 )
 
+# Add Windows resource file if building on Windows
+if(WIN32)
+    list(APPEND SOURCES resources/icon.rc)
+endif()
+
 set(HEADERS
     src/core/module_executor.h
     src/core/gaussian_extractor.h
@@ -126,8 +131,12 @@ target_link_libraries(gaussian_extractor
 )
 
 # Link stdc++fs for non-MSVC compilers if needed for std::filesystem
+# Note: stdc++fs is not needed for GCC 9+ and Clang 9+ as std::filesystem is in libstdc++
 if(NOT MSVC)
-    target_link_libraries(gaussian_extractor PRIVATE stdc++fs)
+    # Only link stdc++fs for older compilers that need it
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
+        target_link_libraries(gaussian_extractor PRIVATE stdc++fs)
+    endif()
 endif()
 
 if(WIN32)

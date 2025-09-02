@@ -1,19 +1,22 @@
 #include "command_system.h"
 #include "config_manager.h"
 #include "version.h"
-#include <iostream>
 #include <algorithm>
-#include <thread>
-#include <string>
-#include <sstream>
 #include <cstdlib>
 #include <filesystem>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <thread>
 
-CommandContext CommandParser::parse(int argc, char* argv[]) {
+CommandContext CommandParser::parse(int argc, char* argv[])
+{
     // Early check for version before any other processing
-    for (int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i)
+    {
         std::string arg = argv[i];
-        if (arg == "--version" || arg == "-v") {
+        if (arg == "--version" || arg == "-v")
+        {
             std::cout << GaussianExtractor::get_version_info() << std::endl;
             std::exit(0);
         }
@@ -30,18 +33,21 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
     context.job_resources = JobSchedulerDetector::detect_job_resources();
 
     // If no arguments, default to EXTRACT
-    if (argc == 1) {
+    if (argc == 1)
+    {
         validate_context(context);
         return context;
     }
 
     // Scan all arguments to find a command (flexible positioning)
     CommandType found_command = CommandType::EXTRACT;
-    int command_index = -1;
+    int         command_index = -1;
 
-    for (int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i)
+    {
         CommandType potential_command = parse_command(argv[i]);
-        if (potential_command != CommandType::EXTRACT || std::string(argv[i]) == "extract") {
+        if (potential_command != CommandType::EXTRACT || std::string(argv[i]) == "extract")
+        {
             found_command = potential_command;
             command_index = i;
             break;
@@ -51,32 +57,41 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
     context.command = found_command;
 
     // Parse all arguments, skipping the command if found
-    for (int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i)
+    {
         std::string arg = argv[i];
 
         // Skip the command argument itself
-        if (i == command_index) {
+        if (i == command_index)
+        {
             continue;
         }
 
-        if (arg == "-h" || arg == "--help") {
-            if (context.command == CommandType::EXTRACT) {
+        if (arg == "-h" || arg == "--help")
+        {
+            if (context.command == CommandType::EXTRACT)
+            {
                 print_help();  // Use default parameter
-            } else {
+            }
+            else
+            {
                 print_command_help(context.command);  // Use default parameter
             }
             std::exit(0);
         }
 
-        else if (arg == "--config-help") {
+        else if (arg == "--config-help")
+        {
             print_config_help();
             std::exit(0);
         }
-        else if (arg == "--create-config") {
+        else if (arg == "--create-config")
+        {
             create_default_config();
             std::exit(0);
         }
-        else if (arg == "--show-config") {
+        else if (arg == "--show-config")
+        {
             g_config_manager.print_config_summary(true);
             std::exit(0);
         }
@@ -85,13 +100,17 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
         parse_common_options(context, i, argc, argv);
 
         // Parse command-specific options
-        if (context.command == CommandType::EXTRACT ||
-            context.command == CommandType::HIGH_LEVEL_KJ ||
-            context.command == CommandType::HIGH_LEVEL_AU) {
+        if (context.command == CommandType::EXTRACT || context.command == CommandType::HIGH_LEVEL_KJ ||
+            context.command == CommandType::HIGH_LEVEL_AU)
+        {
             parse_extract_options(context, i, argc, argv);
-        } else if (context.command == CommandType::EXTRACT_COORDS) {
-                parse_xyz_options(context, i, argc, argv);
-        } else {
+        }
+        else if (context.command == CommandType::EXTRACT_COORDS)
+        {
+            parse_xyz_options(context, i, argc, argv);
+        }
+        else
+        {
             parse_checker_options(context, i, argc, argv);
         }
     }
@@ -100,250 +119,384 @@ CommandContext CommandParser::parse(int argc, char* argv[]) {
     return context;
 }
 
-CommandType CommandParser::parse_command(const std::string& cmd) {
-    if (cmd == "extract") return CommandType::EXTRACT;
-    if (cmd == "done") return CommandType::CHECK_DONE;
-    if (cmd == "errors") return CommandType::CHECK_ERRORS;
-    if (cmd == "pcm") return CommandType::CHECK_PCM;
-    if (cmd == "imode" || cmd == "--imaginary") return CommandType::CHECK_IMAGINARY;
-    if (cmd == "check") return CommandType::CHECK_ALL;
-    if (cmd == "high-kj" || cmd == "--high-level-kj") return CommandType::HIGH_LEVEL_KJ;
-    if (cmd == "high-au" || cmd == "--high-level-au") return CommandType::HIGH_LEVEL_AU;
-    if (cmd == "xyz" || cmd == "--extract-coord") return CommandType::EXTRACT_COORDS;
+CommandType CommandParser::parse_command(const std::string& cmd)
+{
+    if (cmd == "extract")
+        return CommandType::EXTRACT;
+    if (cmd == "done")
+        return CommandType::CHECK_DONE;
+    if (cmd == "errors")
+        return CommandType::CHECK_ERRORS;
+    if (cmd == "pcm")
+        return CommandType::CHECK_PCM;
+    if (cmd == "imode" || cmd == "--imaginary")
+        return CommandType::CHECK_IMAGINARY;
+    if (cmd == "check")
+        return CommandType::CHECK_ALL;
+    if (cmd == "high-kj" || cmd == "--high-level-kj")
+        return CommandType::HIGH_LEVEL_KJ;
+    if (cmd == "high-au" || cmd == "--high-level-au")
+        return CommandType::HIGH_LEVEL_AU;
+    if (cmd == "xyz" || cmd == "--extract-coord")
+        return CommandType::EXTRACT_COORDS;
 
     // If it starts with '-', it's probably an option, not a command
-    if (!cmd.empty() && cmd.front() == '-') return CommandType::EXTRACT;
+    if (!cmd.empty() && cmd.front() == '-')
+        return CommandType::EXTRACT;
 
     // Default to extract for backward compatibility
     return CommandType::EXTRACT;
 }
 
-std::string CommandParser::get_command_name(CommandType command) {
-    switch (command) {
-        case CommandType::EXTRACT: return std::string("extract");
-        case CommandType::CHECK_DONE: return std::string("done");
-        case CommandType::CHECK_ERRORS: return std::string("errors");
-        case CommandType::CHECK_PCM: return std::string("pcm");
-        case CommandType::CHECK_IMAGINARY: return std::string("imode");
-        case CommandType::CHECK_ALL: return std::string("check");
-        case CommandType::HIGH_LEVEL_KJ: return std::string("high-kj");
-        case CommandType::HIGH_LEVEL_AU: return std::string("high-au");
-        case CommandType::EXTRACT_COORDS: return std::string("xyz");
-        default: return std::string("unknown");
+std::string CommandParser::get_command_name(CommandType command)
+{
+    switch (command)
+    {
+        case CommandType::EXTRACT:
+            return std::string("extract");
+        case CommandType::CHECK_DONE:
+            return std::string("done");
+        case CommandType::CHECK_ERRORS:
+            return std::string("errors");
+        case CommandType::CHECK_PCM:
+            return std::string("pcm");
+        case CommandType::CHECK_IMAGINARY:
+            return std::string("imode");
+        case CommandType::CHECK_ALL:
+            return std::string("check");
+        case CommandType::HIGH_LEVEL_KJ:
+            return std::string("high-kj");
+        case CommandType::HIGH_LEVEL_AU:
+            return std::string("high-au");
+        case CommandType::EXTRACT_COORDS:
+            return std::string("xyz");
+        default:
+            return std::string("unknown");
     }
 }
 
-void CommandParser::parse_common_options(CommandContext& context, int& i, int argc, char* argv[]) {
+void CommandParser::parse_common_options(CommandContext& context, int& i, int argc, char* argv[])
+{
     std::string arg = argv[i];
 
-    if (arg == "-q" || arg == "--quiet") {
+    if (arg == "-q" || arg == "--quiet")
+    {
         context.quiet = true;
     }
-    else if (arg == "-e" || arg == "--ext") {
-        if (++i < argc) {
-            std::string ext = argv[i];
+    else if (arg == "-e" || arg == "--ext")
+    {
+        if (++i < argc)
+        {
+            std::string ext      = argv[i];
             std::string full_ext = (ext[0] == '.') ? ext : ("." + ext);
-            if (full_ext == ".log" || full_ext == ".out") {
+            if (full_ext == ".log" || full_ext == ".out")
+            {
                 context.extension = full_ext;
-            } else {
-                add_warning(context, "Error: Extension '" + ext + "' not in configured output extensions. Using default.");
+            }
+            else
+            {
+                add_warning(context,
+                            "Error: Extension '" + ext + "' not in configured output extensions. Using default.");
                 context.extension = g_config_manager.get_default_output_extension();
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Extension value required after -e/--ext.");
         }
     }
-    else if (arg == "-nt" || arg == "--threads") {
-        if (++i < argc) {
-            std::string threads_arg = argv[i];
+    else if (arg == "-nt" || arg == "--threads")
+    {
+        if (++i < argc)
+        {
+            std::string  threads_arg    = argv[i];
             unsigned int hardware_cores = std::thread::hardware_concurrency();
-            if (hardware_cores == 0) hardware_cores = 4;
+            if (hardware_cores == 0)
+                hardware_cores = 4;
 
-            if (threads_arg == "max") {
+            if (threads_arg == "max")
+            {
                 context.requested_threads = hardware_cores;
-            } else if (threads_arg == "half") {
+            }
+            else if (threads_arg == "half")
+            {
                 context.requested_threads = std::max(1u, hardware_cores / 2);
-            } else {
-                try {
+            }
+            else
+            {
+                try
+                {
                     unsigned int req_threads = std::stoul(threads_arg);
-                    if (req_threads == 0) {
+                    if (req_threads == 0)
+                    {
                         add_warning(context, "Error: Thread count must be at least 1. Using configured default.");
                         context.requested_threads = g_config_manager.get_default_threads();
-                    } else {
+                    }
+                    else
+                    {
                         context.requested_threads = req_threads;
                     }
-                } catch (const std::exception& e) {
+                }
+                catch (const std::exception& e)
+                {
                     add_warning(context, "Error: Invalid thread count format. Using configured default.");
                     context.requested_threads = g_config_manager.get_default_threads();
                 }
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Thread count required after -nt/--threads.");
         }
     }
-    else if (arg == "--max-file-size") {
-        if (++i < argc) {
-            try {
+    else if (arg == "--max-file-size")
+    {
+        if (++i < argc)
+        {
+            try
+            {
                 int size = std::stoi(argv[i]);
-                if (size <= 0) {
+                if (size <= 0)
+                {
                     add_warning(context, "Error: Max file size must be positive. Using default 100MB.");
-                } else {
+                }
+                else
+                {
                     context.max_file_size_mb = static_cast<size_t>(size);
                 }
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e)
+            {
                 add_warning(context, "Error: Invalid max file size format. Using default 100MB.");
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Max file size value required after --max-file-size.");
         }
     }
-    else if (arg == "--batch-size") {
-        if (++i < argc) {
-            try {
+    else if (arg == "--batch-size")
+    {
+        if (++i < argc)
+        {
+            try
+            {
                 int size = std::stoi(argv[i]);
-                if (size <= 0) {
+                if (size <= 0)
+                {
                     add_warning(context, "Error: Batch size must be positive. Using default (auto-detect).");
-                } else {
+                }
+                else
+                {
                     context.batch_size = static_cast<size_t>(size);
                 }
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e)
+            {
                 add_warning(context, "Error: Invalid batch size format. Using default (auto-detect).");
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Batch size value required after --batch-size.");
         }
     }
 }
 
-void CommandParser::parse_extract_options(CommandContext& context, int& i, int argc, char* argv[]) {
+void CommandParser::parse_extract_options(CommandContext& context, int& i, int argc, char* argv[])
+{
     std::string arg = argv[i];
 
-    if (arg == "-t" || arg == "--temp") {
-        if (++i < argc) {
-            try {
+    if (arg == "-t" || arg == "--temp")
+    {
+        if (++i < argc)
+        {
+            try
+            {
                 context.temp = std::stod(argv[i]);
-                if (context.temp <= 0) {
+                if (context.temp <= 0)
+                {
                     add_warning(context, "Warning: Temperature must be positive. Using default 298.15 K.");
                     context.temp = 298.15;
-                } else {
+                }
+                else
+                {
                     context.use_input_temp = true;
                 }
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e)
+            {
                 add_warning(context, "Error: Invalid temperature format. Using default 298.15 K.");
                 context.temp = 298.15;
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Temperature value required after -t/--temp.");
         }
     }
-    else if (arg == "-c" || arg == "--cm") {
-        if (++i < argc) {
-            try {
+    else if (arg == "-c" || arg == "--cm")
+    {
+        if (++i < argc)
+        {
+            try
+            {
                 int conc = std::stoi(argv[i]);
-                if (conc <= 0) {
+                if (conc <= 0)
+                {
                     add_warning(context, "Error: Concentration must be positive. Using configured default.");
                     context.concentration = static_cast<int>(g_config_manager.get_default_concentration() * 1000);
-                } else {
+                }
+                else
+                {
                     context.concentration = conc * 1000;
                 }
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e)
+            {
                 add_warning(context, "Error: Invalid concentration format. Using configured default.");
                 context.concentration = static_cast<int>(g_config_manager.get_default_concentration() * 1000);
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Concentration value required after -c/--cm.");
         }
     }
-    else if (arg == "-col" || arg == "--column") {
-        if (++i < argc) {
-            try {
+    else if (arg == "-col" || arg == "--column")
+    {
+        if (++i < argc)
+        {
+            try
+            {
                 int col = std::stoi(argv[i]);
-                if (col >= 1 && col <= 10) {
+                if (col >= 1 && col <= 10)
+                {
                     context.sort_column = col;
-                } else {
+                }
+                else
+                {
                     add_warning(context, "Error: Column must be between 1-10. Using default column 2.");
                 }
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e)
+            {
                 add_warning(context, "Error: Invalid column format. Using default column 2.");
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Column value required after -col/--column.");
         }
     }
-    else if (arg == "-f" || arg == "--format") {
-        if (++i < argc) {
+    else if (arg == "-f" || arg == "--format")
+    {
+        if (++i < argc)
+        {
             std::string fmt = argv[i];
-            if (fmt == "text" || fmt == "csv") {
+            if (fmt == "text" || fmt == "csv")
+            {
                 context.output_format = fmt;
-            } else {
+            }
+            else
+            {
                 add_warning(context, "Error: Format must be 'text' or 'csv'. Using default 'text'.");
                 context.output_format = "text";
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Format value required after -f/--format.");
         }
     }
-    else if (arg == "--memory-limit") {
-        if (++i < argc) {
-            try {
+    else if (arg == "--memory-limit")
+    {
+        if (++i < argc)
+        {
+            try
+            {
                 int size = std::stoi(argv[i]);
-                if (size <= 0) {
+                if (size <= 0)
+                {
                     add_warning(context, "Error: Memory limit must be positive. Using auto-calculated limit.");
-                } else {
+                }
+                else
+                {
                     context.memory_limit_mb = static_cast<size_t>(size);
                 }
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e)
+            {
                 add_warning(context, "Error: Invalid memory limit format. Using auto-calculated limit.");
             }
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Memory limit value required after --memory-limit.");
         }
     }
-    else if (arg == "--resource-info") {
+    else if (arg == "--resource-info")
+    {
         context.show_resource_info = true;
     }
-    else if (!arg.empty() && arg.front() == '-') {
+    else if (!arg.empty() && arg.front() == '-')
+    {
         add_warning(context, "Warning: Unknown argument '" + arg + "' ignored.");
     }
 }
 
-void CommandParser::parse_checker_options(CommandContext& context, int& i, int argc, char* argv[]) {
+void CommandParser::parse_checker_options(CommandContext& context, int& i, int argc, char* argv[])
+{
     std::string arg = argv[i];
 
-    if (arg == "--target-dir") {
-        if (++i < argc) {
+    if (arg == "--target-dir")
+    {
+        if (++i < argc)
+        {
             context.target_dir = argv[i];
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Target directory name required after --target-dir.");
         }
     }
-    else if (arg == "--dir-suffix") {
-        if (++i < argc) {
+    else if (arg == "--dir-suffix")
+    {
+        if (++i < argc)
+        {
             context.dir_suffix = argv[i];
-        } else {
+        }
+        else
+        {
             add_warning(context, "Error: Directory suffix required after --dir-suffix.");
         }
     }
-    else if (arg == "--show-details") {
+    else if (arg == "--show-details")
+    {
         context.show_error_details = true;
     }
-    else if (!arg.empty() && arg.front() == '-') {
+    else if (!arg.empty() && arg.front() == '-')
+    {
         add_warning(context, "Warning: Unknown argument '" + arg + "' ignored.");
     }
 }
 
 // In command_system.cpp, modify parse_xyz_options:
-void CommandParser::parse_xyz_options(CommandContext& context, int& i, int argc, char* argv[]) {
+void CommandParser::parse_xyz_options(CommandContext& context, int& i, int argc, char* argv[])
+{
     std::string arg = argv[i];
 
-    if (arg == "-f" || arg == "--files") {
+    if (arg == "-f" || arg == "--files")
+    {
         bool files_found = false;
         // Keep consuming arguments until we hit another option or the end
-        while (++i < argc) {
+        while (++i < argc)
+        {
             std::string file_arg = argv[i];
-            
+
             // Check if the argument is another option
-            if (file_arg.length() > 1 && file_arg[0] == '-') {
+            if (file_arg.length() > 1 && file_arg[0] == '-')
+            {
                 // It's another option, so we're done with files.
                 // Decrement i so the main loop can process this new option.
                 i--;
@@ -355,101 +508,108 @@ void CommandParser::parse_xyz_options(CommandContext& context, int& i, int argc,
             // Process the argument, which may contain multiple filenames separated by commas
             std::replace(file_arg.begin(), file_arg.end(), ',', ' ');
             std::istringstream iss(file_arg);
-            std::string file;
-            while (iss >> file) {
-                if (!file.empty()) {
+            std::string        file;
+            while (iss >> file)
+            {
+                if (!file.empty())
+                {
                     // Trim whitespace (should be handled by stringstream, but good practice)
                     file.erase(0, file.find_first_not_of(" "));
                     file.erase(file.find_last_not_of(" ") + 1);
 
-                    if (file.empty()) continue;
+                    if (file.empty())
+                        continue;
 
                     bool has_valid_extension = false;
-                    for (const auto& ext : context.valid_extensions) {
-                        if (file.size() >= ext.size() &&
-                            file.compare(file.size() - ext.size(), ext.size(), ext) == 0) {
+                    for (const auto& ext : context.valid_extensions)
+                    {
+                        if (file.size() >= ext.size() && file.compare(file.size() - ext.size(), ext.size(), ext) == 0)
+                        {
                             has_valid_extension = true;
                             break;
                         }
                     }
 
-                    if (!has_valid_extension) {
+                    if (!has_valid_extension)
+                    {
                         file += context.extension;
                     }
 
-                    if (!std::filesystem::exists(file)) {
+                    if (!std::filesystem::exists(file))
+                    {
                         add_warning(context, "Specified file does not exist: " + file);
                     }
-                    
+
                     context.specific_files.push_back(file);
                 }
             }
         }
 
-        if (!files_found) {
-             add_warning(context, "--files requires a filename or list of filenames");
+        if (!files_found)
+        {
+            add_warning(context, "--files requires a filename or list of filenames");
         }
     }
 }
 
-void CommandParser::add_warning(CommandContext& context, const std::string& warning) {
+void CommandParser::add_warning(CommandContext& context, const std::string& warning)
+{
     context.warnings.push_back(warning);
 }
 
 
-void CommandParser::validate_context(CommandContext& context) {
+void CommandParser::validate_context(CommandContext& context)
+{
     // Set default threads if not specified
-    if (context.requested_threads == 0) {
+    if (context.requested_threads == 0)
+    {
         context.requested_threads = g_config_manager.get_default_threads();
     }
 
     // Validate file size limits
-    if (context.max_file_size_mb == 0) {
+    if (context.max_file_size_mb == 0)
+    {
         context.max_file_size_mb = g_config_manager.get_default_max_file_size();
     }
 }
 
-void CommandParser::apply_config_to_context(CommandContext& context) {
+void CommandParser::apply_config_to_context(CommandContext& context)
+{
     // Apply configuration defaults to context
-    if (!g_config_manager.is_config_loaded()) {
-        return; // Keep built-in defaults if config not loaded
+    if (!g_config_manager.is_config_loaded())
+    {
+        return;  // Keep built-in defaults if config not loaded
     }
 
     // Apply configuration values
-    context.quiet = g_config_manager.get_bool("quiet_mode");
-    context.requested_threads = g_config_manager.get_default_threads();
-    context.max_file_size_mb = g_config_manager.get_default_max_file_size();
-    context.extension = g_config_manager.get_default_output_extension();
-    context.valid_extensions = ConfigUtils::split_string(g_config_manager.get_string("output_extensions"), ',');
-    context.temp = g_config_manager.get_default_temperature();
-    context.concentration = static_cast<int>(g_config_manager.get_default_concentration() * 1000);
-    context.sort_column = g_config_manager.get_int("default_sort_column");
-    context.output_format = g_config_manager.get_default_output_format();
-    context.use_input_temp = g_config_manager.get_bool("use_input_temp");
-    context.memory_limit_mb = g_config_manager.get_size_t("memory_limit_mb");
+    context.quiet              = g_config_manager.get_bool("quiet_mode");
+    context.requested_threads  = g_config_manager.get_default_threads();
+    context.max_file_size_mb   = g_config_manager.get_default_max_file_size();
+    context.extension          = g_config_manager.get_default_output_extension();
+    context.valid_extensions   = ConfigUtils::split_string(g_config_manager.get_string("output_extensions"), ',');
+    context.temp               = g_config_manager.get_default_temperature();
+    context.concentration      = static_cast<int>(g_config_manager.get_default_concentration() * 1000);
+    context.sort_column        = g_config_manager.get_int("default_sort_column");
+    context.output_format      = g_config_manager.get_default_output_format();
+    context.use_input_temp     = g_config_manager.get_bool("use_input_temp");
+    context.memory_limit_mb    = g_config_manager.get_size_t("memory_limit_mb");
     context.show_error_details = g_config_manager.get_bool("show_error_details");
-    context.dir_suffix = g_config_manager.get_string("done_directory_suffix");
+    context.dir_suffix         = g_config_manager.get_string("done_directory_suffix");
 }
 
-void CommandParser::load_configuration() {
+void CommandParser::load_configuration()
+{
     // Try to load configuration file
-    if (!g_config_manager.is_config_loaded()) {
+    if (!g_config_manager.is_config_loaded())
+    {
         g_config_manager.load_config();
     }
 }
 
-void CommandParser::print_config_help() {
+void CommandParser::print_config_help()
+{
     std::cout << "Gaussian Extractor Configuration System\n\n";
-    std::cout << "Configuration file locations (searched in order):\n";
-    std::cout << "Configuration file locations (searched in order):\n";
-    std::cout << "  1. ./gaussian_extractor.conf\n";
-    std::cout << "  2. ./.gaussian_extractor.conf\n";
-    std::cout << "  3. ~/.gaussian_extractor.conf\n";
-    std::cout << "  4. ~/gaussian_extractor.conf\n";
-    #ifndef _WIN32
-    std::cout << "  5. /etc/gaussian_extractor/gaussian_extractor.conf\n";
-    std::cout << "  6. /usr/local/etc/gaussian_extractor.conf\n";
-    #endif
+    std::cout << ConfigUtils::get_config_search_paths();
     std::cout << std::endl;
 
     std::cout << "Commands:\n";
@@ -470,41 +630,52 @@ void CommandParser::print_config_help() {
     std::cout << "  default_threads = 4\n\n";
 }
 
-void CommandParser::create_default_config() {
+void CommandParser::create_default_config()
+{
     std::cout << "Creating default configuration file...\n";
 
-    if (g_config_manager.create_default_config_file()) {
+    if (g_config_manager.create_default_config_file())
+    {
         std::string home_dir = g_config_manager.get_user_home_directory();
-        if (!home_dir.empty()) {
+        if (!home_dir.empty())
+        {
             std::cout << "Configuration file created at: " << home_dir << "/.gaussian_extractor.conf" << std::endl;
-        } else {
+        }
+        else
+        {
             std::cout << "Configuration file created at: ./.gaussian_extractor.conf" << std::endl;
         }
         std::cout << "Edit this file to customize your default settings.\n";
-    } else {
+    }
+    else
+    {
         std::cout << "Failed to create configuration file.\n";
         std::cout << "You can create it manually using the template below:\n\n";
         g_config_manager.print_config_file_template();
     }
 }
 
-std::unordered_map<std::string, std::string> CommandParser::extract_config_overrides(int argc, char* argv[]) {
+std::unordered_map<std::string, std::string> CommandParser::extract_config_overrides(int argc, char* argv[])
+{
     std::unordered_map<std::string, std::string> overrides;
 
-    for (int i = 1; i < argc - 1; ++i) {
+    for (int i = 1; i < argc - 1; ++i)
+    {
         std::string arg = argv[i];
-        if (arg.substr(0, 9) == "--config-") {
-            std::string key = arg.substr(9);
+        if (arg.substr(0, 9) == "--config-")
+        {
+            std::string key   = arg.substr(9);
             std::string value = argv[i + 1];
-            overrides[key] = value;
-            ++i; // Skip the value argument
+            overrides[key]    = value;
+            ++i;  // Skip the value argument
         }
     }
 
     return overrides;
 }
 
-void CommandParser::print_help(const std::string& program_name) {
+void CommandParser::print_help(const std::string& program_name)
+{
     std::cout << "Gaussian Extractor (Version " << GaussianExtractor::get_version_info() << ")\n\n";
     std::cout << "Usage: " << program_name << " [command] [options]\n\n";
     std::cout << "Commands:\n";
@@ -527,11 +698,13 @@ void CommandParser::print_help(const std::string& program_name) {
     std::cout << "\n";
 }
 
-void CommandParser::print_command_help(CommandType command, const std::string& program_name) {
+void CommandParser::print_command_help(CommandType command, const std::string& program_name)
+{
     std::string cmd_name = get_command_name(command);
     std::cout << "Help for command: " << cmd_name << "\n\n";
 
-    switch (command) {
+    switch (command)
+    {
         case CommandType::EXTRACT:
             std::cout << "Description: Extract thermodynamic data from Gaussian log files\n\n";
             std::cout << "This is the default command when no command is specified.\n";
@@ -579,7 +752,8 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
 
         case CommandType::HIGH_LEVEL_KJ:
             std::cout << "Description: Calculate high-level energies with output in kJ/mol units\n";
-            std::cout << "             Uses high-level electronic energy combined with low-level thermal corrections\n\n";
+            std::cout
+                << "             Uses high-level electronic energy combined with low-level thermal corrections\n\n";
             std::cout << "This command reads high-level electronic energies from current directory\n";
             std::cout << "and thermal corrections from parent directory (../) to compute final\n";
             std::cout << "thermodynamic quantities. Output format focuses on final Gibbs energies.\n\n";
@@ -593,7 +767,8 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
 
         case CommandType::HIGH_LEVEL_AU:
             std::cout << "Description: Calculate detailed energy components in atomic units\n";
-            std::cout << "             Uses high-level electronic energy combined with low-level thermal corrections\n\n";
+            std::cout
+                << "             Uses high-level electronic energy combined with low-level thermal corrections\n\n";
             std::cout << "This command reads high-level electronic energies from current directory\n";
             std::cout << "and thermal corrections from parent directory (../) to compute detailed\n";
             std::cout << "energy component breakdown including ZPE, TC, TS, H, and G values.\n\n";
@@ -602,7 +777,8 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
             std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n";
             std::cout << "  -f, --format <fmt>    Output format: text|csv (default: text)\n";
             std::cout << "  -col, --column <N>    Sort column 1-10 (default: 2)\n";
-            std::cout << "                        1=Name, 2=E high, 3=E low, 4=ZPE, 5=TC, 6=TS, 7=H, 8=G, 9=LowFQ, 10=PhCorr\n\n";
+            std::cout << "                        1=Name, 2=E high, 3=E low, 4=ZPE, 5=TC, 6=TS, 7=H, 8=G, 9=LowFQ, "
+                         "10=PhCorr\n\n";
             break;
 
         case CommandType::EXTRACT_COORDS:
@@ -626,16 +802,19 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
     std::cout << "  --max-file-size <MB>  Maximum file size in MB (default: 100)\n";
     std::cout << "  --batch-size <N>      Batch size for large directories (default: auto)\n";
 
-    if (command == CommandType::CHECK_DONE) {
+    if (command == CommandType::CHECK_DONE)
+    {
         std::cout << "  --dir-suffix <suffix> Directory suffix (default: done)\n";
         std::cout << "                        Creates {current_dir}-{suffix}/\n";
     }
 
-    if (command == CommandType::CHECK_ERRORS || command == CommandType::CHECK_PCM) {
+    if (command == CommandType::CHECK_ERRORS || command == CommandType::CHECK_PCM)
+    {
         std::cout << "  --target-dir <name>   Custom target directory name\n";
     }
 
-    if (command == CommandType::CHECK_ERRORS) {
+    if (command == CommandType::CHECK_ERRORS)
+    {
         std::cout << "  --show-details        Show actual error messages found\n";
     }
 
@@ -645,19 +824,29 @@ void CommandParser::print_command_help(CommandType command, const std::string& p
     std::cout << "Examples:\n";
     std::cout << "  " << program_name << " " << cmd_name << "              # Basic usage\n";
     std::cout << "  " << program_name << " " << cmd_name << " -q           # Quiet mode\n";
-    if (command == CommandType::HIGH_LEVEL_KJ) {
+    if (command == CommandType::HIGH_LEVEL_KJ)
+    {
         std::cout << "  " << program_name << " " << cmd_name << " -col 5       # Sort by frequency\n";
-        std::cout << "  " << program_name << " " << cmd_name << " -t 300 -col 2 -f csv  # Custom temp, sort by G kJ/mol, CSV\n";
-    } else if (command == CommandType::HIGH_LEVEL_AU) {
+        std::cout << "  " << program_name << " " << cmd_name
+                  << " -t 300 -col 2 -f csv  # Custom temp, sort by G kJ/mol, CSV\n";
+    }
+    else if (command == CommandType::HIGH_LEVEL_AU)
+    {
         std::cout << "  " << program_name << " " << cmd_name << " -col 8       # Sort by Gibbs energy\n";
-        std::cout << "  " << program_name << " " << cmd_name << " -t 273 -col 4 -f csv  # Custom temp, sort by ZPE, CSV\n";
-    } else if (command == CommandType::EXTRACT_COORDS) {
+        std::cout << "  " << program_name << " " << cmd_name
+                  << " -t 273 -col 4 -f csv  # Custom temp, sort by ZPE, CSV\n";
+    }
+    else if (command == CommandType::EXTRACT_COORDS)
+    {
         std::cout << "  " << program_name << " " << cmd_name << " -f file1.log,file2.log  # Process specific files\n";
-    } else {
+    }
+    else
+    {
         std::cout << "  " << program_name << " " << cmd_name << " -nt 4        # Use 4 threads\n";
     }
 
-    if (command == CommandType::CHECK_DONE) {
+    if (command == CommandType::CHECK_DONE)
+    {
         std::cout << "  " << program_name << " " << cmd_name << " --dir-suffix completed  # Use 'completed' suffix\n";
     }
 
