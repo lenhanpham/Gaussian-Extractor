@@ -33,12 +33,12 @@
 #ifndef COMMAND_SYSTEM_H
 #define COMMAND_SYSTEM_H
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <unordered_map>
-#include "job_scheduler.h"
 #include "config_manager.h"
+#include "job_scheduler.h"
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 /**
  * @enum CommandType
@@ -48,16 +48,17 @@
  * Gaussian Extractor application. Each command type corresponds to a specific
  * functionality and has its own parameter requirements and execution flow.
  */
-enum class CommandType {
-    EXTRACT,              ///< Default command - extract thermodynamic data from log files
-    CHECK_DONE,           ///< Check and organize completed job calculations
-    CHECK_ERRORS,         ///< Check and organize jobs that terminated with errors
-    CHECK_PCM,            ///< Check and organize jobs with PCM convergence failures
-    CHECK_IMAGINARY,      ///< Check and organize jobs with imaginary frequencies
-    CHECK_ALL,            ///< Run comprehensive checks for all job types
-    HIGH_LEVEL_KJ,        ///< Calculate high-level energies with output in kJ/mol units
-    HIGH_LEVEL_AU,        ///< Calculate high-level energies with detailed output in atomic units
-    EXTRACT_COORDS        ///< Extract coordinates from log files and organize XYZ files
+enum class CommandType
+{
+    EXTRACT,          ///< Default command - extract thermodynamic data from log files
+    CHECK_DONE,       ///< Check and organize completed job calculations
+    CHECK_ERRORS,     ///< Check and organize jobs that terminated with errors
+    CHECK_PCM,        ///< Check and organize jobs with PCM convergence failures
+    CHECK_IMAGINARY,  ///< Check and organize jobs with imaginary frequencies
+    CHECK_ALL,        ///< Run comprehensive checks for all job types
+    HIGH_LEVEL_KJ,    ///< Calculate high-level energies with output in kJ/mol units
+    HIGH_LEVEL_AU,    ///< Calculate high-level energies with detailed output in atomic units
+    EXTRACT_COORDS    ///< Extract coordinates from log files and organize XYZ files
 };
 
 /**
@@ -74,35 +75,36 @@ enum class CommandType {
  * - Command-specific parameters
  * - Runtime state and configuration
  */
-struct CommandContext {
-    CommandType command;              ///< The command to execute
+struct CommandContext
+{
+    CommandType command;  ///< The command to execute
 
     // Common parameters for all commands
-    bool quiet;                       ///< Suppress non-essential output
-    unsigned int requested_threads;   ///< Number of threads requested by user
-    size_t max_file_size_mb;         ///< Maximum individual file size in MB
-    size_t batch_size;               ///< Batch size for processing large directories (0 = auto)
-    std::string extension;           ///< File extension to process (default: ".log")
-    std::vector<std::string> valid_extensions; ///< List of valid file extensions (e.g {".log", ".out"})
-    std::vector<std::string> warnings; ///< Collected warnings from parsing
-    JobResources job_resources;      ///< Job scheduler resource information
+    bool                     quiet;              ///< Suppress non-essential output
+    unsigned int             requested_threads;  ///< Number of threads requested by user
+    size_t                   max_file_size_mb;   ///< Maximum individual file size in MB
+    size_t                   batch_size;         ///< Batch size for processing large directories (0 = auto)
+    std::string              extension;          ///< File extension to process (default: ".log")
+    std::vector<std::string> valid_extensions;   ///< List of valid file extensions (e.g {".log", ".out"})
+    std::vector<std::string> warnings;           ///< Collected warnings from parsing
+    JobResources             job_resources;      ///< Job scheduler resource information
 
     // Extract-specific parameters
-    double temp;                     ///< Temperature for calculations (K)
-    int concentration;               ///< Concentration for phase corrections (mM)
-    int sort_column;                 ///< Column number for result sorting
+    double      temp;                ///< Temperature for calculations (K)
+    int         concentration;       ///< Concentration for phase corrections (mM)
+    int         sort_column;         ///< Column number for result sorting
     std::string output_format;       ///< Output format ("text", "csv", etc.)
-    bool use_input_temp;            ///< Use temperature from input files
-    size_t memory_limit_mb;         ///< Memory usage limit in MB
-    bool show_resource_info;        ///< Display resource usage information
+    bool        use_input_temp;      ///< Use temperature from input files
+    size_t      memory_limit_mb;     ///< Memory usage limit in MB
+    bool        show_resource_info;  ///< Display resource usage information
 
     // Job checker-specific parameters
-    std::string target_dir;         ///< Custom directory name for organizing files
-    bool show_error_details;        ///< Display detailed error messages from log files
-    std::string dir_suffix;         ///< Custom suffix for completed job directory
+    std::string target_dir;          ///< Custom directory name for organizing files
+    bool        show_error_details;  ///< Display detailed error messages from log files
+    std::string dir_suffix;          ///< Custom suffix for completed job directory
 
     // Coordinate extraction-specific parameters
-    std::vector<std::string> specific_files; ///< List of specific files to process (empty for all files)
+    std::vector<std::string> specific_files;  ///< List of specific files to process (empty for all files)
 
     /**
      * @brief Default constructor with built-in fallback values
@@ -114,24 +116,25 @@ struct CommandContext {
      * @note Configuration defaults are applied via apply_config_defaults()
      *       after the configuration system is initialized
      */
-    CommandContext() :
-        command(CommandType::EXTRACT),    // Default to extraction command
-        quiet(false),                     // Show normal output by default
-        requested_threads(0),             // Auto-detect thread count
-        max_file_size_mb(100),            // 100MB max file size
-        batch_size(0),                    // Auto-detect batch size (0 = disabled)
-        extension(".log"),                // Process .log files
-        valid_extensions({".log", ".out"}), // Valid extensions
-        temp(298.15),                     // Room temperature (25°C)
-        concentration(1000),              // 1M concentration (1000 mM)
-        sort_column(2),                   // Sort by second column (typically energy)
-        output_format("text"),            // Plain text output
-        use_input_temp(false),            // Use fixed temperature
-        memory_limit_mb(0),               // No memory limit (auto-detect)
-        show_resource_info(false),        // Don't show resource info by default
-        target_dir(""),                   // Use default directory names
-        show_error_details(false),        // Show minimal error info
-        dir_suffix("done") {}             // Default suffix for completed jobs
+    CommandContext()
+        : command(CommandType::EXTRACT),       // Default to extraction command
+          quiet(false),                        // Show normal output by default
+          requested_threads(0),                // Auto-detect thread count
+          max_file_size_mb(100),               // 100MB max file size
+          batch_size(0),                       // Auto-detect batch size (0 = disabled)
+          extension(".log"),                   // Process .log files
+          valid_extensions({".log", ".out"}),  // Valid extensions
+          temp(298.15),                        // Room temperature (25°C)
+          concentration(1000),                 // 1M concentration (1000 mM)
+          sort_column(2),                      // Sort by second column (typically energy)
+          output_format("text"),               // Plain text output
+          use_input_temp(false),               // Use fixed temperature
+          memory_limit_mb(0),                  // No memory limit (auto-detect)
+          show_resource_info(false),           // Don't show resource info by default
+          target_dir(""),                      // Use default directory names
+          show_error_details(false),           // Show minimal error info
+          dir_suffix("done")
+    {}  // Default suffix for completed jobs
 
     /**
      * @brief Apply configuration file defaults to context parameters
@@ -170,7 +173,8 @@ struct CommandContext {
  * 4. Configuration integration and validation
  * 5. Context finalization and return
  */
-class CommandParser {
+class CommandParser
+{
 public:
     /**
      * @brief Parse command-line arguments and create execution context
@@ -214,6 +218,25 @@ public:
      * - Related commands and workflows
      */
     static void print_command_help(CommandType command, const std::string& program_name = "gaussian_extractor.x");
+
+    /**
+     * @brief Print configuration system help
+     *
+     * Displays information about:
+     * - Configuration file locations
+     * - Available configuration options
+     * - Configuration file format
+     * - How to create default configuration
+     */
+    static void print_config_help();
+
+    /**
+     * @brief Create a default configuration file
+     *
+     * Generates a default configuration file with all available options
+     * and their descriptions for user customization.
+     */
+    static void create_default_config();
 
 private:
     /**
@@ -308,25 +331,6 @@ private:
     static void load_configuration();
 
     /**
-     * @brief Print configuration system help
-     *
-     * Displays information about:
-     * - Configuration file locations
-     * - Available configuration options
-     * - Configuration file format
-     * - How to create default configuration
-     */
-    static void print_config_help();
-
-    /**
-     * @brief Create a default configuration file
-     *
-     * Generates a default configuration file with all available options
-     * and their descriptions for user customization.
-     */
-    static void create_default_config();
-
-    /**
      * @brief Apply configuration values to command context
      * @param context CommandContext to update with configuration values
      *
@@ -371,4 +375,4 @@ private:
  * @{
  */
 
-#endif // COMMAND_SYSTEM_H
+#endif  // COMMAND_SYSTEM_H
