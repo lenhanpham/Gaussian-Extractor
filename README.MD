@@ -19,44 +19,9 @@
 
 - **A binary package is included in the release**. Just download this package and extract it to use the program. Users should add the program to PATH system variable and then interact with gaussian_extractor through Windows terminal
 
+- Windows users can use GX in interactive mode directly: double click and type commands
+
 - Use windows terminal (powershell) to run gaussian_extractor.exe in a folder where your gaussian log files are available.
-
-### Windows Compilation
-
-The project includes custom build scripts for Windows with icon support:
-
-**Standard Build (GCC/MinGW):**
-```cmd
-build_windows.bat
-```
-
-**Static Build with Clang (Recommended for Distribution):**
-```cmd
-build_windows_static_link_with_Clang.bat
-```
-
-**PowerShell Build Script:**
-```powershell
-.\build_windows.ps1
-```
-
-**Manual CMake Build:**
-```cmd
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . --config Release
-```
-
-### Windows Icon Support
-
-The Windows executable includes a custom icon that displays in:
-- Windows Explorer
-- Taskbar when running
-- File properties dialog
-- Desktop shortcuts
-
-To customize the icon, replace `resources/app_icon.ico` with your own icon file. See `resources/README_ICON.md` for detailed instructions on creating and using custom icons.
 
 ## Linux
 
@@ -312,8 +277,6 @@ gaussian_extractor.x high-au    # Improved Gibbs free energy in hartree
 gaussian_extractor.x xyz                          # extract coordinates of all ouput files 
 gaussian_extractor.x xyz -f file or list of files    # all general errors causing jobs killed will be moved to errorJobs**Enhanced Parallel Processing:**
 ```
-
-
 
 ### Some more examples
 
