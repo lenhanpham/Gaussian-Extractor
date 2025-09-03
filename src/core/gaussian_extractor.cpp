@@ -571,12 +571,30 @@ std::vector<std::string> findLogFiles(const std::string& extension, size_t max_f
                 break;
             }
 
-            if (entry.is_regular_file() && entry.path().extension() == extension)
+            if (entry.is_regular_file())
             {
-                auto file_size = entry.file_size();
-                if (file_size <= max_file_size_mb * 1024 * 1024)
+                std::string file_ext = entry.path().extension().string();
+                // Case-insensitive extension comparison
+                bool extension_match = false;
+                if (file_ext.length() == extension.length())
                 {
-                    log_files.push_back(entry.path().filename().string());
+                    extension_match = true;
+                    for (size_t i = 0; i < file_ext.length(); ++i)
+                    {
+                        if (std::tolower(file_ext[i]) != std::tolower(extension[i]))
+                        {
+                            extension_match = false;
+                            break;
+                        }
+                    }
+                }
+                if (extension_match)
+                {
+                    auto file_size = entry.file_size();
+                    if (file_size <= max_file_size_mb * 1024 * 1024)
+                    {
+                        log_files.push_back(entry.path().filename().string());
+                    }
                 }
             }
         }
@@ -609,21 +627,39 @@ std::vector<std::string> findLogFiles(const std::string& extension, size_t max_f
                 break;
             }
 
-            if (entry.is_regular_file() && entry.path().extension() == extension)
+            if (entry.is_regular_file())
             {
-                auto file_size = entry.file_size();
-                if (file_size <= max_file_size_mb * 1024 * 1024)
+                std::string file_ext = entry.path().extension().string();
+                // Case-insensitive extension comparison
+                bool extension_match = false;
+                if (file_ext.length() == extension.length())
                 {
-                    batch_files.push_back(entry.path().filename().string());
-
-                    // When batch is full, sort and move to main vector
-                    if (batch_files.size() >= batch_size)
+                    extension_match = true;
+                    for (size_t i = 0; i < file_ext.length(); ++i)
                     {
-                        std::sort(batch_files.begin(), batch_files.end());
-                        all_log_files.insert(all_log_files.end(),
-                                             std::make_move_iterator(batch_files.begin()),
-                                             std::make_move_iterator(batch_files.end()));
-                        batch_files.clear();
+                        if (std::tolower(file_ext[i]) != std::tolower(extension[i]))
+                        {
+                            extension_match = false;
+                            break;
+                        }
+                    }
+                }
+                if (extension_match)
+                {
+                    auto file_size = entry.file_size();
+                    if (file_size <= max_file_size_mb * 1024 * 1024)
+                    {
+                        batch_files.push_back(entry.path().filename().string());
+
+                        // When batch is full, sort and move to main vector
+                        if (batch_files.size() >= batch_size)
+                        {
+                            std::sort(batch_files.begin(), batch_files.end());
+                            all_log_files.insert(all_log_files.end(),
+                                                 std::make_move_iterator(batch_files.begin()),
+                                                 std::make_move_iterator(batch_files.end()));
+                            batch_files.clear();
+                        }
                     }
                 }
             }
@@ -1201,8 +1237,10 @@ void processAndOutputResults(double                          temp,
         // Find and validate log files using batch processing if specified
         std::vector<std::string> log_files;
 
-        // If using default extension (.log), search for both .log and .out files
-        if (extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_extension = (extension.length() == 4 && std::tolower(extension[1]) == 'l' &&
+                                 std::tolower(extension[2]) == 'o' && std::tolower(extension[3]) == 'g');
+        if (is_log_extension)
         {
             std::vector<std::string> extensions = {".log", ".out"};
             if (batch_size > 0)
@@ -1228,7 +1266,7 @@ void processAndOutputResults(double                          temp,
 
         if (log_files.empty())
         {
-            if (extension == ".log")
+            if (is_log_extension)
             {
                 std::cerr << "No .log or .out files found in the current directory." << std::endl;
             }
@@ -1254,7 +1292,7 @@ void processAndOutputResults(double                          temp,
 
         if (!quiet)
         {
-            if (extension == ".log")
+            if (is_log_extension)
             {
                 std::cout << "Found " << log_files.size() << " .log/.out files" << std::endl;
             }

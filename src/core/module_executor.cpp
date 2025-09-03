@@ -4,6 +4,7 @@
 #include "high_level_energy.h"
 #include "job_checker.h"
 #include "version.h"
+#include <algorithm>
 #include <atomic>
 #include <csignal>
 #include <fstream>
@@ -130,8 +131,10 @@ int execute_check_done_command(const CommandContext& context)
         // Find log files using batch processing if specified
         std::vector<std::string> log_files;
 
-        // If using default extension (.log), search for both .log and .out files
-        if (context.extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_ext = (context.extension.length() == 4 && std::tolower(context.extension[1]) == 'l' &&
+                           std::tolower(context.extension[2]) == 'o' && std::tolower(context.extension[3]) == 'g');
+        if (is_log_ext)
         {
             std::vector<std::string> extensions = {".log", ".out"};
             if (context.batch_size > 0)
@@ -236,10 +239,12 @@ int execute_check_errors_command(const CommandContext& context)
         // Find log files using batch processing if specified
         std::vector<std::string> log_files;
 
-        // If using default extension (.log), search for both .log and .out files
-        if (context.extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_ext = (context.extension.length() == 4 && std::tolower(context.extension[1]) == 'l' &&
+                           std::tolower(context.extension[2]) == 'o' && std::tolower(context.extension[3]) == 'g');
+        if (is_log_ext)
         {
-            std::vector<std::string> extensions = {".log", ".out"};
+            std::vector<std::string> extensions = {".log", ".out", ".LOG", ".OUT", ".Log", ".Out"};
             if (context.batch_size > 0)
             {
                 log_files = findLogFiles(extensions, context.max_file_size_mb, context.batch_size);
@@ -341,10 +346,12 @@ int execute_check_pcm_command(const CommandContext& context)
         // Find log files using batch processing if specified
         std::vector<std::string> log_files;
 
-        // If using default extension (.log), search for both .log and .out files
-        if (context.extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_ext = (context.extension.length() == 4 && std::tolower(context.extension[1]) == 'l' &&
+                           std::tolower(context.extension[2]) == 'o' && std::tolower(context.extension[3]) == 'g');
+        if (is_log_ext)
         {
-            std::vector<std::string> extensions = {".log", ".out"};
+            std::vector<std::string> extensions = {".log", ".out", ".LOG", ".OUT", ".Log", ".Out"};
             if (context.batch_size > 0)
             {
                 log_files = findLogFiles(extensions, context.max_file_size_mb, context.batch_size);
@@ -446,10 +453,12 @@ int execute_check_all_command(const CommandContext& context)
         // Find log files using batch processing if specified
         std::vector<std::string> log_files;
 
-        // If using default extension (.log), search for both .log and .out files
-        if (context.extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_ext = (context.extension.length() == 4 && std::tolower(context.extension[1]) == 'l' &&
+                           std::tolower(context.extension[2]) == 'o' && std::tolower(context.extension[3]) == 'g');
+        if (is_log_ext)
         {
-            std::vector<std::string> extensions = {".log", ".out"};
+            std::vector<std::string> extensions = {".log", ".out", ".LOG", ".OUT", ".Log", ".Out"};
             if (context.batch_size > 0)
             {
                 log_files = findLogFiles(extensions, context.max_file_size_mb, context.batch_size);
@@ -537,8 +546,10 @@ int execute_check_imaginary_command(const CommandContext& context)
     {
         std::vector<std::string> log_files;
 
-        // If using default extension (.log), search for both .log and .out files
-        if (context.extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_ext = (context.extension.length() == 4 && std::tolower(context.extension[1]) == 'l' &&
+                           std::tolower(context.extension[2]) == 'o' && std::tolower(context.extension[3]) == 'g');
+        if (is_log_ext)
         {
             std::vector<std::string> extensions = {".log", ".out"};
             if (context.batch_size > 0)
@@ -1081,10 +1092,12 @@ int execute_extract_coords_command(const CommandContext& context)
         else
         {
             // Find all log files
-            // If using default extension (.log), search for both .log and .out files
-            if (context.extension == ".log")
+            // If using default extension (.log), search for both .log and .out files (case-insensitive)
+            bool is_log_ext = (context.extension.length() == 4 && std::tolower(context.extension[1]) == 'l' &&
+                               std::tolower(context.extension[2]) == 'o' && std::tolower(context.extension[3]) == 'g');
+            if (is_log_ext)
             {
-                std::vector<std::string> extensions = {".log", ".out"};
+                std::vector<std::string> extensions = {".log", ".out", ".LOG", ".OUT", ".Log", ".Out"};
                 if (context.batch_size > 0)
                 {
                     log_files = findLogFiles(extensions, context.max_file_size_mb, context.batch_size);

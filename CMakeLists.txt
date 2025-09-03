@@ -40,6 +40,7 @@ set(SOURCES
     src/core/coord_extractor.cpp
     src/core/metadata.cpp
     src/core/utils.cpp
+    src/core/interactive_mode.cpp
 )
 
 # Add Windows resource file if building on Windows

@@ -117,22 +117,22 @@ struct CommandContext
      *       after the configuration system is initialized
      */
     CommandContext()
-        : command(CommandType::EXTRACT),       // Default to extraction command
-          quiet(false),                        // Show normal output by default
-          requested_threads(0),                // Auto-detect thread count
-          max_file_size_mb(100),               // 100MB max file size
-          batch_size(0),                       // Auto-detect batch size (0 = disabled)
-          extension(".log"),                   // Process .log files
-          valid_extensions({".log", ".out"}),  // Valid extensions
-          temp(298.15),                        // Room temperature (25°C)
-          concentration(1000),                 // 1M concentration (1000 mM)
-          sort_column(2),                      // Sort by second column (typically energy)
-          output_format("text"),               // Plain text output
-          use_input_temp(false),               // Use fixed temperature
-          memory_limit_mb(0),                  // No memory limit (auto-detect)
-          show_resource_info(false),           // Don't show resource info by default
-          target_dir(""),                      // Use default directory names
-          show_error_details(false),           // Show minimal error info
+        : command(CommandType::EXTRACT),                                       // Default to extraction command
+          quiet(false),                                                        // Show normal output by default
+          requested_threads(0),                                                // Auto-detect thread count
+          max_file_size_mb(100),                                               // 100MB max file size
+          batch_size(0),                                                       // Auto-detect batch size (0 = disabled)
+          extension(".log"),                                                   // Process .log files
+          valid_extensions({".log", ".out", ".LOG", ".OUT", ".Log", ".Out"}),  // Valid output extensions
+          temp(298.15),                                                        // Room temperature (25°C)
+          concentration(1000),                                                 // 1M concentration (1000 mM)
+          sort_column(2),             // Sort by second column (typically energy)
+          output_format("text"),      // Plain text output
+          use_input_temp(false),      // Use fixed temperature
+          memory_limit_mb(0),         // No memory limit (auto-detect)
+          show_resource_info(false),  // Don't show resource info by default
+          target_dir(""),             // Use default directory names
+          show_error_details(false),  // Show minimal error info
           dir_suffix("done")
     {}  // Default suffix for completed jobs
 

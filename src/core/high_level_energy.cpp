@@ -385,10 +385,12 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_directory(co
         const size_t effective_max_file_size_mb = has_context_ ? context_->max_file_size_mb : DEFAULT_MAX_FILE_SIZE_MB;
 
         std::vector<std::string> log_files;
-        // If using default extension (.log), search for both .log and .out files
-        if (effective_extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_ext = (effective_extension.length() == 4 && std::tolower(effective_extension[1]) == 'l' &&
+                           std::tolower(effective_extension[2]) == 'o' && std::tolower(effective_extension[3]) == 'g');
+        if (is_log_ext)
         {
-            std::vector<std::string> extensions = {".log", ".out"};
+            std::vector<std::string> extensions = {".log", ".out", ".LOG", ".OUT", ".Log", ".Out"};
             log_files                           = findLogFiles(extensions, effective_max_file_size_mb);
         }
         else
@@ -436,10 +438,12 @@ std::vector<HighLevelEnergyData> HighLevelEnergyCalculator::process_directory_pa
 
         // Find all log files using the effective extension
         std::vector<std::string> filtered_files;
-        // If using default extension (.log), search for both .log and .out files
-        if (effective_extension == ".log")
+        // If using default extension (.log), search for both .log and .out files (case-insensitive)
+        bool is_log_ext = (effective_extension.length() == 4 && std::tolower(effective_extension[1]) == 'l' &&
+                           std::tolower(effective_extension[2]) == 'o' && std::tolower(effective_extension[3]) == 'g');
+        if (is_log_ext)
         {
-            std::vector<std::string> extensions = {".log", ".out"};
+            std::vector<std::string> extensions = {".log", ".out", ".LOG", ".OUT", ".Log", ".Out"};
             filtered_files                      = findLogFiles(extensions, effective_max_file_size_mb);
         }
         else

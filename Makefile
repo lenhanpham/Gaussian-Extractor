@@ -61,7 +61,8 @@ SOURCES = $(SRC_DIR)/main.cpp \
           $(CORE_DIR)/metadata.cpp \
           $(CORE_DIR)/high_level_energy.cpp \
 		  $(CORE_DIR)/coord_extractor.cpp \
-		  $(CORE_DIR)/utils.cpp
+		  $(CORE_DIR)/utils.cpp \
+		  $(CORE_DIR)/interactive_mode.cpp
 
 HEADERS = $(CORE_DIR)/module_executor.h \
           $(CORE_DIR)/gaussian_extractor.h \
