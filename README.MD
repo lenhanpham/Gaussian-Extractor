@@ -1,6 +1,6 @@
 # Gaussian Extractor v0.5.0
 
-**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
+**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It  in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
 ![results](./resources/results.png)
 
@@ -91,7 +91,7 @@ CXX=g++ make -j 8
 module load intel-compiler-llvm         # For Intel compilers
 module load intel-tbb                   # For intel Threading Building Blocks
 # OR
-module load gcc                              # For GCC
+module load gcc                         # For GCC
 
 # Create build directory
 mkdir build && cd build
