@@ -72,11 +72,22 @@ jobs:
           fi
           echo "Basic extraction tests passed."
 
-      - name: Test Coordinate Extraction (xyz)
-        run: |
-          echo "Testing coordinate extraction..."
-          if ls *.log *.out >/dev/null 2>&1; then
-            $BINARY xyz -q
+       - name: Test Coordinate Extraction (xyz)
+         run: |
+           # Try both possible binary locations
+           if [ -f "./build/bin/gaussian_extractor.x" ]; then
+             BINARY="./build/bin/gaussian_extractor.x"
+           elif [ -f "./build/gaussian_extractor.x" ]; then
+             BINARY="./build/gaussian_extractor.x"
+           elif [ -f "./gaussian_extractor.x" ]; then
+             BINARY="./gaussian_extractor.x"
+           else
+             echo "Test failed: gaussian_extractor.x binary not found."
+             exit 1
+           fi
+           echo "Testing coordinate extraction..."
+           if ls *.log *.out >/dev/null 2>&1; then
+             $BINARY xyz -q
             if ! ls *.xyz >/dev/null 2>&1; then
               echo "Coordinate extraction test failed: No .xyz files generated."
               exit 1
@@ -92,12 +103,23 @@ jobs:
             echo "Skipping coordinate extraction test: No log/out files available."
           fi
 
-      - name: Test Create Input (ci)
-        run: |
-          echo "Testing create input functionality..."
-          if ls *.xyz >/dev/null 2>&1; then
-            # Test basic ci command
-            $BINARY ci --calc-type sp -q
+       - name: Test Create Input (ci)
+         run: |
+           # Try both possible binary locations
+           if [ -f "./build/bin/gaussian_extractor.x" ]; then
+             BINARY="./build/bin/gaussian_extractor.x"
+           elif [ -f "./build/gaussian_extractor.x" ]; then
+             BINARY="./build/gaussian_extractor.x"
+           elif [ -f "./gaussian_extractor.x" ]; then
+             BINARY="./gaussian_extractor.x"
+           else
+             echo "Test failed: gaussian_extractor.x binary not found."
+             exit 1
+           fi
+           echo "Testing create input functionality..."
+           if ls *.xyz >/dev/null 2>&1; then
+             # Test basic ci command
+             $BINARY ci --calc-type sp -q
             if ! ls *.gau >/dev/null 2>&1; then
               echo "Create input test failed: No .gau files generated."
               exit 1
@@ -113,10 +135,21 @@ jobs:
             echo "Skipping create input test: No .xyz files available."
           fi
 
-      - name: Test Parameter Template Generation
-        run: |
-          echo "Testing parameter template generation..."
-          $BINARY ci --generate-template opt_freq
+       - name: Test Parameter Template Generation
+         run: |
+           # Try both possible binary locations
+           if [ -f "./build/bin/gaussian_extractor.x" ]; then
+             BINARY="./build/bin/gaussian_extractor.x"
+           elif [ -f "./build/gaussian_extractor.x" ]; then
+             BINARY="./build/gaussian_extractor.x"
+           elif [ -f "./gaussian_extractor.x" ]; then
+             BINARY="./gaussian_extractor.x"
+           else
+             echo "Test failed: gaussian_extractor.x binary not found."
+             exit 1
+           fi
+           echo "Testing parameter template generation..."
+           $BINARY ci --generate-template opt_freq
           if [ ! -f "opt_freq.params" ]; then
             echo "Parameter template generation test failed: opt_freq.params not created."
             exit 1
@@ -128,11 +161,22 @@ jobs:
           fi
           echo "Parameter template generation tests passed."
 
-      - name: Test Parameter File Loading
-        run: |
-          echo "Testing parameter file loading..."
-          if [ -f "opt_freq.params" ] && ls *.xyz >/dev/null 2>&1; then
-            $BINARY ci --param-file opt_freq.params --calc-type ts_freq -q
+       - name: Test Parameter File Loading
+         run: |
+           # Try both possible binary locations
+           if [ -f "./build/bin/gaussian_extractor.x" ]; then
+             BINARY="./build/bin/gaussian_extractor.x"
+           elif [ -f "./build/gaussian_extractor.x" ]; then
+             BINARY="./build/gaussian_extractor.x"
+           elif [ -f "./gaussian_extractor.x" ]; then
+             BINARY="./gaussian_extractor.x"
+           else
+             echo "Test failed: gaussian_extractor.x binary not found."
+             exit 1
+           fi
+           echo "Testing parameter file loading..."
+           if [ -f "opt_freq.params" ] && ls *.xyz >/dev/null 2>&1; then
+             $BINARY ci --param-file opt_freq.params --calc-type ts_freq -q
             if ! ls *.gau >/dev/null 2>&1; then
               echo "Parameter file loading test failed: No .gau files generated."
               exit 1
