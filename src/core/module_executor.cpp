@@ -1318,13 +1318,68 @@ int execute_create_input_command(const CommandContext& context)
         creator.set_irc_maxcycle(context.ci_irc_maxcycle);
         creator.set_irc_stepsize(context.ci_irc_stepsize);
 
-        // Execute the creation
-        CreateSummary summary = creator.create_inputs(xyz_files);
+        // Execute the creation (with batch processing if enabled)
+        CreateSummary total_summary;
+        if (context.batch_size > 0 && xyz_files.size() > context.batch_size)
+        {
+            // Process files in batches
+            size_t total_files       = xyz_files.size();
+            size_t processed_batches = 0;
+
+            if (!context.quiet)
+            {
+                std::cout << "Processing " << total_files << " files in batches of " << context.batch_size << std::endl;
+            }
+
+            for (size_t i = 0; i < total_files; i += context.batch_size)
+            {
+                size_t                   batch_end = std::min(i + context.batch_size, total_files);
+                std::vector<std::string> batch(xyz_files.begin() + i, xyz_files.begin() + batch_end);
+
+                if (!context.quiet)
+                {
+                    std::cout << "Processing batch " << (processed_batches + 1) << " (files " << (i + 1) << "-"
+                              << batch_end << ")" << std::endl;
+                }
+
+                CreateSummary batch_summary = creator.create_inputs(batch);
+
+                // Accumulate results
+                total_summary.total_files += batch_summary.total_files;
+                total_summary.processed_files += batch_summary.processed_files;
+                total_summary.created_files += batch_summary.created_files;
+                total_summary.failed_files += batch_summary.failed_files;
+                total_summary.skipped_files += batch_summary.skipped_files;
+                total_summary.execution_time += batch_summary.execution_time;
+
+                processed_batches++;
+
+                // Check for shutdown signal
+                if (g_shutdown_requested.load())
+                {
+                    if (!context.quiet)
+                    {
+                        std::cout << "Shutdown requested, stopping batch processing..." << std::endl;
+                    }
+                    break;
+                }
+            }
+
+            if (!context.quiet)
+            {
+                std::cout << "Completed processing " << processed_batches << " batches" << std::endl;
+            }
+        }
+        else
+        {
+            // Process all files at once (original behavior)
+            total_summary = creator.create_inputs(xyz_files);
+        }
 
         // Print summary
         if (!context.quiet)
         {
-            creator.print_summary(summary, "Input file creation");
+            creator.print_summary(total_summary, "Input file creation");
         }
 
         // Check for errors
@@ -1341,7 +1396,7 @@ int execute_create_input_command(const CommandContext& context)
             return 1;
         }
 
-        return summary.failed_files > 0 ? 1 : 0;
+        return total_summary.failed_files > 0 ? 1 : 0;
     }
     catch (const std::exception& e)
     {

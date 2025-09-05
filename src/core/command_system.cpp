@@ -236,25 +236,29 @@ CommandContext CommandParser::parse(int argc, char* argv[])
         }
 
         // Parse common options first
+        int original_i = i;
         parse_common_options(context, i, argc, argv);
 
-        // Parse command-specific options
-        if (context.command == CommandType::EXTRACT || context.command == CommandType::HIGH_LEVEL_KJ ||
-            context.command == CommandType::HIGH_LEVEL_AU)
+        // Parse command-specific options only if common options didn't handle this argument
+        if (i == original_i)
         {
-            parse_extract_options(context, i, argc, argv);
-        }
-        else if (context.command == CommandType::EXTRACT_COORDS)
-        {
-            parse_xyz_options(context, i, argc, argv);
-        }
-        else if (context.command == CommandType::CREATE_INPUT)
-        {
-            parse_create_input_options(context, i, argc, argv);
-        }
-        else
-        {
-            parse_checker_options(context, i, argc, argv);
+            if (context.command == CommandType::EXTRACT || context.command == CommandType::HIGH_LEVEL_KJ ||
+                context.command == CommandType::HIGH_LEVEL_AU)
+            {
+                parse_extract_options(context, i, argc, argv);
+            }
+            else if (context.command == CommandType::EXTRACT_COORDS)
+            {
+                parse_xyz_options(context, i, argc, argv);
+            }
+            else if (context.command == CommandType::CREATE_INPUT)
+            {
+                parse_create_input_options(context, i, argc, argv);
+            }
+            else
+            {
+                parse_checker_options(context, i, argc, argv);
+            }
         }
     }
 

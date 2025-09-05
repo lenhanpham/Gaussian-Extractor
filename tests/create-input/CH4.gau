@@ -1,0 +1,11 @@
+%chk=CH4.chk
+# scf(maxcycle=500,xqc) UwB97XD/Def2SVPP
+
+Title: Normal single point calculation
+
+0 1
+C         -3.15635        1.18864        0.00000
+H         -2.08635        1.18864        0.00000
+H         -3.51301        1.45464       -0.97311
+H         -3.51302        1.89838        0.71691
+H         -3.51302        0.21291        0.25619
