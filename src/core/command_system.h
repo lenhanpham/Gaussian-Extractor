@@ -58,7 +58,8 @@ enum class CommandType
     CHECK_ALL,        ///< Run comprehensive checks for all job types
     HIGH_LEVEL_KJ,    ///< Calculate high-level energies with output in kJ/mol units
     HIGH_LEVEL_AU,    ///< Calculate high-level energies with detailed output in atomic units
-    EXTRACT_COORDS    ///< Extract coordinates from log files and organize XYZ files
+    EXTRACT_COORDS,   ///< Extract coordinates from log files and organize XYZ files
+    CREATE_INPUT      ///< Create Gaussian input files from XYZ files
 };
 
 /**
@@ -106,6 +107,29 @@ struct CommandContext
     // Coordinate extraction-specific parameters
     std::vector<std::string> specific_files;  ///< List of specific files to process (empty for all files)
 
+    // Create input-specific parameters
+    std::string ci_calc_type;       ///< Calculation type (sp, opt_freq, ts, etc.)
+    std::string ci_functional;      ///< DFT functional (UWB97XD, B3LYP, etc.)
+    std::string ci_basis;           ///< Basis set (def2SVPP, etc.)
+    std::string ci_large_basis;     ///< Large basis set for higher level calculations
+    std::string ci_solvent;         ///< Solvent name
+    std::string ci_solvent_model;   ///< Solvent model (smd, pcm, etc.)
+    std::string ci_print_level;     ///< Pound sign modifier (N, P, T)
+    std::string ci_extra_keywords;  ///< Additional Gaussian keywords
+    int         ci_charge;          ///< Molecular charge
+    int         ci_mult;            ///< Multiplicity
+    std::string ci_tail;            ///< Additional content at end of input
+    std::string ci_extension;       ///< Output file extension
+    std::string ci_tschk_path;      ///< Path to transition state checkpoint files
+    int         ci_freeze_atom1;    ///< First atom to freeze (for TS calculations)
+    int         ci_freeze_atom2;    ///< Second atom to freeze (for TS calculations)
+    int         ci_scf_maxcycle;    ///< SCF maxcycle override
+    int         ci_opt_maxcycles;   ///< OPT maxcycles override
+    int         ci_irc_maxpoints;   ///< IRC maxpoints override
+    int         ci_irc_recalc;      ///< IRC recalc override
+    int         ci_irc_maxcycle;    ///< IRC maxcycle override
+    int         ci_irc_stepsize;    ///< IRC stepsize override
+
     /**
      * @brief Default constructor with built-in fallback values
      *
@@ -126,15 +150,35 @@ struct CommandContext
           valid_extensions({".log", ".out", ".LOG", ".OUT", ".Log", ".Out"}),  // Valid output extensions
           temp(298.15),                                                        // Room temperature (25°C)
           concentration(1000),                                                 // 1M concentration (1000 mM)
-          sort_column(2),             // Sort by second column (typically energy)
-          output_format("text"),      // Plain text output
-          use_input_temp(false),      // Use fixed temperature
-          memory_limit_mb(0),         // No memory limit (auto-detect)
-          show_resource_info(false),  // Don't show resource info by default
-          target_dir(""),             // Use default directory names
-          show_error_details(false),  // Show minimal error info
-          dir_suffix("done")
-    {}  // Default suffix for completed jobs
+          sort_column(2),                           // Sort by second column (typically energy)
+          output_format("text"),                    // Plain text output
+          use_input_temp(false),                    // Use fixed temperature
+          memory_limit_mb(0),                       // No memory limit (auto-detect)
+          show_resource_info(false),                // Don't show resource info by default
+          target_dir(""),                           // Use default directory names
+          show_error_details(false),                // Show minimal error info
+          dir_suffix("done"),                       // Default suffix for completed jobs
+          ci_calc_type("sp"),                       // Default to single point calculation
+          ci_functional("UwB97XD"),                 // Default functional
+          ci_basis("Def2SVPP"),                     // Default basis set
+          ci_large_basis(""),                       // No large basis by default
+          ci_solvent(""),                           // Gas phase by default
+          ci_solvent_model("smd"),                  // Default solvent model
+          ci_print_level(""),                       // Empty pound sign (defaults to N)
+          ci_extra_keywords(""),                    // No extra keywords
+          ci_charge(0),                             // Neutral charge
+          ci_mult(1),                               // Singlet multiplicity
+          ci_tail(""),                              // No tail content
+          ci_extension(".gau"),                     // Default extension
+          ci_tschk_path(""),                        // No TS checkpoint path
+          ci_freeze_atom1(0),                       // No frozen atoms
+          ci_freeze_atom2(0), ci_scf_maxcycle(-1),  // Use default SCF maxcycle
+          ci_opt_maxcycles(-1),                     // Use default OPT maxcycles
+          ci_irc_maxpoints(-1),                     // Use default IRC maxpoints
+          ci_irc_recalc(-1),                        // Use default IRC recalc
+          ci_irc_maxcycle(-1),                      // Use default IRC maxcycle
+          ci_irc_stepsize(-1)                       // Use default IRC stepsize
+    {}
 
     /**
      * @brief Apply configuration file defaults to context parameters
@@ -238,6 +282,13 @@ public:
      */
     static void create_default_config();
 
+    /**
+     * @brief Convert CommandType enum to string representation
+     * @param command CommandType to convert
+     * @return String name of the command
+     */
+    static std::string get_command_name(CommandType command);
+
 private:
     /**
      * @brief Parse command string to CommandType enum
@@ -246,13 +297,6 @@ private:
      * @throws std::invalid_argument if command is not recognized
      */
     static CommandType parse_command(const std::string& cmd);
-
-    /**
-     * @brief Convert CommandType enum to string representation
-     * @param command CommandType to convert
-     * @return String name of the command
-     */
-    static std::string get_command_name(CommandType command);
 
     /**
      * @brief Parse options common to all commands
@@ -298,6 +342,17 @@ private:
      * Handles xyz-specific options like --files.
      */
     static void parse_xyz_options(CommandContext& context, int& i, int argc, char* argv[]);
+
+    /**
+     * @brief Parse options specific to create_input command
+     * @param context CommandContext to populate
+     * @param i Current argument index (modified by reference)
+     * @param argc Total number of arguments
+     * @param argv Argument array
+     *
+     * Handles create_input-specific options like --calc-type, --functional, --basis.
+     */
+    static void parse_create_input_options(CommandContext& context, int& i, int argc, char* argv[]);
 
     /**
      * @brief Add a warning message to the command context
@@ -349,6 +404,12 @@ private:
      * that should override configuration file settings.
      */
     static std::unordered_map<std::string, std::string> extract_config_overrides(int argc, char* argv[]);
+
+    /**
+     * @brief Find or create a default parameter file for create_input
+     * @return Path to the parameter file, or empty string if failed
+     */
+    static std::string find_or_create_default_param_file();
 };
 
 /**

@@ -1,8 +1,8 @@
-# Gaussian Extractor v0.4.4
+# Gaussian Extractor v0.5.0
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
-![results](./docs/results.png)
+![results](./resources/results.png)
 
 ## Key Features
 
@@ -11,11 +11,13 @@
 * **Gibbs Free Energy Calculation**: Calculates Gibbs free energies from output files with improved electronic energy (single point) from higher levels of theory
 * **Automatic Sorting**: Results sorted by energy values for easy analysis
 * **Extract coodinates**: Coordinates of gaussian outputs can be extracted
+* **Create Input Files**: Generate Gaussian input files from XYZ coordinate files with customizable calculation parameters
+* **Parameter Templates**: Generate and reuse parameter templates for different calculation types
 * **Important note**: **Large files (>100MB) automatically skipped by default**. Users need to set flag --max-file-size xxxxx to increase the size limit
 
 ## Installation and Compilation
 
-## Windows
+### Windows
 
 - **A binary package is included in the release**. Just download this package and extract it to use the program. Users should add the program to PATH system variable and then interact with gaussian_extractor through Windows terminal
 
@@ -23,9 +25,9 @@
 
 - Use windows terminal (powershell) to run gaussian_extractor.exe in a folder where your gaussian log files are available.
 
-## Linux
+### Linux
 
-### Prerequisites
+#### Prerequisites
 
 **Compiler Requirements:**
 
@@ -33,11 +35,11 @@
 * **Threading Support**: pthread library (Linux/macOS) or Windows threading
 * **Filesystem Support**: std::filesystem (included in modern compilers)
 
-### Compilation Options
+#### Compilation Options
 
-### Note that I do not use MacOS computers or servers to test the program; I am not sure if it is going to work properly on MacOS. Only linux was tested well.
+**Note that I do not use MacOS computers or servers to test the program; I am not sure if it is going to work properly on MacOS. Only linux and Windows were tested well.**
 
-#### Option 1: Automatic Build (Recommended)
+##### Option 1: Automatic Build (Recommended)
 
 **Basic Build (Auto-detects Compiler):**
 
@@ -80,7 +82,7 @@ CXX=icpc make -j 8
 CXX=g++ make -j 8
 ```
 
-#### Option 2: CMake (Cross-platform)
+##### Option 2: CMake (Cross-platform)
 
 **Basic CMake Build (Auto-detects Compiler):**
 
@@ -170,7 +172,7 @@ Total execution time: 12.347 seconds
 Memory usage: 256.7 MB / 4.0 GB
 ```
 
-![results](./docs/results.png)
+![results](./resources/results.png)
 
 ***Output explanation:***
 
@@ -204,7 +206,7 @@ Memory usage: 256.7 MB / 4.0 GB
 | `--resource-info` | Show resources     | -                 | false           |
 | `-h, --help`      | Show help          | -                 | false           |
 
-### Important Notes
+#### Important Notes
 
 **Temperature Setting (`-t, --temp`):**
 
@@ -222,9 +224,30 @@ Memory usage: 256.7 MB / 4.0 GB
 - **7**: Zero-point energy
 - **10**: Round count (number of Gaussian calculation rounds)
 
+### Options to create inputs (ci)
+
+| Option               | Description                   | Values                      | Default   |
+| -------------------- | ----------------------------- | --------------------------- | --------- |
+| `--calc-type`        | Calculation type              | sp, opt_freq, ts_freq, etc. | sp        |
+| `--functional`       | DFT functional                | UWB97XD, B3LYP, etc.        | UWB97XD   |
+| `--basis`            | Basis set                     | def2-SVPP, 6-31G*, etc.     | def2-SVPP |
+| `--large-basis`      | Large basis for TS/high-level | def2-TZVPP, etc.            | -         |
+| `--solvent`          | Solvent name                  | water, ethanol, etc.        | gas phase |
+| `--solvent-model`    | Solvent model                 | smd, cpcm, iefpcm           | smd       |
+| `--charge`           | Molecular charge              | integer                     | 0         |
+| `--mult`             | Multiplicity                  | integer                     | 1         |
+| `--freeze-atoms`     | Freeze bond for TS            | atom1 atom2                 | -         |
+| `--print-level`      | Route modifier                | N, P, T                     | -         |
+| `--extra-keywords`   | Additional keywords           | any Gaussian keywords       | -         |
+| `--extension`        | Output extension              | .gau, .com, etc.            | .gau      |
+| `--tschk-path`       | TS checkpoint path            | directory path              | -         |
+| `----genci-params`   | Generate parameter template   | calculation type            | -         |
+| `--genci-all-params` | Generate all templates        | directory path              | -         |
+| `--param-file`       | Load parameters from file     | file path                   | -         |
+
 ## Usage Examples of all features
 
-### Extrac data from outputs
+### Extract data from outputs
 
 ```bash
 # Simple processing with defaults
@@ -239,6 +262,142 @@ gaussian_extractor.x -c 2 -col 6
 # Generate CSV output quietly
 gaussian_extractor.x -f csv -q
 ```
+
+### Create Gaussian inputs
+
+#### File Requirements
+
+- **Input**: XYZ coordinate files in current directory
+- **Output**: Gaussian input files (.gau by default)
+- **Naming**: Input files named after corresponding XYZ files
+- **Format**: Standard XYZ format with atom count, comment, coordinates
+
+#### Supported Calculation Types
+
+- **sp**: Single point energy calculation
+- **opt_freq**: Geometry optimization + frequency analysis
+- **ts_freq**: Transition state search + frequency analysis
+- **oss_ts_freq**: Openshell singlet TS search + frequency analysis
+- **modre_ts_freq**: Modredundant TS search + frequency analysis
+- **oss_check_sp**: Openshell singlet stability check
+- **high_sp**: High-level single point with larger basis set
+- **irc_forward**: IRC calculation in forward direction
+- **irc_reverse**: IRC calculation in reverse direction
+- **irc**: IRC calculation in both directions
+
+#### Commands to create gaussian inputs
+
+The `ci` module generates Gaussian input files from XYZ coordinate files by combining the ci command with several options
+
+##### Basic examples
+
+```bash
+# Generate single point energy inputs (default)
+gaussian_extractor.x ci
+
+# Generate optimization + frequency inputs
+gaussian_extractor.x ci --calc-type opt_freq
+
+# Generate transition state search inputs
+gaussian_extractor.x ci --calc-type ts_freq
+
+# Generate parameter template
+gaussian_extractor.x ci --genci-params opt_freq
+
+# Use parameter file
+gaussian_extractor.x ci --param-file opt_freq.params
+```
+
+##### Advanced Examples
+
+```bash
+# Transition state search with frozen bond
+gaussian_extractor.x ci --calc-type modre_ts_freq --freeze-atoms 1 2
+
+# High-level single point with custom functional and basis
+gaussian_extractor.x ci --calc-type high_sp --functional B3LYP --basis 6-311+G** --large-basis def2-TZVPP
+
+# Solvent calculation
+gaussian_extractor.x ci --calc-type opt_freq --solvent water --solvent-model smd
+
+# IRC calculation from transition state
+gaussian_extractor.x ci --calc-type irc --tschk-path ../ts_checkpoints
+
+# Custom keywords and settings
+gaussian_extractor.x ci --calc-type opt_freq --extra-keywords "Int=UltraFine SCF=Conver=8" --pound-sign P
+```
+
+#### Generate parameter files for creation of inputs
+
+The `ci` module generates template parameter files for different types of calculations or a universial parameter files for all supported types. 
+
+##### Parameter Templates
+
+The program can generate reusable parameter templates for different calculation types:
+
+```bash
+# Generate a template for optimization + frequency
+gaussian_extractor.x ci --genci-params opt_freq
+
+# Generate a universial parameter template
+gaussian_extractor.x ci --genci-params opt_freq
+
+# Generate templates for all calculation types
+gaussian_extractor.x ci --genci-all-params ./my_templates
+
+# Use a saved parameter file
+gaussian_extractor.x ci --param-file opt_freq.params
+```
+
+##### Input creation workflow with parameter template
+
+1. **Generate Template**:
+   
+   ```bash
+   gaussian_extractor.x ci --genci-params opt_freq
+   # Creates opt_freq.params
+   ```
+
+2. **Edit Template** (opt_freq.params):
+   
+   ```bash
+   # Modify parameters as needed
+   calc_type = opt_freq
+   functional = B3LYP
+   basis = 6-31G*
+   solvent = chloroform
+   charge = 1
+   mult = 2
+   ```
+
+3. **Use Template**:
+   
+   ```bash
+   gaussian_extractor.x ci --param-file opt_freq.params
+   ```
+
+#### Integration with Other Features
+
+The create_input module works seamlessly with other Gaussian Extractor features:
+
+```bash
+# Generate inputs, then check job status
+gaussian_extractor.x ci --calc-type opt_freq
+gaussian_extractor.x done
+
+# Generate inputs for failed jobs
+gaussian_extractor.x errors
+# Then create new inputs for the error jobs
+gaussian_extractor.x ci --calc-type opt_freq
+```
+
+#### Tips
+
+- Use `--genci-params` to create templates for common calculation types
+- Templates can be shared and reused across projects
+- The program automatically detects required parameters for each calculation type
+- Multi-threading is supported for batch processing of many XYZ files
+- Check the generated input files before submitting to Gaussian
 
 ### Check and seprate outputs to a directory
 
@@ -261,7 +420,7 @@ Single point calculations are done at a higher level of theory and electronic en
 - Subdirectory (e.g., `higher_level`): Single point calculations at higher theory level
 - Log files must have the same names in both directories
 
-![dirs](./docs/tree_dir.png)
+![dirs](./resources/tree_dir.png)
 
 **Basic Usage:**
 
@@ -274,13 +433,13 @@ gaussian_extractor.x high-au    # Improved Gibbs free energy in hartree
 ### Extract coordinates
 
 ```
-gaussian_extractor.x xyz                          # extract coordinates of all ouput files 
-gaussian_extractor.x xyz -f file or list of files    # all general errors causing jobs killed will be moved to errorJobs**Enhanced Parallel Processing:**
+gaussian_extractor.x xyz                          # extract coordinates of all output files
+gaussian_extractor.x xyz -f file1.log file2.log    # extract coordinates from specific files
 ```
 
 ### Some more examples
 
-#### Production Examples
+#### Production Examples of data extraction
 
 ```bash
 # Cluster-safe processing
@@ -299,7 +458,7 @@ gaussian_extractor.x --max-file-size 500
 gaussian_extractor.x --memory-limit 8192 -nt 16
 ```
 
-#### Advanced Examples
+#### Advanced Examples of data extraction
 
 ```bash
 # Complete parameter specification
@@ -434,7 +593,7 @@ gaussian_extractor.x --resource-info
 - Check system memory with `--resource-info`
 - Reduce threads if memory pressure occurs
 
-### Getting Help
+## Getting Help
 
 ```bash
 gaussian_extractor.x --help           # Complete help
@@ -487,6 +646,7 @@ gaussian_extractor.x -nt 40  # Uses ~19.2GB (60% of 32GB)
 
 ## Version History
 
+- **v0.5** New feature: Creation of gaussian inputs
 - **v0.4** Several new features have been implemented, including error checks, solvent error check, completed job checks, calculations of Gibbs free energy using high-level electronic energy in combiation with low-level energy components (entropy, zero-point energy, thermal correction)
 - **v0.3** (Enhanced Safety Edition): Complete resource management, cluster awareness, comprehensive error handling
 - **v0.2** (Original): Basic parallel processing
@@ -502,5 +662,3 @@ For bug reports, feature requests, or safety concerns, please create an issue at
 - Resource usage information (`--resource-info` output)
 
 ---
-
-**⚠️ Important**: This enhanced version prioritizes system stability and cluster safety. Always test in your environment before production use, especially on shared systems.

@@ -240,18 +240,15 @@ int main(int argc, char* argv[])
                     command_result = execute_extract_coords_command(context);
                     break;
 
+                case CommandType::CREATE_INPUT:
+                    command_result = execute_create_input_command(context);
+                    break;
+
                 default:
                     std::cerr << "Error: Unknown command type" << std::endl;
                     command_result = 1;
                     break;
             }
-
-                // On Windows, keep the console window open
-#ifdef _WIN32
-            std::cout << std::endl << "Press Enter to exit..." << std::endl;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cin.get();
-#endif
 
             return command_result;
         }
@@ -264,20 +261,8 @@ int main(int argc, char* argv[])
     catch (...)
     {
         std::cerr << "Fatal error: Unknown exception occurred" << std::endl;
-#ifdef _WIN32
-        std::cout << std::endl << "Press Enter to exit..." << std::endl;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cin.get();
-#endif
         return 1;
     }
-
-#ifdef _WIN32
-    // On Windows, keep the console window open after successful execution
-    std::cout << std::endl << "Press Enter to exit..." << std::endl;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cin.get();
-#endif
 
     return 0;
 }

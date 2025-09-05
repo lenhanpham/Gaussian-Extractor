@@ -164,6 +164,17 @@ int execute_high_level_au_command(const CommandContext& context);
  */
 int execute_extract_coords_command(const CommandContext& context);
 
-/** @} */ // end of ModuleExecutors group
+/**
+ * @brief Execute Gaussian input file creation from XYZ files
+ * @param context Configured command context
+ * @return Exit code: 0 for success, non-zero for errors
+ *
+ * Creates Gaussian input files (.gau, .com, .in, .gjf) from XYZ coordinate files
+ * for various types of calculations including single points, optimizations,
+ * transition state searches, and high-level energy calculations.
+ */
+int execute_create_input_command(const CommandContext& context);
 
-#endif // MODULE_EXECUTOR_H
+/** @} */  // end of ModuleExecutors group
+
+#endif  // MODULE_EXECUTOR_H

@@ -1,5 +1,5 @@
 # Makefile for Gaussian Extractor
-# Enhanced Safety Edition v0.4.4
+# Enhanced Safety Edition v0.5.0
 
 # Directory structure
 SRC_DIR = src
@@ -61,8 +61,11 @@ SOURCES = $(SRC_DIR)/main.cpp \
           $(CORE_DIR)/metadata.cpp \
           $(CORE_DIR)/high_level_energy.cpp \
 		  $(CORE_DIR)/coord_extractor.cpp \
+		  $(CORE_DIR)/parameter_parser.cpp \
 		  $(CORE_DIR)/utils.cpp \
-		  $(CORE_DIR)/interactive_mode.cpp
+		  $(CORE_DIR)/interactive_mode.cpp \
+		  $(CORE_DIR)/create_input.cpp \
+		  $(CORE_DIR)/help_utils.cpp
 
 HEADERS = $(CORE_DIR)/module_executor.h \
           $(CORE_DIR)/gaussian_extractor.h \
@@ -73,8 +76,12 @@ HEADERS = $(CORE_DIR)/module_executor.h \
           $(CORE_DIR)/metadata.h \
           $(CORE_DIR)/high_level_energy.h \
 		  $(CORE_DIR)/coord_extractor.h \
+		  $(CORE_DIR)/parameter_parser.h \
 		  $(CORE_DIR)/utils.h \
-          $(CORE_DIR)/version.h 
+          $(CORE_DIR)/version.h \
+          $(CORE_DIR)/interactive_mode.h \
+          $(CORE_DIR)/create_input.h \
+          $(CORE_DIR)/help_utils.h
 
 OBJECTS = $(SOURCES:%.cpp=$(BUILD_DIR)/%.o)
 TARGET = gaussian_extractor.x

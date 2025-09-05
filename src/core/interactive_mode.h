@@ -24,6 +24,7 @@ int execute_check_all_command(const CommandContext& context);
 int execute_high_level_kj_command(const CommandContext& context);
 int execute_high_level_au_command(const CommandContext& context);
 int execute_extract_coords_command(const CommandContext& context);
+int execute_create_input_command(const CommandContext& context);
 
 /**
  * @brief Interactive command loop for Windows double-click usage

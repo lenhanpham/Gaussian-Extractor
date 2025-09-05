@@ -1,7 +1,7 @@
 # CMake configuration for Gaussian Extractor
 cmake_minimum_required(VERSION 3.16)
 project(GaussianExtractor
-    VERSION 0.4.4
+    VERSION 0.5.0
     DESCRIPTION "High-performance Gaussian log file processor"
     LANGUAGES CXX
 )
@@ -39,8 +39,11 @@ set(SOURCES
     src/core/high_level_energy.cpp
     src/core/coord_extractor.cpp
     src/core/metadata.cpp
+    src/core/parameter_parser.cpp
     src/core/utils.cpp
     src/core/interactive_mode.cpp
+    src/core/create_input.cpp
+    src/core/help_utils.cpp
 )
 
 # Add Windows resource file if building on Windows
@@ -58,8 +61,12 @@ set(HEADERS
     src/core/high_level_energy.h
     src/core/coord_extractor.h
     src/core/metadata.h
+    src/core/parameter_parser.h
     src/core/utils.h
     src/core/version.h
+    src/core/interactive_mode.h
+    src/core/create_input.h
+    src/core/help_utils.h
 )
 
 # Create the executable
@@ -155,11 +162,12 @@ if(ENABLE_ASAN AND NOT MSVC)
     )
 endif()
 
-# Set output name
-set_target_properties(gaussian_extractor
-    PROPERTIES
-    OUTPUT_NAME "gaussian_extractor.x"
-)
+# Set output name based on platform
+if(WIN32)
+    set_target_properties(gaussian_extractor PROPERTIES OUTPUT_NAME "gaussian_extractor")
+else()
+    set_target_properties(gaussian_extractor PROPERTIES OUTPUT_NAME "gaussian_extractor.x")
+endif()
 
 # Installation rules
 include(GNUInstallDirs)

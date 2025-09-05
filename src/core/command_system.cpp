@@ -1,5 +1,8 @@
 #include "command_system.h"
 #include "config_manager.h"
+#include "help_utils.h"
+#include "parameter_parser.h"
+#include "utils.h"
 #include "version.h"
 #include <algorithm>
 #include <cstdlib>
@@ -71,29 +74,165 @@ CommandContext CommandParser::parse(int argc, char* argv[])
         {
             if (context.command == CommandType::EXTRACT)
             {
-                print_help();  // Use default parameter
+                HelpUtils::print_help();  // Use default parameter
             }
             else
             {
-                print_command_help(context.command);  // Use default parameter
+                HelpUtils::print_command_help(context.command);  // Use default parameter
             }
             std::exit(0);
         }
 
         else if (arg == "--config-help")
         {
-            print_config_help();
+            HelpUtils::print_config_help();
             std::exit(0);
         }
         else if (arg == "--create-config")
         {
-            create_default_config();
+            HelpUtils::create_default_config();
             std::exit(0);
         }
         else if (arg == "--show-config")
         {
             g_config_manager.print_config_summary(true);
             std::exit(0);
+        }
+        else if (arg == "--genci-params")
+        {
+            std::string template_type = "";   // Empty means general template
+            std::string directory     = ".";  // Default to current directory
+            std::string filename;
+            bool        is_general_template = true;
+
+            if (++i < argc)
+            {
+                std::string first_arg = argv[i];
+
+                if (first_arg[0] == '-')
+                {
+                    // Next argument is another option, use defaults (general template)
+                    --i;
+                }
+                else if (first_arg.find('/') != std::string::npos || first_arg.find('\\') != std::string::npos ||
+                         first_arg.find('.') == 0 || std::filesystem::exists(first_arg))
+                {
+                    // Argument looks like a directory path
+                    directory = first_arg;
+
+                    // Check if there's a calculation type argument after the directory
+                    if (i + 1 < argc && argv[i + 1][0] != '-')
+                    {
+                        template_type       = argv[++i];
+                        is_general_template = false;
+                    }
+                    // If no calc_type after directory, generate general template in that directory
+                }
+                else
+                {
+                    // Assume it's a calculation type
+                    template_type       = first_arg;
+                    is_general_template = false;
+
+                    // Check if there's an optional directory argument
+                    if (i + 1 < argc && argv[i + 1][0] != '-')
+                    {
+                        directory = argv[++i];
+                    }
+                }
+            }
+            else
+            {
+                // No arguments provided, use defaults (general template)
+                --i;
+            }
+
+            // Ensure directory exists or create it
+            std::filesystem::path dir_path(directory);
+            if (!std::filesystem::exists(dir_path))
+            {
+                try
+                {
+                    std::filesystem::create_directories(dir_path);
+                }
+                catch (const std::filesystem::filesystem_error& e)
+                {
+                    std::cerr << "Error: Cannot create directory " << directory << ": " << e.what() << std::endl;
+                    exit(1);
+                }
+            }
+
+            ParameterParser parser;
+            bool            success;
+
+            if (is_general_template)
+            {
+                std::filesystem::path base_path  = std::filesystem::path(directory) / "ci_parameters.params";
+                std::filesystem::path final_path = Utils::generate_unique_filename(base_path);
+                filename                         = final_path.string();
+                success                          = parser.generateGeneralTemplate(filename);
+            }
+            else
+            {
+                std::filesystem::path base_path  = std::filesystem::path(directory) / (template_type + ".params");
+                std::filesystem::path final_path = Utils::generate_unique_filename(base_path);
+                filename                         = final_path.string();
+                success                          = parser.generateTemplate(template_type, filename);
+            }
+
+            if (success)
+            {
+                std::cout << "Template generated successfully: " << filename << std::endl;
+                if (is_general_template)
+                {
+                    std::cout << "This is a general parameter file containing all possible parameters." << std::endl;
+                    std::cout << "Edit the calc_type and uncomment relevant parameters as needed." << std::endl;
+                }
+                std::cout << "Use with: gaussian_extractor ci --param-file " << filename << std::endl;
+                exit(0);  // Exit after generating template
+            }
+            else
+            {
+                if (is_general_template)
+                {
+                    std::cerr << "Failed to generate general template" << std::endl;
+                }
+                else
+                {
+                    std::cerr << "Failed to generate template for: " << template_type << std::endl;
+                }
+                exit(1);
+            }
+        }
+        else if (arg == "--genci-all-params")
+        {
+            std::string directory = ".";  // Default to current directory
+
+            // Check if there's an optional directory argument
+            if (++i < argc && argv[i][0] != '-')
+            {
+                directory = argv[i];
+            }
+            else
+            {
+                // No directory provided, use current directory
+                --i;  // Reset index since we didn't consume an argument
+            }
+
+            // Ensure directory path is absolute for clear feedback
+            std::filesystem::path dir_path(directory);
+            std::filesystem::path abs_dir_path = std::filesystem::absolute(dir_path);
+
+            ParameterParser parser;
+            if (parser.generateAllTemplates(directory))
+            {
+                exit(0);  // Exit after generating templates
+            }
+            else
+            {
+                std::cerr << "Failed to generate templates in: " << abs_dir_path.string() << std::endl;
+                exit(1);
+            }
         }
 
         // Parse common options first
@@ -108,6 +247,10 @@ CommandContext CommandParser::parse(int argc, char* argv[])
         else if (context.command == CommandType::EXTRACT_COORDS)
         {
             parse_xyz_options(context, i, argc, argv);
+        }
+        else if (context.command == CommandType::CREATE_INPUT)
+        {
+            parse_create_input_options(context, i, argc, argv);
         }
         else
         {
@@ -139,6 +282,8 @@ CommandType CommandParser::parse_command(const std::string& cmd)
         return CommandType::HIGH_LEVEL_AU;
     if (cmd == "xyz" || cmd == "--extract-coord")
         return CommandType::EXTRACT_COORDS;
+    if (cmd == "ci" || cmd == "--create-input")
+        return CommandType::CREATE_INPUT;
 
     // If it starts with '-', it's probably an option, not a command
     if (!cmd.empty() && cmd.front() == '-')
@@ -170,6 +315,8 @@ std::string CommandParser::get_command_name(CommandType command)
             return std::string("high-au");
         case CommandType::EXTRACT_COORDS:
             return std::string("xyz");
+        case CommandType::CREATE_INPUT:
+            return std::string("ci");
         default:
             return std::string("unknown");
     }
@@ -237,6 +384,8 @@ void CommandParser::parse_common_options(CommandContext& context, int& i, int ar
                         context.requested_threads = req_threads;
                     }
                 }
+
+
                 catch (const std::exception& e)
                 {
                     add_warning(context, "Error: Invalid thread count format. Using configured default.");
@@ -606,29 +755,6 @@ void CommandParser::load_configuration()
     }
 }
 
-void CommandParser::print_config_help()
-{
-    std::cout << "Gaussian Extractor Configuration System\n\n";
-    std::cout << ConfigUtils::get_config_search_paths();
-    std::cout << std::endl;
-
-    std::cout << "Commands:\n";
-    std::cout << "  --show-config     Show current configuration\n";
-    std::cout << "  --create-config   Create default configuration file\n";
-    std::cout << "  --config-help     Show this configuration help\n\n";
-
-    std::cout << "Configuration file format:\n";
-    std::cout << "  # Lines starting with # are comments\n";
-    std::cout << "  key = value\n";
-    std::cout << "  # Values can be quoted: key = \"value with spaces\"\n\n";
-
-    std::cout << "Example configuration entries:\n";
-    std::cout << "  default_temperature = 298.15\n";
-    std::cout << "  default_concentration = 2.0\n";
-    std::cout << "  output_extensions = .log,.out\n";
-    std::cout << "  input_extensions = .com,.gjf,.gau\n";
-    std::cout << "  default_threads = 4\n\n";
-}
 
 void CommandParser::create_default_config()
 {
@@ -674,181 +800,556 @@ std::unordered_map<std::string, std::string> CommandParser::extract_config_overr
     return overrides;
 }
 
-void CommandParser::print_help(const std::string& program_name)
+
+void CommandParser::parse_create_input_options(CommandContext& context, int& i, int argc, char* argv[])
 {
-    std::cout << "Gaussian Extractor (Version " << GaussianExtractor::get_version_info() << ")\n\n";
-    std::cout << "Usage: " << program_name << " [command] [options]\n\n";
-    std::cout << "Commands:\n";
-    std::cout << "  extract           Extract thermodynamic data from Gaussian log files (default)\n";
-    std::cout << "  done              Check and move completed Gaussian jobs\n";
-    std::cout << "  errors            Check and move jobs with errors\n";
-    std::cout << "  pcm               Check and move jobs with PCM convergence failures\n";
-    std::cout << "  imode             Check and move jobs with imaginary frequencies\n";
-    std::cout << "  check             Run all job checks (done, errors, pcm)\n";
-    std::cout << "  high-kj           Calculate high-level energies in kJ/mol\n";
-    std::cout << "  high-au           Calculate high-level energies in atomic units\n";
-    std::cout << "  xyz               Extract final coordinates to XYZ and organize by status\n";
-    std::cout << "\nOptions:\n";
-    std::cout << "  -h, --help        Show this help message\n";
-    std::cout << "  -v, --version     Show version information\n";
-    std::cout << "  --config-help     Show configuration file help\n";
-    std::cout << "  --create-config   Create a default configuration file\n";
-    std::cout << "  --show-config     Show current configuration settings\n";
-    std::cout << "\nRun '" << program_name << " <command> --help' for command-specific help.\n";
-    std::cout << "\n";
-}
+    std::string arg = argv[i];
 
-void CommandParser::print_command_help(CommandType command, const std::string& program_name)
-{
-    std::string cmd_name = get_command_name(command);
-    std::cout << "Help for command: " << cmd_name << "\n\n";
-
-    switch (command)
+    if (arg == "--calc-type")
     {
-        case CommandType::EXTRACT:
-            std::cout << "Description: Extract thermodynamic data from Gaussian log files\n\n";
-            std::cout << "This is the default command when no command is specified.\n";
-            std::cout << "Extracts electronic energies, thermal corrections, and other\n";
-            std::cout << "thermodynamic properties from Gaussian log files.\n\n";
-            std::cout << "Additional Options:\n";
-            std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: 298.15)\n";
-            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n";
-            std::cout << "  -f, --format <fmt>    Output format: text|csv (default: text)\n";
-            std::cout << "  -col, --column <N>    Sort column 1-7 (default: 2)\n";
-            std::cout << "                        1=Name, 2=G kJ/mol, 3=G a.u, 4=G eV, 5=LowFQ, 6=Status, 7=PhCorr\n";
-            std::cout << "  --input-temp          Use temperature from input files\n";
-            std::cout << "  --show-resources      Show system resource information\n";
-            std::cout << "  --memory-limit <MB>   Maximum memory usage in MB (default: auto)\n";
-            break;
-
-        case CommandType::CHECK_DONE:
-            std::cout << "Description: Check and organize completed Gaussian jobs\n\n";
-            std::cout << "This command looks for 'Normal termination' in log files\n";
-            std::cout << "and moves completed jobs along with their .gau and .chk files\n";
-            std::cout << "to a directory named {current_dir}-done/ by default.\n\n";
-            break;
-
-        case CommandType::CHECK_ERRORS:
-            std::cout << "Description: Check and organize Gaussian jobs that failed\n\n";
-            std::cout << "This command looks for error terminations in log files and\n";
-            std::cout << "moves failed jobs along with their .gau and .chk files to errorJobs/\n\n";
-            break;
-
-        case CommandType::CHECK_PCM:
-            std::cout << "Description: Check and organize Gaussian jobs with PCM convergence failures\n\n";
-            std::cout << "This command looks for 'failed in PCMMkU' messages in log files\n";
-            std::cout << "and moves failed jobs along with their .gau and .chk files to PCMMkU/\n\n";
-            break;
-
-        case CommandType::CHECK_IMAGINARY:
-            std::cout << "Description: Check and organize jobs with imaginary frequencies\n\n";
-            std::cout << "This command identifies Gaussian jobs with negative vibrational\n";
-            std::cout << "frequencies and moves them to a designated directory.\n\n";
-            break;
-
-        case CommandType::CHECK_ALL:
-            std::cout << "Description: Run all job checks (done, errors, pcm) in sequence\n\n";
-            break;
-
-        case CommandType::HIGH_LEVEL_KJ:
-            std::cout << "Description: Calculate high-level energies with output in kJ/mol units\n";
-            std::cout
-                << "             Uses high-level electronic energy combined with low-level thermal corrections\n\n";
-            std::cout << "This command reads high-level electronic energies from current directory\n";
-            std::cout << "and thermal corrections from parent directory (../) to compute final\n";
-            std::cout << "thermodynamic quantities. Output format focuses on final Gibbs energies.\n\n";
-            std::cout << "Additional Options:\n";
-            std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: from input or 298.15)\n";
-            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n";
-            std::cout << "  -f, --format <fmt>    Output format: text|csv (default: text)\n";
-            std::cout << "  -col, --column <N>    Sort column 1-7 (default: 2)\n";
-            std::cout << "                        1=Name, 2=G kJ/mol, 3=G a.u, 4=G eV, 5=LowFQ, 6=Status, 7=PhCorr\n\n";
-            break;
-
-        case CommandType::HIGH_LEVEL_AU:
-            std::cout << "Description: Calculate detailed energy components in atomic units\n";
-            std::cout
-                << "             Uses high-level electronic energy combined with low-level thermal corrections\n\n";
-            std::cout << "This command reads high-level electronic energies from current directory\n";
-            std::cout << "and thermal corrections from parent directory (../) to compute detailed\n";
-            std::cout << "energy component breakdown including ZPE, TC, TS, H, and G values.\n\n";
-            std::cout << "Additional Options:\n";
-            std::cout << "  -t, --temp <K>        Temperature in Kelvin (default: from input or 298.15)\n";
-            std::cout << "  -c, --concentration <M> Concentration in M for phase correction (default: 1.0)\n";
-            std::cout << "  -f, --format <fmt>    Output format: text|csv (default: text)\n";
-            std::cout << "  -col, --column <N>    Sort column 1-10 (default: 2)\n";
-            std::cout << "                        1=Name, 2=E high, 3=E low, 4=ZPE, 5=TC, 6=TS, 7=H, 8=G, 9=LowFQ, "
-                         "10=PhCorr\n\n";
-            break;
-
-        case CommandType::EXTRACT_COORDS:
-            std::cout << "Description: Extract final Cartesian coordinates from Gaussian log files\n";
-            std::cout << "             Saves coordinates in XYZ format and organizes based on job status\n\n";
-            std::cout << "This command processes specified or all Gaussian log files in the current directory,\n";
-            std::cout << "extracts the last set of coordinates, converts to XYZ format, and moves\n";
-            std::cout << "the XYZ files to:\n";
-            std::cout << "  - {current_dir}_final_coord/   for completed jobs\n";
-            std::cout << "  - {current_dir}_running_coord/ for incomplete/failed jobs\n\n";
-            std::cout << "Directories are created only if needed.\n\n";
-            std::cout << "Additional Options:\n";
-            std::cout << "  -f, --files <file1[,file2,...]> Single file or comma-separated list of files to process\n";
-            break;
+        if (++i < argc)
+        {
+            context.ci_calc_type = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: calc-type requires a value");
+        }
     }
-
-    std::cout << "Options:\n";
-    std::cout << "  -e, --ext <ext>       File extension: log|out (default: log)\n";
-    std::cout << "  -nt, --threads <N>    Thread count: number|max|half (default: half)\n";
-    std::cout << "  -q, --quiet           Quiet mode (minimal output)\n";
-    std::cout << "  --max-file-size <MB>  Maximum file size in MB (default: 100)\n";
-    std::cout << "  --batch-size <N>      Batch size for large directories (default: auto)\n";
-
-    if (command == CommandType::CHECK_DONE)
+    else if (arg == "--functional")
     {
-        std::cout << "  --dir-suffix <suffix> Directory suffix (default: done)\n";
-        std::cout << "                        Creates {current_dir}-{suffix}/\n";
+        if (++i < argc)
+        {
+            context.ci_functional = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: functional requires a value");
+        }
     }
-
-    if (command == CommandType::CHECK_ERRORS || command == CommandType::CHECK_PCM)
+    else if (arg == "--basis")
     {
-        std::cout << "  --target-dir <name>   Custom target directory name\n";
+        if (++i < argc)
+        {
+            context.ci_basis = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: basis requires a value");
+        }
     }
-
-    if (command == CommandType::CHECK_ERRORS)
+    else if (arg == "--large-basis")
     {
-        std::cout << "  --show-details        Show actual error messages found\n";
+        if (++i < argc)
+        {
+            context.ci_large_basis = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: large-basis requires a value");
+        }
     }
-
-    std::cout << "  -h, --help            Show this help message\n";
-    std::cout << "  -v, --version         Show version information\n\n";
-
-    std::cout << "Examples:\n";
-    std::cout << "  " << program_name << " " << cmd_name << "              # Basic usage\n";
-    std::cout << "  " << program_name << " " << cmd_name << " -q           # Quiet mode\n";
-    if (command == CommandType::HIGH_LEVEL_KJ)
+    else if (arg == "--solvent")
     {
-        std::cout << "  " << program_name << " " << cmd_name << " -col 5       # Sort by frequency\n";
-        std::cout << "  " << program_name << " " << cmd_name
-                  << " -t 300 -col 2 -f csv  # Custom temp, sort by G kJ/mol, CSV\n";
+        if (++i < argc)
+        {
+            context.ci_solvent = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: solvent requires a value");
+        }
     }
-    else if (command == CommandType::HIGH_LEVEL_AU)
+    else if (arg == "--solvent-model")
     {
-        std::cout << "  " << program_name << " " << cmd_name << " -col 8       # Sort by Gibbs energy\n";
-        std::cout << "  " << program_name << " " << cmd_name
-                  << " -t 273 -col 4 -f csv  # Custom temp, sort by ZPE, CSV\n";
+        if (++i < argc)
+        {
+            context.ci_solvent_model = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: solvent-model requires a value");
+        }
     }
-    else if (command == CommandType::EXTRACT_COORDS)
+    else if (arg == "--charge")
     {
-        std::cout << "  " << program_name << " " << cmd_name << " -f file1.log,file2.log  # Process specific files\n";
+        if (++i < argc)
+        {
+            try
+            {
+                context.ci_charge = std::stoi(argv[i]);
+            }
+            catch (const std::exception& e)
+            {
+                add_warning(context, "Error: invalid charge value");
+            }
+        }
+        else
+        {
+            add_warning(context, "Error: charge requires a value");
+        }
+    }
+    else if (arg == "--mult")
+    {
+        if (++i < argc)
+        {
+            try
+            {
+                context.ci_mult = std::stoi(argv[i]);
+            }
+            catch (const std::exception& e)
+            {
+                add_warning(context, "Error: invalid multiplicity value");
+            }
+        }
+        else
+        {
+            add_warning(context, "Error: mult requires a value");
+        }
+    }
+    else if (arg == "--print-level")
+    {
+        if (++i < argc)
+        {
+            context.ci_print_level = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: print-level requires a value");
+        }
+    }
+    else if (arg == "--extra-keywords")
+    {
+        if (++i < argc)
+        {
+            context.ci_extra_keywords = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: extra-keywords requires a value");
+        }
+    }
+    else if (arg == "--tail")
+    {
+        if (++i < argc)
+        {
+            context.ci_tail = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: tail requires a value");
+        }
+    }
+    else if (arg == "--extension")
+    {
+        if (++i < argc)
+        {
+            context.ci_extension = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: extension requires a value");
+        }
+    }
+    else if (arg == "--tschk-path")
+    {
+        if (++i < argc)
+        {
+            context.ci_tschk_path = argv[i];
+        }
+        else
+        {
+            add_warning(context, "Error: tschk-path requires a value");
+        }
+    }
+    else if (arg == "--freeze-atoms")
+    {
+        if (++i < argc)
+        {
+            try
+            {
+                context.ci_freeze_atom1 = std::stoi(argv[i]);
+                if (++i < argc)
+                {
+                    context.ci_freeze_atom2 = std::stoi(argv[i]);
+                }
+                else
+                {
+                    add_warning(context, "Error: freeze-atoms requires two values");
+                }
+            }
+            catch (const std::exception& e)
+            {
+                add_warning(context, "Error: freeze-atoms requires integer values");
+            }
+        }
+        else
+        {
+            add_warning(context, "Error: freeze-atoms requires values");
+        }
+    }
+    else if (arg == "--genci-params")
+    {
+        std::string template_type = "";   // Empty means general template
+        std::string directory     = ".";  // Default to current directory
+        std::string filename;
+        bool        is_general_template = true;
+
+        if (++i < argc)
+        {
+            std::string first_arg = argv[i];
+
+            if (first_arg[0] == '-')
+            {
+                // Next argument is another option, use defaults (general template)
+                --i;
+            }
+            else if (first_arg.find('/') != std::string::npos || first_arg.find('\\') != std::string::npos ||
+                     first_arg.find('.') == 0 || std::filesystem::exists(first_arg))
+            {
+                // Argument looks like a directory path
+                directory = first_arg;
+
+                // Check if there's a calculation type argument after the directory
+                if (i + 1 < argc && argv[i + 1][0] != '-')
+                {
+                    template_type       = argv[++i];
+                    is_general_template = false;
+                }
+                // If no calc_type after directory, generate general template in that directory
+            }
+            else
+            {
+                // Assume it's a calculation type
+                template_type       = first_arg;
+                is_general_template = false;
+
+                // Check if there's an optional directory argument
+                if (i + 1 < argc && argv[i + 1][0] != '-')
+                {
+                    directory = argv[++i];
+                }
+            }
+        }
+        else
+        {
+            // No arguments provided, use defaults (general template)
+            --i;
+        }
+
+        // Ensure directory exists or create it
+        std::filesystem::path dir_path(directory);
+        if (!std::filesystem::exists(dir_path))
+        {
+            try
+            {
+                std::filesystem::create_directories(dir_path);
+            }
+            catch (const std::filesystem::filesystem_error& e)
+            {
+                std::cerr << "Error: Cannot create directory " << directory << ": " << e.what() << std::endl;
+                exit(1);
+            }
+        }
+
+        ParameterParser parser;
+        bool            success;
+
+        if (is_general_template)
+        {
+            std::filesystem::path base_path  = std::filesystem::path(directory) / "ci_parameters.params";
+            std::filesystem::path final_path = Utils::generate_unique_filename(base_path);
+            filename                         = final_path.string();
+            success                          = parser.generateGeneralTemplate(filename);
+        }
+        else
+        {
+            std::filesystem::path base_path  = std::filesystem::path(directory) / (template_type + ".params");
+            std::filesystem::path final_path = Utils::generate_unique_filename(base_path);
+            filename                         = final_path.string();
+            success                          = parser.generateTemplate(template_type, filename);
+        }
+
+        if (success)
+        {
+            std::cout << "Template generated successfully: " << filename << std::endl;
+            if (is_general_template)
+            {
+                std::cout << "This is a general parameter file containing all possible parameters." << std::endl;
+                std::cout << "Edit the calc_type and uncomment relevant parameters as needed." << std::endl;
+            }
+            std::cout << "Use with: gaussian_extractor ci --param-file " << filename << std::endl;
+            exit(0);  // Exit after generating template
+        }
+        else
+        {
+            if (is_general_template)
+            {
+                std::cerr << "Failed to generate general template" << std::endl;
+            }
+            else
+            {
+                std::cerr << "Failed to generate template for: " << template_type << std::endl;
+            }
+            exit(1);
+        }
+    }
+    else if (arg == "--genci-all-params")
+    {
+        std::string directory = ".";  // Default to current directory
+
+        // Check if there's an optional directory argument
+        if (++i < argc && argv[i][0] != '-')
+        {
+            directory = argv[i];
+        }
+        else
+        {
+            // No directory provided, use current directory
+            --i;  // Reset index since we didn't consume an argument
+        }
+
+        // Ensure directory path is absolute for clear feedback
+        std::filesystem::path dir_path(directory);
+        std::filesystem::path abs_dir_path = std::filesystem::absolute(dir_path);
+
+        ParameterParser parser;
+        if (parser.generateAllTemplates(directory))
+        {
+            exit(0);  // Exit after generating templates
+        }
+        else
+        {
+            std::cerr << "Failed to generate templates in: " << abs_dir_path.string() << std::endl;
+            exit(1);
+        }
+    }
+    else if (arg == "--param-file")
+    {
+        std::string param_file;
+
+        if (++i < argc && argv[i][0] != '-')
+        {
+            // User specified a file path
+            param_file = argv[i];
+        }
+        else
+        {
+            // No file specified, look for default parameter file
+            param_file = find_or_create_default_param_file();
+            if (param_file.empty())
+            {
+                add_warning(context, "Error: Could not find or create default parameter file");
+                return;
+            }
+            // Decrement i since we didn't consume an argument
+            --i;
+        }
+
+        ParameterParser parser;
+        if (parser.loadFromFile(param_file))
+        {
+            // Apply loaded parameters to context
+            context.ci_calc_type     = parser.getString("calc_type", context.ci_calc_type);
+            context.ci_functional    = parser.getString("functional", context.ci_functional);
+            context.ci_basis         = parser.getString("basis", context.ci_basis);
+            context.ci_large_basis   = parser.getString("large_basis", context.ci_large_basis);
+            context.ci_solvent       = parser.getString("solvent", context.ci_solvent);
+            context.ci_solvent_model = parser.getString("solvent_model", context.ci_solvent_model);
+
+            // Convert functional and basis to uppercase for better readability
+            std::transform(
+                context.ci_functional.begin(), context.ci_functional.end(), context.ci_functional.begin(), ::toupper);
+            std::transform(context.ci_basis.begin(), context.ci_basis.end(), context.ci_basis.begin(), ::toupper);
+            std::transform(context.ci_large_basis.begin(),
+                           context.ci_large_basis.end(),
+                           context.ci_large_basis.begin(),
+                           ::toupper);
+            context.ci_print_level    = parser.getString("print_level", context.ci_print_level);
+            context.ci_extra_keywords = parser.getString("extra_keywords", context.ci_extra_keywords);
+            context.ci_charge         = parser.getInt("charge", context.ci_charge);
+            context.ci_mult           = parser.getInt("mult", context.ci_mult);
+            context.ci_tail           = parser.getString("tail", context.ci_tail);
+            context.ci_extension      = parser.getString("extension", context.ci_extension);
+            context.ci_tschk_path     = parser.getString("tschk_path", context.ci_tschk_path);
+            // Handle freeze atoms - try freeze_atoms first, then fall back to separate parameters
+            std::string freeze_atoms_str = parser.getString("freeze_atoms", "");
+            if (!freeze_atoms_str.empty())
+            {
+                // Parse freeze_atoms string (comma or space separated)
+                std::vector<int> atoms;
+                std::string      cleaned_str = freeze_atoms_str;
+                // Remove leading/trailing whitespace
+                cleaned_str.erase(cleaned_str.begin(),
+                                  std::find_if(cleaned_str.begin(), cleaned_str.end(), [](unsigned char ch) {
+                                      return !std::isspace(ch);
+                                  }));
+                cleaned_str.erase(std::find_if(cleaned_str.rbegin(),
+                                               cleaned_str.rend(),
+                                               [](unsigned char ch) {
+                                                   return !std::isspace(ch);
+                                               })
+                                      .base(),
+                                  cleaned_str.end());
+
+                // Handle comma-separated format: "1,2"
+                if (cleaned_str.find(',') != std::string::npos)
+                {
+                    std::stringstream ss(cleaned_str);
+                    std::string       token;
+                    while (std::getline(ss, token, ','))
+                    {
+                        token.erase(token.begin(), std::find_if(token.begin(), token.end(), [](unsigned char ch) {
+                                        return !std::isspace(ch);
+                                    }));
+                        token.erase(std::find_if(token.rbegin(),
+                                                 token.rend(),
+                                                 [](unsigned char ch) {
+                                                     return !std::isspace(ch);
+                                                 })
+                                        .base(),
+                                    token.end());
+
+                        try
+                        {
+                            int atom = std::stoi(token);
+                            atoms.push_back(atom);
+                        }
+                        catch (const std::exception&)
+                        {
+                            // Skip invalid tokens
+                        }
+                    }
+                }
+                // Handle space-separated format: "1 2"
+                else
+                {
+                    std::stringstream ss(cleaned_str);
+                    int               atom;
+                    while (ss >> atom)
+                    {
+                        atoms.push_back(atom);
+                    }
+                }
+
+                if (atoms.size() >= 2)
+                {
+                    context.ci_freeze_atom1 = atoms[0];
+                    context.ci_freeze_atom2 = atoms[1];
+                }
+            }
+            else
+            {
+                // Fall back to separate freeze_atom1 and freeze_atom2 parameters
+                context.ci_freeze_atom1 = parser.getInt("freeze_atom1", context.ci_freeze_atom1);
+                context.ci_freeze_atom2 = parser.getInt("freeze_atom2", context.ci_freeze_atom2);
+            }
+
+            // Load custom cycle and optimization parameters (always loaded)
+            context.ci_scf_maxcycle  = parser.getInt("scf_maxcycle", context.ci_scf_maxcycle);
+            context.ci_opt_maxcycles = parser.getInt("opt_maxcycles", context.ci_opt_maxcycles);
+            context.ci_irc_maxpoints = parser.getInt("irc_maxpoints", context.ci_irc_maxpoints);
+            context.ci_irc_recalc    = parser.getInt("irc_recalc", context.ci_irc_recalc);
+            context.ci_irc_maxcycle  = parser.getInt("irc_maxcycle", context.ci_irc_maxcycle);
+            context.ci_irc_stepsize  = parser.getInt("irc_stepsize", context.ci_irc_stepsize);
+
+            std::cout << "Parameters loaded from: " << param_file << std::endl;
+        }
+        else
+        {
+            add_warning(context, "Error: Failed to load parameter file: " + param_file);
+        }
+    }
+    else if (!arg.empty() && arg.front() == '-')
+    {
+        add_warning(context, "Warning: Unknown argument '" + arg + "' ignored.");
     }
     else
     {
-        std::cout << "  " << program_name << " " << cmd_name << " -nt 4        # Use 4 threads\n";
-    }
+        // Treat as positional argument (file or comma-separated files)
+        // Parse comma-separated filenames and handle whitespace
+        std::string file_arg = arg;
+        std::replace(file_arg.begin(), file_arg.end(), ',', ' ');
 
-    if (command == CommandType::CHECK_DONE)
+        std::istringstream iss(file_arg);
+        std::string        filename;
+        while (iss >> filename)
+        {
+            if (!filename.empty())
+            {
+                // Trim whitespace from both ends
+                filename.erase(0, filename.find_first_not_of(" \t"));
+                filename.erase(filename.find_last_not_of(" \t") + 1);
+
+                if (!filename.empty())
+                {
+                    context.specific_files.push_back(filename);
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @brief Find or create a default parameter file for create_input
+ * @return Path to the parameter file, or empty string if failed
+ */
+std::string CommandParser::find_or_create_default_param_file()
+{
+    const std::string DEFAULT_PARAM_FILENAME = ".ci_parameters.params";
+    const std::string ALT_PARAM_FILENAME     = "ci_parameters.params";
+
+    std::vector<std::string> search_paths;
+
+    // 1. Current directory
+    search_paths.push_back("./" + DEFAULT_PARAM_FILENAME);
+    search_paths.push_back("./" + ALT_PARAM_FILENAME);
+
+    // 2. Executable directory
+    std::string exe_dir = ConfigUtils::get_executable_directory();
+    if (!exe_dir.empty())
     {
-        std::cout << "  " << program_name << " " << cmd_name << " --dir-suffix completed  # Use 'completed' suffix\n";
+        search_paths.push_back(exe_dir + "/" + DEFAULT_PARAM_FILENAME);
+        search_paths.push_back(exe_dir + "/" + ALT_PARAM_FILENAME);
     }
 
-    std::cout << "\n";
+    // 3. User home directory
+    std::string home_dir = g_config_manager.get_user_home_directory();
+    if (!home_dir.empty())
+    {
+        search_paths.push_back(home_dir + "/" + DEFAULT_PARAM_FILENAME);
+        search_paths.push_back(home_dir + "/" + ALT_PARAM_FILENAME);
+    }
+
+    // 4. System config directories (Unix-like systems)
+#ifndef _WIN32
+    search_paths.push_back("/etc/gaussian_extractor/" + ALT_PARAM_FILENAME);
+    search_paths.push_back("/usr/local/etc/" + ALT_PARAM_FILENAME);
+#endif
+
+    // Search for existing parameter file
+    for (const auto& path : search_paths)
+    {
+        if (std::filesystem::exists(path))
+        {
+            std::cout << "Found default parameter file: " << path << std::endl;
+            return path;
+        }
+    }
+
+    // No existing file found, create default in current directory
+    std::string     default_path = "./" + DEFAULT_PARAM_FILENAME;
+    ParameterParser parser;
+
+    if (parser.generateTemplate("sp", default_path))
+    {
+        std::cout << "Created default parameter file: " << default_path << std::endl;
+        std::cout << "Using default parameters from newly created file." << std::endl;
+        return default_path;
+    }
+    else
+    {
+        std::cerr << "Error: Failed to create default parameter file: " << default_path << std::endl;
+        return "";
+    }
 }

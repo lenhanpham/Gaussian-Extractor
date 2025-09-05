@@ -1,5 +1,6 @@
 #include "module_executor.h"
 #include "coord_extractor.h"
+#include "create_input.h"
 #include "gaussian_extractor.h"
 #include "high_level_energy.h"
 #include "job_checker.h"
@@ -1162,6 +1163,185 @@ int execute_extract_coords_command(const CommandContext& context)
         }
 
         return summary.failed_files > 0 || !processing_context->error_collector->get_errors().empty() ? 1 : 0;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Fatal error: " << e.what() << std::endl;
+        return 1;
+    }
+    catch (...)
+    {
+        std::cerr << "Fatal error: Unknown exception occurred" << std::endl;
+        return 1;
+    }
+}
+
+int execute_create_input_command(const CommandContext& context)
+{
+    setup_signal_handlers();
+
+    try
+    {
+        std::vector<std::string> xyz_files;
+        if (!context.specific_files.empty())
+        {
+            // Use specific files provided
+            for (const auto& file : context.specific_files)
+            {
+                if (std::filesystem::exists(file) && std::filesystem::is_regular_file(file))
+                {
+                    xyz_files.push_back(file);
+                }
+                else
+                {
+                    std::cerr << "Warning: Specified file '" << file << "' does not exist or is not a regular file."
+                              << std::endl;
+                }
+            }
+        }
+        else
+        {
+            // Find all XYZ files in current directory
+            for (const auto& entry : std::filesystem::directory_iterator("."))
+            {
+                if (entry.is_regular_file())
+                {
+                    std::string extension = entry.path().extension().string();
+                    if (extension == ".xyz")
+                    {
+                        xyz_files.push_back(entry.path().string());
+                    }
+                }
+            }
+        }
+
+        if (xyz_files.empty())
+        {
+            if (!context.quiet)
+            {
+                std::cout << "No valid .xyz files found." << std::endl;
+            }
+            return 0;
+        }
+
+        auto processing_context = std::make_shared<ProcessingContext>(298.15,  // Default temp, not used
+                                                                      1.0,     // Default conc, not used
+                                                                      false,   // use_input_temp not relevant
+                                                                      context.requested_threads,
+                                                                      ".xyz",  // extension for XYZ files
+                                                                      context.max_file_size_mb,
+                                                                      context.job_resources);
+
+        // Create CreateInput instance with default parameters
+        CreateInput creator(processing_context, context.quiet);
+
+        // Configure calculation parameters from context
+        // Convert string calc_type to CalculationType enum
+        CalculationType calc_type = CalculationType::SP;  // Default
+        if (context.ci_calc_type == "opt_freq")
+        {
+            calc_type = CalculationType::OPT_FREQ;
+        }
+        else if (context.ci_calc_type == "ts_freq")
+        {
+            calc_type = CalculationType::TS_FREQ;
+        }
+        else if (context.ci_calc_type == "oss_ts_freq")
+        {
+            calc_type = CalculationType::OSS_TS_FREQ;
+        }
+        else if (context.ci_calc_type == "modre_ts_freq")
+        {
+            calc_type = CalculationType::MODRE_TS_FREQ;
+        }
+        else if (context.ci_calc_type == "oss_check_sp")
+        {
+            calc_type = CalculationType::OSS_CHECK_SP;
+        }
+        else if (context.ci_calc_type == "high_sp")
+        {
+            calc_type = CalculationType::HIGH_SP;
+        }
+        else if (context.ci_calc_type == "irc_forward")
+        {
+            calc_type = CalculationType::IRC_FORWARD;
+        }
+        else if (context.ci_calc_type == "irc_reverse")
+        {
+            calc_type = CalculationType::IRC_REVERSE;
+        }
+        else if (context.ci_calc_type == "irc")
+        {
+            calc_type = CalculationType::IRC;
+        }
+        // Default is SP for any other value
+
+        // Validate freeze atoms for OSS_TS_FREQ and MODRE_TS_FREQ
+        if (calc_type == CalculationType::OSS_TS_FREQ || calc_type == CalculationType::MODRE_TS_FREQ)
+        {
+            if (context.ci_freeze_atom1 == 0 || context.ci_freeze_atom2 == 0)
+            {
+                std::string calc_type_name =
+                    (calc_type == CalculationType::OSS_TS_FREQ) ? "oss_ts_freq" : "modre_ts_freq";
+                std::cerr << "Error: --freeze-atoms is required for " << calc_type_name << " calculation type."
+                          << std::endl;
+                std::cerr << "Please specify two atom indices to freeze, e.g., --freeze-atoms 1 2" << std::endl;
+                return 1;
+            }
+        }
+
+        creator.set_calculation_type(calc_type);
+        creator.set_functional(context.ci_functional);
+        creator.set_basis(context.ci_basis);
+        if (!context.ci_large_basis.empty())
+        {
+            creator.set_large_basis(context.ci_large_basis);
+        }
+        if (!context.ci_solvent.empty())
+        {
+            creator.set_solvent(context.ci_solvent, context.ci_solvent_model);
+        }
+        creator.set_print_level(context.ci_print_level);
+        creator.set_extra_keywords(context.ci_extra_keywords);
+        creator.set_molecular_specs(context.ci_charge, context.ci_mult);
+        creator.set_tail(context.ci_tail);
+        creator.set_extension(context.ci_extension);
+        creator.set_tschk_path(context.ci_tschk_path);
+        if (context.ci_freeze_atom1 != 0 && context.ci_freeze_atom2 != 0)
+        {
+            creator.set_freeze_atoms(context.ci_freeze_atom1, context.ci_freeze_atom2);
+        }
+        creator.set_scf_maxcycle(context.ci_scf_maxcycle);
+        creator.set_opt_maxcycles(context.ci_opt_maxcycles);
+        creator.set_irc_maxpoints(context.ci_irc_maxpoints);
+        creator.set_irc_recalc(context.ci_irc_recalc);
+        creator.set_irc_maxcycle(context.ci_irc_maxcycle);
+        creator.set_irc_stepsize(context.ci_irc_stepsize);
+
+        // Execute the creation
+        CreateSummary summary = creator.create_inputs(xyz_files);
+
+        // Print summary
+        if (!context.quiet)
+        {
+            creator.print_summary(summary, "Input file creation");
+        }
+
+        // Check for errors
+        if (!processing_context->error_collector->get_errors().empty())
+        {
+            if (!context.quiet)
+            {
+                std::cout << "\nProcessing errors:" << std::endl;
+                for (const auto& error : processing_context->error_collector->get_errors())
+                {
+                    std::cout << "  " << error << std::endl;
+                }
+            }
+            return 1;
+        }
+
+        return summary.failed_files > 0 ? 1 : 0;
     }
     catch (const std::exception& e)
     {
