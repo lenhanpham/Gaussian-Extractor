@@ -7,6 +7,12 @@ on:
     branches: [main, develop, dev]
   workflow_dispatch:
 
+# Add permissions for GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -116,10 +122,14 @@ jobs:
   build-and-deploy-docs:
     runs-on: ubuntu-latest
     needs: build-and-test
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
+    # Only run on main branch pushes
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    # Use concurrency to cancel in-progress deployments
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -202,10 +212,15 @@ jobs:
             docs/_build/markdown/
             docs/html/
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/_build/html
+      # Setup GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
