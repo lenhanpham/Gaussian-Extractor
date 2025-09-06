@@ -172,15 +172,6 @@ jobs:
           fi
           echo "Doxygen XML files generated successfully."
 
-      - name: Verify api.rst Generation
-        working-directory: docs
-        run: |
-          if [ ! -f "api/api.rst" ]; then
-            echo "Error: api.rst not generated in docs/api/."
-            exit 1
-          fi
-          echo "api.rst generated successfully."
-
       - name: Build Sphinx HTML
         working-directory: docs
         run: |

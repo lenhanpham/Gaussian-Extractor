@@ -64,7 +64,6 @@ exhale_args = {
         MACRO_EXPANSION = YES
         EXPAND_ONLY_PREDEF = YES
         INLINE_SOURCES = YES
-        STRIP_FROM_PATH = ../src
         SHOW_FILES = YES
         EXCLUDE_PATTERNS = */test/* */tests/* */example/* */examples/*
         HAVE_DOT = YES
@@ -82,13 +81,13 @@ exhale_args = {
         INTERACTIVE_SVG = YES
         DOT_TRANSPARENT = YES
         DOT_MULTI_TARGETS = YES
+        QUIET = YES
     """,
     "createTreeView": True,
     "afterTitleDescription": "Comprehensive API documentation for the Gaussian Extractor.",
-    "exhaleFullApiNoDuplicates": True,
-    "verboseBuild": False,  # Disable verbose logging to reduce warning noise
-    "exhaleSilent": True,   # Suppress non-critical warnings
+    "verboseBuild": False,
 }
+
 
 
 breathe_projects = {
