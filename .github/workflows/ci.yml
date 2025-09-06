@@ -186,7 +186,7 @@ jobs:
             echo "Error: HTML generation failed: _build/html/ directory not found."
             exit 1
           fi
-          if [ ! -f "_build/html/api.html" ]; then
+          if [ ! -f "_build/html/api/api.html" ]; then
             echo "Error: API documentation (api.html) not generated."
             exit 1
           fi
