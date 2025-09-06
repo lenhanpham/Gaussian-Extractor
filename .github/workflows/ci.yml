@@ -1,126 +1,242 @@
-build-and-deploy-docs:
-  runs-on: ubuntu-latest
-  needs: build-and-test
-  permissions:
-    contents: read
-    pages: write
-    id-token: write
-  environment:
-    name: github-pages
-    url: ${{ steps.deployment.outputs.page_url }}
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+name: CI/CD for Gaussian Extractor
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+on:
+  push:
+    branches: [main, develop, dev]
+  pull_request:
+    branches: [main, develop, dev]
+  workflow_dispatch:
 
-    - name: Cache Python dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('docs/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
 
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r docs/requirements.txt
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install Doxygen and Graphviz
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y doxygen graphviz
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ make cmake clang-tidy
 
-    - name: Generate Doxygen XML and HTML
-      run: |
-        doxygen Doxyfile
-        if [ ! -d "docs/xml" ]; then
-          echo "Error: Doxygen XML generation failed: docs/xml/ directory not found."
-          exit 1
-        fi
-        if [ ! -d "docs/html" ]; then
-          echo "Warning: Doxygen HTML directory (docs/html/) not found."
-        fi
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-    - name: Verify Doxygen XML Output
-      run: |
-        if [ -z "$(ls -A docs/xml/)" ]; then
-          echo "Error: Doxygen XML directory (docs/xml/) is empty."
-          exit 1
-        fi
-        echo "Doxygen XML files generated successfully."
+      - name: Static Analysis
+        run: clang-tidy -p build src/main.cpp src/core/gaussian_extractor.cpp src/core/job_scheduler.cpp
 
-    - name: Verify api.rst Generation
-      working-directory: docs
-      run: |
-        if [ ! -f "api/api.rst" ]; then
-          echo "Error: api.rst not generated in docs/api/."
-          exit 1
-        fi
-        echo "api.rst generated successfully."
+      - name: Build the project
+        run: cmake --build build
 
-    - name: Build Sphinx HTML
-      working-directory: docs
-      run: |
-        mkdir -p _static _templates
-        cp -r ../docs/html/*.svg _static/ && echo "SVGs copied to _static/" || echo "No SVGs found in docs/html/, continuing"
-        make html -W --keep-going 2> build_warnings.log || true
-        if [ -s build_warnings.log ]; then
-          echo "Warnings during Sphinx HTML build:"
-          cat build_warnings.log
-        fi
-        if [ ! -d "_build/html" ]; then
-          echo "Error: HTML generation failed: _build/html/ directory not found."
-          exit 1
-        fi
-        if [ ! -f "_build/html/api.html" ]; then
-          echo "Error: API documentation (api.html) not generated."
-          exit 1
-        fi
-        echo "Sphinx HTML build completed successfully."
+      - name: Prepare test data
+        run: |
+          cp tests/data/*.log .
+          cp tests/extract-xyz/*.log tests/extract-xyz/*.LOG tests/extract-xyz/*.Log tests/extract-xyz/*.out tests/extract-xyz/*.OUT .
+          cp tests/create-input/*.xyz .
 
-    - name: Build Sphinx Markdown
-      working-directory: docs
-      run: |
-        sphinx-build -b markdown . _build/markdown -W --keep-going || echo "Markdown build failed, continuing"
-        if [ -d "_build/markdown" ] && [ -z "$(ls -A _build/markdown)" ]; then
-          rm -rf _build/markdown
-          echo "Markdown directory was empty and removed"
-        fi
+      - name: Run Tests
+        id: run_tests
+        run: |
+          # Try both possible binary locations
+          if [ -f "./build/bin/gaussian_extractor.x" ]; then
+            BINARY="./build/bin/gaussian_extractor.x"
+          elif [ -f "./build/gaussian_extractor.x" ]; then
+            BINARY="./build/gaussian_extractor.x"
+          elif [ -f "./gaussian_extractor.x" ]; then
+            BINARY="./gaussian_extractor.x"
+          else
+            echo "Test failed: gaussian_extractor.x binary not found."
+            exit 1
+          fi
 
-    - name: Upload Documentation Artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: documentation
-        path: |
-          docs/_build/html/
-          docs/_build/markdown/
-          docs/html/
-        if-no-files-found: warn
+          $BINARY -q -f csv
 
-    - name: Configure GitHub Pages
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: actions/configure-pages@v4
+          if ! ls *.csv >/dev/null 2>&1; then
+            echo "Test failed: No .csv file generated."
+            exit 1
+          fi
 
-    - name: Upload GitHub Pages Artifact
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: docs/_build/html/
+          csv_file=$(ls *.csv | head -n 1)
+          if [ ! -s "$csv_file" ]; then
+            echo "Test failed: $csv_file is empty."
+            exit 1
+          fi
 
-    - name: Deploy to GitHub Pages
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      id: deployment
-      uses: actions/deploy-pages@v4
+          echo "Basic extraction tests passed."
 
-    - name: Log GitHub Pages URL
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: |
-        echo "Deployed documentation to ${{ steps.deployment.outputs.page_url }}"
+      - name: Test Coordinate Extraction (xyz)
+        run: |
+          echo "TODO: implement xyz test"
+
+      - name: Test Create Input (ci)
+        run: |
+          echo "TODO: implement ci test"
+
+      - name: Test Parameter Template Generation
+        run: |
+          echo "TODO: implement parameter template generation test"
+
+      - name: Test Parameter File Loading
+        run: |
+          echo "TODO: implement parameter file loading test"
+
+      - name: Process log and out files
+        if: ${{ success() || steps.run_tests.conclusion == 'success' }}
+        run: |
+          echo "TODO: implement log/out processing"
+
+      - name: Upload results artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gaussian-results
+          path: |
+            *.results
+            *.csv
+            *.xyz
+            *.gau
+            *.params
+            test_templates/
+            gaussian-extractor_*_coord/
+          if-no-files-found: warn
+
+      - name: Display results
+        if: always()
+        run: |
+          echo "TODO: display results"
+
+      - name: Cleanup test files
+        if: always()
+        run: |
+          rm -f *.log *.out *.LOG *.Log *.OUT *.xyz *.gau *.params *.results *.csv
+          rm -rf test_templates gaussian-extractor_*_coord
+
+  build-and-deploy-docs:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('docs/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs/requirements.txt
+
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Generate Doxygen XML and HTML
+        run: |
+          doxygen Doxyfile
+          if [ ! -d "docs/xml" ]; then
+            echo "Error: Doxygen XML generation failed: docs/xml/ directory not found."
+            exit 1
+          fi
+          if [ ! -d "docs/html" ]; then
+            echo "Warning: Doxygen HTML directory (docs/html/) not found."
+          fi
+
+      - name: Verify Doxygen XML Output
+        run: |
+          if [ -z "$(ls -A docs/xml/)" ]; then
+            echo "Error: Doxygen XML directory (docs/xml/) is empty."
+            exit 1
+          fi
+          echo "Doxygen XML files generated successfully."
+
+      - name: Verify api.rst Generation
+        working-directory: docs
+        run: |
+          if [ ! -f "api/api.rst" ]; then
+            echo "Error: api.rst not generated in docs/api/."
+            exit 1
+          fi
+          echo "api.rst generated successfully."
+
+      - name: Build Sphinx HTML
+        working-directory: docs
+        run: |
+          mkdir -p _static _templates
+          cp -r ../docs/html/*.svg _static/ && echo "SVGs copied to _static/" || echo "No SVGs found in docs/html/, continuing"
+          make html -W --keep-going 2> build_warnings.log || true
+          if [ -s build_warnings.log ]; then
+            echo "Warnings during Sphinx HTML build:"
+            cat build_warnings.log
+          fi
+          if [ ! -d "_build/html" ]; then
+            echo "Error: HTML generation failed: _build/html/ directory not found."
+            exit 1
+          fi
+          if [ ! -f "_build/html/api.html" ]; then
+            echo "Error: API documentation (api.html) not generated."
+            exit 1
+          fi
+          echo "Sphinx HTML build completed successfully."
+
+      - name: Build Sphinx Markdown
+        working-directory: docs
+        run: |
+          sphinx-build -b markdown . _build/markdown -W --keep-going || echo "Markdown build failed, continuing"
+          if [ -d "_build/markdown" ] && [ -z "$(ls -A _build/markdown)" ]; then
+            rm -rf _build/markdown
+            echo "Markdown directory was empty and removed"
+          fi
+
+      - name: Upload Documentation Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: |
+            docs/_build/html/
+            docs/_build/markdown/
+            docs/html/
+          if-no-files-found: warn
+
+      - name: Configure GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v4
+
+      - name: Upload GitHub Pages Artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html/
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Log GitHub Pages URL
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "Deployed documentation to ${{ steps.deployment.outputs.page_url }}"
