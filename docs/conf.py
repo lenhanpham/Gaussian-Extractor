@@ -46,7 +46,7 @@ exhale_args = {
     "doxygenStripFromPath": os.path.abspath("../src"),
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin": """
-        PROJECT_NAME = Gaussian Extractor
+        PROJECT_NAME = GaussianExtractor
         INPUT = ../src
         FILE_PATTERNS = *.cpp *.hpp *.h *.cxx *.cc
         RECURSIVE = YES
@@ -82,6 +82,7 @@ exhale_args = {
         DOT_TRANSPARENT = YES
         DOT_MULTI_TARGETS = YES
         QUIET = YES
+        EXCLUDE_PATTERNS = */src/*.cpp
     """,
     "createTreeView": True,
     "afterTitleDescription": "Comprehensive API documentation for the Gaussian Extractor.",
