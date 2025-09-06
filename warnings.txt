@@ -1,0 +1,109 @@
+(ml) a@DESKTOP-PVLELQ3:/mnt/e/CodeScript/gaussian-extractor/docs$ make html
+Running Sphinx v8.2.3
+loading translations [en]... done
+making output directory... done
+loading intersphinx inventory 'python' from https://docs.python.org/3/objects.inv ...
+building [mo]: targets for 0 po files that are out of date
+writing output...
+building [html]: targets for 5 source files that are out of date
+updating environment: [new config] 5 added, 0 changed, 0 removed
+reading sources... [100%] usage
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:258: CRITICAL: Duplicate ID: "group__ResourceManagement_1Design". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:258: WARNING: Duplicate explicit target name: "group__ResourceManagement_1Design". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:327: WARNING: Title underline too short.
+
+Inline Implementations
+--------------------- [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:327: WARNING: Title underline too short.
+
+Inline Implementations
+--------------------- [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "group__ResourceManagement_1Design". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "group__ResourceManagement_1Design". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "group__ResourceManagement_1Design". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "group__ResourceManagement_1Design". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:339: WARNING: Duplicate C++ declaration, also defined at api:334.
+Declaration is '.. cpp:class:: MemoryMonitor'. [duplicate_declaration.cpp]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "main_8cpp_1Features". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "main_8cpp_1Features". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "classMemoryMonitor_1Usage". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: CRITICAL: Duplicate ID: "classMemoryMonitor". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:286: WARNING: Duplicate explicit target name: "classMemoryMonitor". [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:370: WARNING: doxygenfunction: Cannot find function "GaussianExtractor::get_version_info" in doxygen xml output for project "GaussianExtractor" from directory: ./xml/ [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:445: WARNING: Title underline too short.
+
+Integration Examples
+=================== [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/api.rst:445: WARNING: Title underline too short.
+
+Integration Examples
+=================== [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/developer.rst:35: WARNING: Explicit markup ends without a blank line; unexpected unindent. [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/usage.rst:899: ERROR: Malformed table.
+
++------------------+--------------------------------------------------+
+| Option           | Description                                      |
++==================+==================================================+
+| ``-h, --help``   | Show help message                                |
++------------------+--------------------------------------------------+
+| ``-v, --version``| Show version information                         |
++------------------+--------------------------------------------------+
+| ``-q, --quiet``  | Quiet mode                                       |
++------------------+--------------------------------------------------+
+| ``-nt, --threads``| Thread count (number/half/max)                  |
++------------------+--------------------------------------------------+
+| ``-e, --ext``    | File extension (.log/.out)                       |
++------------------+--------------------------------------------------+
+| ``--max-file-size``| Maximum file size (MB)                          |
++------------------+--------------------------------------------------+
+| ``--memory-limit``| Memory limit (MB)                                |
++------------------+--------------------------------------------------+
+| ``--resource-info``| Show system resource information               |
++------------------+--------------------------------------------------+ [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/usage.rst:921: ERROR: Malformed table.
+
++------------------+--------------------------------------------------+
+| Option           | Description                                      |
++==================+==================================================+
+| ``-t, --temp``   | Temperature (K)                                  |
++------------------+--------------------------------------------------+
+| ``-c, --cm``     | Concentration (M)                                |
++------------------+--------------------------------------------------+
+| ``-col, --column``| Sort column (2-10)                              |
++------------------+--------------------------------------------------+
+| ``-f, --format`` | Output format (text/csv)                         |
++------------------+--------------------------------------------------+
+| ``--use-input-temp``| Use temperature from files                     |
++------------------+--------------------------------------------------+ [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/usage.rst:945: WARNING: Inline literal start-string without end-string. [docutils]
+/mnt/e/CodeScript/gaussian-extractor/docs/usage.rst:949: ERROR: Malformed table.
+
++------------------+--------------------------------------------------+
+| Option           | Description                                      |
++==================+==================================================+
+| ``--calc-type``  | Calculation type                                 |
++------------------+--------------------------------------------------+
+| ``--functional`` | DFT functional                                   |
++------------------+--------------------------------------------------+
+| ``--basis``      | Basis set                                        |
++------------------+--------------------------------------------------+
+| ``--solvent``    | Solvent name                                     |
++------------------+--------------------------------------------------+
+| ``--charge``     | Molecular charge                                 |
++------------------+--------------------------------------------------+
+| ``--mult``       | Multiplicity                                     |
++------------------+--------------------------------------------------+
+| ``--freeze-atoms``| Atoms to freeze for TS                         |
++------------------+--------------------------------------------------+
+| ``--genci-params``| Generate parameter template                     |
++------------------+--------------------------------------------------+
+| ``--param-file`` | Use parameter file                                |
++------------------+--------------------------------------------------+ [docutils]
+looking for now-outdated files... none found
