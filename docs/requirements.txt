@@ -3,3 +3,5 @@ sphinx-rtd-theme
 myst-parser
 sphinx-markdown-builder
 breathe
+exhale
+pillow
