@@ -1,0 +1,215 @@
+
+.. _file_core_gaussian_extractor.h:
+
+File gaussian_extractor.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_core>` (``core``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+
+Core extraction engine and data structures for Gaussian log file processing. 
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``core/gaussian_extractor.h``)
+------------------------------------------
+
+
+
+
+Detailed Description
+--------------------
+
+Le Nhan Pham 
+
+2025
+
+This header file contains the core functionality for extracting thermodynamic data from Gaussian computational chemistry log files. It provides:
+
+- Multi-threaded file processing with resource management
+
+- Thread-safe data extraction and result collection
+
+- Memory and file handle management for large-scale processing
+
+- Integration with job scheduler systems for HPC environments
+
+
+
+
+Features
+
+
+
+- Concurrent processing of multiple log files
+
+- Automatic resource management and memory limiting
+
+- Thread-safe error collection and reporting
+
+- Support for various thermodynamic calculations
+
+- Integration with configuration and job management systems
+
+
+
+
+
+Model
+
+The extraction system uses a producer-consumer model with:
+
+- File discovery and validation (single-threaded)
+
+- Parallel file processing (multi-threaded)
+
+- :ref:`exhale_struct_structResult` collection and sorting (thread-safe)
+
+- Output generation (single-threaded)
+
+
+
+
+
+Management
+
+Comprehensive resource management includes:
+
+- Memory usage monitoring and limiting
+
+- File handle management to prevent exhaustion
+
+- Thread-safe error and warning collection
+
+- Integration with job scheduler resource limits 
+
+
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``atomic``
+
+- ``condition_variable``
+
+- ``cstddef``
+
+- ``functional``
+
+- ``job_scheduler.h`` (:ref:`file_core_job_scheduler.h`)
+
+- ``memory``
+
+- ``mutex``
+
+- ``string``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_core_coord_extractor.h`
+
+- :ref:`file_core_create_input.h`
+
+- :ref:`file_core_high_level_energy.h`
+
+- :ref:`file_core_job_checker.h`
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structProcessingContext`
+
+- :ref:`exhale_struct_structResult`
+
+- :ref:`exhale_class_classFileHandleManager`
+
+- :ref:`exhale_class_classFileHandleManager_1_1FileGuard`
+
+- :ref:`exhale_class_classMemoryMonitor`
+
+- :ref:`exhale_class_classThreadSafeErrorCollector`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_group__ResourceCalculation_1ga92cbfbad3c9f226e74f095b3703edff4`
+
+- :ref:`exhale_function_group__ResourceCalculation_1gaf6946ebbf530a167fc82bb7f20b36a42`
+
+- :ref:`exhale_function_group__CoreFunctions_1ga185cd895974d0b226a5c66a2f7df8072`
+
+- :ref:`exhale_function_group__CoreFunctions_1gad17c8399509c1c8b6d29fde9d0bcfac3`
+
+- :ref:`exhale_function_group__UtilityFunctions_1gaf62947f0321d444f7e4e26cbc7d1bf8f`
+
+- :ref:`exhale_function_group__UtilityFunctions_1ga8dcf9bf3a43b711cb268f2ee8948b47c`
+
+- :ref:`exhale_function_group__UtilityFunctions_1ga9a325bd1793b5dc5e9490383802ad169`
+
+- :ref:`exhale_function_group__UtilityFunctions_1ga5d1bf1ec351f0a9912a810ebe82a1e0a`
+
+- :ref:`exhale_function_group__UtilityFunctions_1gad9472b23817cf18d4ae5c857afb94c5f`
+
+- :ref:`exhale_function_group__UtilityFunctions_1gad797e43f6528ebd1a5288f01262ccc3d`
+
+- :ref:`exhale_function_group__UtilityFunctions_1ga13a0fe5daedc9937f2e60e35b862674b`
+
+- :ref:`exhale_function_group__CoreFunctions_1ga4a40f96b211c992d0cd35f99d390d13f`
+
+- :ref:`exhale_function_group__SafeParsing_1ga131e6ac5862047eda88e31ac535d9229`
+
+- :ref:`exhale_function_group__SafeParsing_1ga9d2e1dc30c07adc96e7fb857f208bef6`
+
+- :ref:`exhale_function_group__SafeParsing_1ga55358cf328c6698059a9ce209d7a7727`
+
+- :ref:`exhale_function_group__UtilityFunctions_1ga98551a8875f12c1ace388443122c58d9`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_group__SafetyLimits_1ga53a9c91d48aea3f132ce5aac13b8ae8a`
+
+- :ref:`exhale_variable_group__SafetyLimits_1ga5b473519c702109b67a50e1c68aa62da`
+
+- :ref:`exhale_variable_gaussian__extractor_8h_1ad9223bbbed1d71323a789daf88911c4a`
+
+- :ref:`exhale_variable_group__PhysicsConstants_1ga002422f5b9b60e223b4f38505877f8a3`
+
+- :ref:`exhale_variable_group__SafetyLimits_1ga85a5c7ea2679e0f92b11d8de33d02c75`
+
+- :ref:`exhale_variable_group__SafetyLimits_1ga4ae9d2d4ae994dd75f2dbd0b0ce593f3`
+
+- :ref:`exhale_variable_group__SafetyLimits_1ga99f41eb90c4eb0abba0d99171b29aa40`
+
+- :ref:`exhale_variable_group__PhysicsConstants_1ga2af4da1ed0b3553264e3d0b583f56277`
+
+- :ref:`exhale_variable_group__PhysicsConstants_1ga0877420f3d7b1f47b871d2ccb47168d8`
+

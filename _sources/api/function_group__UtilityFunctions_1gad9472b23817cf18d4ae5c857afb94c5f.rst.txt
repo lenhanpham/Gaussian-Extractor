@@ -1,0 +1,14 @@
+.. _exhale_function_group__UtilityFunctions_1gad9472b23817cf18d4ae5c857afb94c5f:
+
+Function formatMemorySize
+=========================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: formatMemorySize()
+   :project: GaussianExtractor

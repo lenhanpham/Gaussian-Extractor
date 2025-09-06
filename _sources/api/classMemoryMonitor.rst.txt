@@ -1,0 +1,17 @@
+.. _exhale_class_classMemoryMonitor:
+
+Class MemoryMonitor
+===================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: MemoryMonitor
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

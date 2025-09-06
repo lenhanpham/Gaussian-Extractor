@@ -1,0 +1,738 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+        <title>Class CreateInput - Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Gaussian Extractor 0.5.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Gaussian Extractor 0.5.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/classCreateInput.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="class-createinput">
+<span id="exhale-class-classcreateinput"></span><h1>Class CreateInput<a class="headerlink" href="#class-createinput" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_core_create_input.h.html#file-core-create-input-h"><span class="std std-ref">File create_input.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv411CreateInput">
+<span id="_CPPv311CreateInput"></span><span id="_CPPv211CreateInput"></span><span id="CreateInput"></span><span class="target" id="classCreateInput"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateInput</span></span></span><a class="headerlink" href="#_CPPv411CreateInput" title="Link to this definition">¶</a><br /></dt>
+<dd><p>System for creating Gaussian input files from XYZ coordinate files. </p>
+<p>Provides functionality to process XYZ files, read coordinates, and generate Gaussian input files for various types of calculations. Supports parallel processing with resource management integration.</p>
+<section id="gaussian__extractor_8h_1Key">
+<h3>Features<a class="headerlink" href="#gaussian__extractor_8h_1Key" title="Link to this heading">¶</a></h3>
+<p id="gaussian__extractor_8h_1Key"><ul class="simple">
+<li><p>Multiple calculation types (SP, OPT+FREQ, TS, etc.)</p></li>
+<li><p>Configurable functionals and basis sets</p></li>
+<li><p>Solvent model support</p></li>
+<li><p>Multi-threaded processing</p></li>
+<li><p>Resource-aware operation</p></li>
+<li><p>Detailed reporting and error handling</p></li>
+<li><p>Support for complex multi-section inputs</p></li>
+</ul>
+</p>
+</section>
+<section id="classCreateInput_1CreateInput">
+<h3>Usage<a class="headerlink" href="#classCreateInput_1CreateInput" title="Link to this heading">¶</a></h3>
+<p id="classCreateInput_1CreateInput">The class processes XYZ files and creates corresponding Gaussian input files with appropriate route sections, molecular specifications, and coordinate data. </p>
+</section>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEEb">
+<span id="_CPPv3N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEEb"></span><span id="_CPPv2N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEEb"></span><span id="CreateInput::CreateInput__std::shared_ptr:ProcessingContext:.b"></span><span class="target" id="classCreateInput_1a41b180c990f253a1b7bde736a4b67dbd"></span><span class="sig-name descname"><span class="n"><span class="pre">CreateInput</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structProcessingContext.html#_CPPv417ProcessingContext" title="ProcessingContext"><span class="n"><span class="pre">ProcessingContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctx</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">quiet</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEEb" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Constructor. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> – Shared pointer to processing context </p></li>
+<li><p><strong>quiet</strong> – Enable quiet mode (suppress non-essential output) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEERKNSt6stringEb">
+<span id="_CPPv3N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEERKNSt6stringEb"></span><span id="_CPPv2N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEERKNSt6stringEb"></span><span id="CreateInput::CreateInput__std::shared_ptr:ProcessingContext:.ssCR.b"></span><span class="target" id="classCreateInput_1a9493e0c1d043f68ff46be63277e02be2"></span><span class="sig-name descname"><span class="n"><span class="pre">CreateInput</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structProcessingContext.html#_CPPv417ProcessingContext" title="ProcessingContext"><span class="n"><span class="pre">ProcessingContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctx</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">param_file</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">quiet</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEERKNSt6stringEb" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Constructor with parameter file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> – Shared pointer to processing context </p></li>
+<li><p><strong>param_file</strong> – Path to parameter file </p></li>
+<li><p><strong>quiet</strong> – Enable quiet mode (suppress non-essential output) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput14loadParametersERKNSt6stringE">
+<span id="_CPPv3N11CreateInput14loadParametersERKNSt6stringE"></span><span id="_CPPv2N11CreateInput14loadParametersERKNSt6stringE"></span><span id="CreateInput::loadParameters__ssCR"></span><span class="target" id="classCreateInput_1a9aec2e755c1ba4029399926925221f73"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadParameters</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">param_file</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput14loadParametersERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Load parameters from a parameter file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_file</strong> – Path to parameter file </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>true if successful, false otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput27generate_checkpoint_sectionERKNSt6stringE">
+<span id="_CPPv3N11CreateInput27generate_checkpoint_sectionERKNSt6stringE"></span><span id="_CPPv2N11CreateInput27generate_checkpoint_sectionERKNSt6stringE"></span><span id="CreateInput::generate_checkpoint_section__ssCR"></span><span class="target" id="classCreateInput_1af97b8545c619c854283b22b791f453ab"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate_checkpoint_section</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">isomer_name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput27generate_checkpoint_sectionERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generate checkpoint section for input file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>isomer_name</strong> – Name of the isomer </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Checkpoint section string </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput14generate_titleEv">
+<span id="_CPPv3N11CreateInput14generate_titleEv"></span><span id="_CPPv2N11CreateInput14generate_titleEv"></span><span id="CreateInput::generate_title"></span><span class="target" id="classCreateInput_1aed0a3cb3385f77c8f2f61d44f1c4efa1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate_title</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput14generate_titleEv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Generate title for current calculation type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Title string </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK11CreateInput28select_basis_for_calculationEv">
+<span id="_CPPv3NK11CreateInput28select_basis_for_calculationEv"></span><span id="_CPPv2NK11CreateInput28select_basis_for_calculationEv"></span><span id="CreateInput::select_basis_for_calculationC"></span><span class="target" id="classCreateInput_1aaa26966f65695608137d998b5659e4fe"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">select_basis_for_calculation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK11CreateInput28select_basis_for_calculationEv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Smartly select the appropriate basis set based on calculation type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The selected basis set string </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK11CreateInput12is_gen_basisERKNSt6stringE">
+<span id="_CPPv3NK11CreateInput12is_gen_basisERKNSt6stringE"></span><span id="_CPPv2NK11CreateInput12is_gen_basisERKNSt6stringE"></span><span id="CreateInput::is_gen_basis__ssCRC"></span><span class="target" id="classCreateInput_1a781b25e4d5f838ad1a106649a487f5e0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_gen_basis</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">basis_str</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK11CreateInput12is_gen_basisERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Check if the given basis string is GEN or GENECP (case insensitive) </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>basis_str</strong> – The basis string to check </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>true if it’s GEN/GENECP, false otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK11CreateInput31validate_gen_basis_requirementsEv">
+<span id="_CPPv3NK11CreateInput31validate_gen_basis_requirementsEv"></span><span id="_CPPv2NK11CreateInput31validate_gen_basis_requirementsEv"></span><span id="CreateInput::validate_gen_basis_requirementsC"></span><span class="target" id="classCreateInput_1af1835325332d8cda3bc6566040afc4cc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">validate_gen_basis_requirements</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK11CreateInput31validate_gen_basis_requirementsEv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Validates requirements for calculations with GEN/GENECP basis. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – if requirements are not met </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput13create_inputsERKNSt6vectorINSt6stringEEE">
+<span id="_CPPv3N11CreateInput13create_inputsERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N11CreateInput13create_inputsERKNSt6vectorINSt6stringEEE"></span><span id="CreateInput::create_inputs__std::vector:ss:CR"></span><span class="target" id="classCreateInput_1aa08199575835140a2122199e52cde238"></span><a class="reference internal" href="structCreateSummary.html#_CPPv413CreateSummary" title="CreateSummary"><span class="n"><span class="pre">CreateSummary</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create_inputs</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xyz_files</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput13create_inputsERKNSt6vectorINSt6stringEEE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Main method to create input files from XYZ files. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xyz_files</strong> – List of XYZ files to process </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Summary of the creation operation </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput20set_calculation_typeE15CalculationType">
+<span id="_CPPv3N11CreateInput20set_calculation_typeE15CalculationType"></span><span id="_CPPv2N11CreateInput20set_calculation_typeE15CalculationType"></span><span id="CreateInput::set_calculation_type__CalculationType"></span><span class="target" id="classCreateInput_1aace28de2ac8b36fb13f3fbd00d0fa5bc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_calculation_type</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="enum_create__input_8h_1ae2fb950fc8d1f9388248733404704d2f.html#_CPPv415CalculationType" title="CalculationType"><span class="n"><span class="pre">CalculationType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput20set_calculation_typeE15CalculationType" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set calculation type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>type</strong> – The calculation type to use </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput14set_functionalERKNSt6stringE">
+<span id="_CPPv3N11CreateInput14set_functionalERKNSt6stringE"></span><span id="_CPPv2N11CreateInput14set_functionalERKNSt6stringE"></span><span id="CreateInput::set_functional__ssCR"></span><span class="target" id="classCreateInput_1a0f4e33ce167dcdc477b5049c7a05a3f0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_functional</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">functional</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput14set_functionalERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set DFT functional. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>functional</strong> – The functional name (e.g., “UWB97XD”) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput9set_basisERKNSt6stringE">
+<span id="_CPPv3N11CreateInput9set_basisERKNSt6stringE"></span><span id="_CPPv2N11CreateInput9set_basisERKNSt6stringE"></span><span id="CreateInput::set_basis__ssCR"></span><span class="target" id="classCreateInput_1a711b47cc7894d6c5f223ebc0f4187024"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_basis</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">basis</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput9set_basisERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set basis set. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>basis</strong> – The basis set name (e.g., “Def2SVPP”) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput15set_large_basisERKNSt6stringE">
+<span id="_CPPv3N11CreateInput15set_large_basisERKNSt6stringE"></span><span id="_CPPv2N11CreateInput15set_large_basisERKNSt6stringE"></span><span id="CreateInput::set_large_basis__ssCR"></span><span class="target" id="classCreateInput_1af9d5277a43ba3361cc7e2b70a7e7c54f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_large_basis</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">large_basis</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput15set_large_basisERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set large basis set for high-level calculations. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>large_basis</strong> – The larger basis set name </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput11set_solventERKNSt6stringERKNSt6stringE">
+<span id="_CPPv3N11CreateInput11set_solventERKNSt6stringERKNSt6stringE"></span><span id="_CPPv2N11CreateInput11set_solventERKNSt6stringERKNSt6stringE"></span><span id="CreateInput::set_solvent__ssCR.ssCR"></span><span class="target" id="classCreateInput_1a1f625d84c27857a727ce195120df342a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_solvent</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">solvent</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">model</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;smd&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput11set_solventERKNSt6stringERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set solvent parameters. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solvent</strong> – Solvent name (empty for gas phase) </p></li>
+<li><p><strong>model</strong> – Solvent model (default: “smd”) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput15set_print_levelERKNSt6stringE">
+<span id="_CPPv3N11CreateInput15set_print_levelERKNSt6stringE"></span><span id="_CPPv2N11CreateInput15set_print_levelERKNSt6stringE"></span><span id="CreateInput::set_print_level__ssCR"></span><span class="target" id="classCreateInput_1aa76f34bae9e3090f123829a755591639"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_print_level</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">print_level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput15set_print_levelERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set pound sign for route section. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>print_level</strong> – The pound sign (“”, “P”, “T”, etc.) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput18set_extra_keywordsERKNSt6stringE">
+<span id="_CPPv3N11CreateInput18set_extra_keywordsERKNSt6stringE"></span><span id="_CPPv2N11CreateInput18set_extra_keywordsERKNSt6stringE"></span><span id="CreateInput::set_extra_keywords__ssCR"></span><span class="target" id="classCreateInput_1a938de5a2a4a0b83aa3974f613d4fc121"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_extra_keywords</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">keywords</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput18set_extra_keywordsERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set extra keywords for route section. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keywords</strong> – Additional Gaussian keywords </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput19set_molecular_specsEii">
+<span id="_CPPv3N11CreateInput19set_molecular_specsEii"></span><span id="_CPPv2N11CreateInput19set_molecular_specsEii"></span><span id="CreateInput::set_molecular_specs__i.i"></span><span class="target" id="classCreateInput_1a277cf5edced7d9b487a192110ca441fc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_molecular_specs</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">charge</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mult</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput19set_molecular_specsEii" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set molecular charge and multiplicity. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>charge</strong> – Molecular charge (default: 0) </p></li>
+<li><p><strong>mult</strong> – Multiplicity (default: 1) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput8set_tailERKNSt6stringE">
+<span id="_CPPv3N11CreateInput8set_tailERKNSt6stringE"></span><span id="_CPPv2N11CreateInput8set_tailERKNSt6stringE"></span><span id="CreateInput::set_tail__ssCR"></span><span class="target" id="classCreateInput_1af8d9f27d0b9b07735936888caa1c8cdb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_tail</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tail</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput8set_tailERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set tail text for input file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tail</strong> – Additional text at end of input </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput13set_extensionERKNSt6stringE">
+<span id="_CPPv3N11CreateInput13set_extensionERKNSt6stringE"></span><span id="_CPPv2N11CreateInput13set_extensionERKNSt6stringE"></span><span id="CreateInput::set_extension__ssCR"></span><span class="target" id="classCreateInput_1adad439f1d1de22a5b643089b0c4d2dc5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_extension</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">extension</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput13set_extensionERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set file extension for output. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>extension</strong> – File extension (default: “.gau”) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput14set_tschk_pathERKNSt6stringE">
+<span id="_CPPv3N11CreateInput14set_tschk_pathERKNSt6stringE"></span><span id="_CPPv2N11CreateInput14set_tschk_pathERKNSt6stringE"></span><span id="CreateInput::set_tschk_path__ssCR"></span><span class="target" id="classCreateInput_1a6142d4492d08a16d861432447fa06a7b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_tschk_path</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput14set_tschk_pathERKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set TS checkpoint path for high-level calculations. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – Path to TS checkpoint file </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput16set_freeze_atomsEii">
+<span id="_CPPv3N11CreateInput16set_freeze_atomsEii"></span><span id="_CPPv2N11CreateInput16set_freeze_atomsEii"></span><span id="CreateInput::set_freeze_atoms__i.i"></span><span class="target" id="classCreateInput_1a356d9f6309aa63e4302608e04e5f92e2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_freeze_atoms</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">atom1</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">atom2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput16set_freeze_atomsEii" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set atoms to freeze for OSS TS calculations. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom1</strong> – First atom index (1-based) </p></li>
+<li><p><strong>atom2</strong> – Second atom index (1-based) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput16set_scf_maxcycleEi">
+<span id="_CPPv3N11CreateInput16set_scf_maxcycleEi"></span><span id="_CPPv2N11CreateInput16set_scf_maxcycleEi"></span><span id="CreateInput::set_scf_maxcycle__i"></span><span class="target" id="classCreateInput_1a2ff1716e7e1609c9c659de5f5777b04a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_scf_maxcycle</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxcycle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput16set_scf_maxcycleEi" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set SCF maxcycle override. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>maxcycle</strong> – SCF maxcycle value (-1 for default) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput17set_opt_maxcyclesEi">
+<span id="_CPPv3N11CreateInput17set_opt_maxcyclesEi"></span><span id="_CPPv2N11CreateInput17set_opt_maxcyclesEi"></span><span id="CreateInput::set_opt_maxcycles__i"></span><span class="target" id="classCreateInput_1a0abd4e7c141ae7cbc826d10a85e53d63"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_opt_maxcycles</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxcycles</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput17set_opt_maxcyclesEi" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set OPT maxcycles override. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>maxcycles</strong> – OPT maxcycles value (-1 for default) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput17set_irc_maxpointsEi">
+<span id="_CPPv3N11CreateInput17set_irc_maxpointsEi"></span><span id="_CPPv2N11CreateInput17set_irc_maxpointsEi"></span><span id="CreateInput::set_irc_maxpoints__i"></span><span class="target" id="classCreateInput_1a8d6cbbe7240f323b45c0e36bf64fdac8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_irc_maxpoints</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxpoints</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput17set_irc_maxpointsEi" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set IRC maxpoints override. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>maxpoints</strong> – IRC maxpoints value (-1 for default) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput14set_irc_recalcEi">
+<span id="_CPPv3N11CreateInput14set_irc_recalcEi"></span><span id="_CPPv2N11CreateInput14set_irc_recalcEi"></span><span id="CreateInput::set_irc_recalc__i"></span><span class="target" id="classCreateInput_1a182ae500cfd5e9606f791f19d974113a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_irc_recalc</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">recalc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput14set_irc_recalcEi" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set IRC recalc override. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>recalc</strong> – IRC recalc value (-1 for default) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput16set_irc_maxcycleEi">
+<span id="_CPPv3N11CreateInput16set_irc_maxcycleEi"></span><span id="_CPPv2N11CreateInput16set_irc_maxcycleEi"></span><span id="CreateInput::set_irc_maxcycle__i"></span><span class="target" id="classCreateInput_1a94c9539437ddc76caaa7ffe9e3bb73cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_irc_maxcycle</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxcycle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput16set_irc_maxcycleEi" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set IRC maxcycle override. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>maxcycle</strong> – IRC maxcycle value (-1 for default) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput16set_irc_stepsizeEi">
+<span id="_CPPv3N11CreateInput16set_irc_stepsizeEi"></span><span id="_CPPv2N11CreateInput16set_irc_stepsizeEi"></span><span id="CreateInput::set_irc_stepsize__i"></span><span class="target" id="classCreateInput_1a8afee13f35dfab8cced84c9b4b199a08"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_irc_stepsize</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stepsize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput16set_irc_stepsizeEi" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Set IRC stepsize override. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stepsize</strong> – IRC stepsize value (-1 for default) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N11CreateInput13print_summaryERK13CreateSummaryRKNSt6stringE">
+<span id="_CPPv3N11CreateInput13print_summaryERK13CreateSummaryRKNSt6stringE"></span><span id="_CPPv2N11CreateInput13print_summaryERK13CreateSummaryRKNSt6stringE"></span><span id="CreateInput::print_summary__CreateSummaryCR.ssCR"></span><span class="target" id="classCreateInput_1a8fdec05545089618e862b276ed23bbcf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">print_summary</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structCreateSummary.html#_CPPv413CreateSummary" title="CreateSummary"><span class="n"><span class="pre">CreateSummary</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">summary</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">operation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11CreateInput13print_summaryERK13CreateSummaryRKNSt6stringE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Print summary of creation operation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>summary</strong> – Summary to print </p></li>
+<li><p><strong>operation</strong> – Description of operation </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Le Nhan Pham
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Class CreateInput</a><ul>
+<li><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
+<li><a class="reference internal" href="#_CPPv411CreateInput"><code class="docutils literal notranslate"><span class="pre">CreateInput</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEEb"><code class="docutils literal notranslate"><span class="pre">CreateInput()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput11CreateInputENSt10shared_ptrI17ProcessingContextEERKNSt6stringEb"><code class="docutils literal notranslate"><span class="pre">CreateInput()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput14loadParametersERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">loadParameters()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput27generate_checkpoint_sectionERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">generate_checkpoint_section()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput14generate_titleEv"><code class="docutils literal notranslate"><span class="pre">generate_title()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK11CreateInput28select_basis_for_calculationEv"><code class="docutils literal notranslate"><span class="pre">select_basis_for_calculation()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK11CreateInput12is_gen_basisERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">is_gen_basis()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK11CreateInput31validate_gen_basis_requirementsEv"><code class="docutils literal notranslate"><span class="pre">validate_gen_basis_requirements()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput13create_inputsERKNSt6vectorINSt6stringEEE"><code class="docutils literal notranslate"><span class="pre">create_inputs()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput20set_calculation_typeE15CalculationType"><code class="docutils literal notranslate"><span class="pre">set_calculation_type()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput14set_functionalERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_functional()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput9set_basisERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_basis()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput15set_large_basisERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_large_basis()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput11set_solventERKNSt6stringERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_solvent()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput15set_print_levelERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_print_level()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput18set_extra_keywordsERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_extra_keywords()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput19set_molecular_specsEii"><code class="docutils literal notranslate"><span class="pre">set_molecular_specs()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput8set_tailERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_tail()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput13set_extensionERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_extension()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput14set_tschk_pathERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">set_tschk_path()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput16set_freeze_atomsEii"><code class="docutils literal notranslate"><span class="pre">set_freeze_atoms()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput16set_scf_maxcycleEi"><code class="docutils literal notranslate"><span class="pre">set_scf_maxcycle()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput17set_opt_maxcyclesEi"><code class="docutils literal notranslate"><span class="pre">set_opt_maxcycles()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput17set_irc_maxpointsEi"><code class="docutils literal notranslate"><span class="pre">set_irc_maxpoints()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput14set_irc_recalcEi"><code class="docutils literal notranslate"><span class="pre">set_irc_recalc()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput16set_irc_maxcycleEi"><code class="docutils literal notranslate"><span class="pre">set_irc_maxcycle()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput16set_irc_stepsizeEi"><code class="docutils literal notranslate"><span class="pre">set_irc_stepsize()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N11CreateInput13print_summaryERK13CreateSummaryRKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">print_summary()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    </body>
+</html>

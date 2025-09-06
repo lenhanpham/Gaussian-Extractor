@@ -1,0 +1,14 @@
+.. _exhale_function_group__UtilityFunctions_1ga13a0fe5daedc9937f2e60e35b862674b:
+
+Function printResourceUsage
+===========================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: printResourceUsage()
+   :project: GaussianExtractor

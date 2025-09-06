@@ -1,0 +1,14 @@
+.. _exhale_define_group__AuthorInfo_1ga0d6d426b032f450f0ac4828d142670a1:
+
+Define GAUSSIAN_EXTRACTOR_COPYRIGHT
+===================================
+
+- Defined in :ref:`file_core_version.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: GAUSSIAN_EXTRACTOR_COPYRIGHT
+   :project: GaussianExtractor

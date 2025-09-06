@@ -1,0 +1,33 @@
+
+.. _namespace_GaussianExtractor:
+
+Namespace GaussianExtractor
+===========================
+
+
+Main namespace containing version utilities and functions. 
+
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_group__VersionFunctions_1gac6e31792810c344c5d0bc503374bf8d6`
+
+- :ref:`exhale_function_group__VersionFunctions_1ga546fbcfeb96704c283dd3b0d080daf11`
+
+- :ref:`exhale_function_group__VersionFunctions_1gaa7d0f6f380da3b7f8fbd8433cf85a52b`
+
+- :ref:`exhale_function_group__VersionFunctions_1gaec16789b9c0ace13484f2a7d587dcf55`
+
+- :ref:`exhale_function_group__VersionFunctions_1ga79afbfd2981f3ac46f43516895d8d5fe`

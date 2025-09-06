@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceUtils_1a438037dac8d7b9a6f17c9cdbe4bfd27f:
+
+Function Utils::read_file_unified
+=================================
+
+- Defined in :ref:`file_core_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: Utils::read_file_unified(const std::string&, FileReadMode, size_t, const std::string&)
+   :project: GaussianExtractor

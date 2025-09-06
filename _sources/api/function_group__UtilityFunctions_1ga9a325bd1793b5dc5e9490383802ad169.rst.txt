@@ -1,0 +1,14 @@
+.. _exhale_function_group__UtilityFunctions_1ga9a325bd1793b5dc5e9490383802ad169:
+
+Function findLogFiles()
+=======================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: findLogFiles()
+   :project: GaussianExtractor

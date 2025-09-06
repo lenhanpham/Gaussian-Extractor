@@ -1,0 +1,14 @@
+.. _exhale_function_group__ConfigStringUtils_1ga49ee140641a23b58f60a06e016fca429:
+
+Function ConfigUtils::string_to_bool
+====================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ConfigUtils::string_to_bool()
+   :project: GaussianExtractor

@@ -1,0 +1,14 @@
+.. _exhale_variable_group__HighLevelConstants_1gad01e819322d383bd0c10b0f9ab5652bb:
+
+Variable PHASE_CORR_FACTOR
+==========================
+
+- Defined in :ref:`file_core_high_level_energy.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: PHASE_CORR_FACTOR
+   :project: GaussianExtractor

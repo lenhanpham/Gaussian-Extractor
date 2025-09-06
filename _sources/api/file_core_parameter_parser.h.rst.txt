@@ -1,0 +1,61 @@
+
+.. _file_core_parameter_parser.h:
+
+File parameter_parser.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_core>` (``core``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+
+Header file for parameter file parsing functionality. 
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``core/parameter_parser.h``)
+----------------------------------------
+
+
+
+
+Detailed Description
+--------------------
+
+Le Nhan Pham 
+
+2025
+
+This header defines the :ref:`exhale_class_classParameterParser` class for reading and writing parameter files used by the create_input module. 
+
+
+
+
+Includes
+--------
+
+
+- ``string``
+
+- ``unordered_map``
+
+- ``unordered_set``
+
+- ``vector``
+
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classParameterParser`
+

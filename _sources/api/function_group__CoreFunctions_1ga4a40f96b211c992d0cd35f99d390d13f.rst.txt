@@ -1,0 +1,14 @@
+.. _exhale_function_group__CoreFunctions_1ga4a40f96b211c992d0cd35f99d390d13f:
+
+Function processAndOutputResults
+================================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: processAndOutputResults()
+   :project: GaussianExtractor

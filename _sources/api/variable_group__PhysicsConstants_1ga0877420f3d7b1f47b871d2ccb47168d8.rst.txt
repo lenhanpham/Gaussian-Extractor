@@ -1,0 +1,14 @@
+.. _exhale_variable_group__PhysicsConstants_1ga0877420f3d7b1f47b871d2ccb47168d8:
+
+Variable R
+==========
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: R
+   :project: GaussianExtractor

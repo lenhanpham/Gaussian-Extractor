@@ -1,0 +1,14 @@
+.. _exhale_define_group__ConfigMacros_1gaa2f220298348132a67571dad5507c26c:
+
+Define CONFIG_GET_STRING
+========================
+
+- Defined in :ref:`file_core_config_manager.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: CONFIG_GET_STRING
+   :project: GaussianExtractor

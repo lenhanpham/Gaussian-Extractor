@@ -1,0 +1,27 @@
+.. _exhale_class_classFileHandleManager:
+
+Class FileHandleManager
+=======================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_class_classFileHandleManager_1_1FileGuard`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: FileHandleManager
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

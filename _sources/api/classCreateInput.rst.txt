@@ -1,0 +1,17 @@
+.. _exhale_class_classCreateInput:
+
+Class CreateInput
+=================
+
+- Defined in :ref:`file_core_create_input.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: CreateInput
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

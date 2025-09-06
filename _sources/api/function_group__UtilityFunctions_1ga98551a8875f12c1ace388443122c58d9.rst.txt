@@ -1,0 +1,14 @@
+.. _exhale_function_group__UtilityFunctions_1ga98551a8875f12c1ace388443122c58d9:
+
+Function validateFileSize
+=========================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: validateFileSize()
+   :project: GaussianExtractor

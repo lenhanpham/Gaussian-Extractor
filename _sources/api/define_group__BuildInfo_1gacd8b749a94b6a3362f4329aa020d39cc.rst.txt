@@ -1,0 +1,14 @@
+.. _exhale_define_group__BuildInfo_1gacd8b749a94b6a3362f4329aa020d39cc:
+
+Define GAUSSIAN_EXTRACTOR_DESCRIPTION
+=====================================
+
+- Defined in :ref:`file_core_version.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: GAUSSIAN_EXTRACTOR_DESCRIPTION
+   :project: GaussianExtractor

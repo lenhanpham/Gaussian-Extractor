@@ -1,0 +1,17 @@
+.. _exhale_struct_structCheckSummary:
+
+Struct CheckSummary
+===================
+
+- Defined in :ref:`file_core_job_checker.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: CheckSummary
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

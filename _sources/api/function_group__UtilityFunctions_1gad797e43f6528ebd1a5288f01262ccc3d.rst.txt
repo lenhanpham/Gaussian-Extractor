@@ -1,0 +1,14 @@
+.. _exhale_function_group__UtilityFunctions_1gad797e43f6528ebd1a5288f01262ccc3d:
+
+Function printJobResourceInfo
+=============================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: printJobResourceInfo()
+   :project: GaussianExtractor

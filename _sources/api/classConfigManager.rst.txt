@@ -1,0 +1,17 @@
+.. _exhale_class_classConfigManager:
+
+Class ConfigManager
+===================
+
+- Defined in :ref:`file_core_config_manager.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ConfigManager
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

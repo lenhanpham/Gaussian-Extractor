@@ -1,0 +1,14 @@
+.. _exhale_function_group__ConfigStringUtils_1ga2f21572e2bdf739cbd8c75720728196c:
+
+Function ConfigUtils::split_string
+==================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ConfigUtils::split_string()
+   :project: GaussianExtractor

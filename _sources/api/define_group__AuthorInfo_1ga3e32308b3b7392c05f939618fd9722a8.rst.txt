@@ -1,0 +1,14 @@
+.. _exhale_define_group__AuthorInfo_1ga3e32308b3b7392c05f939618fd9722a8:
+
+Define GAUSSIAN_EXTRACTOR_REPOSITORY
+====================================
+
+- Defined in :ref:`file_core_version.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: GAUSSIAN_EXTRACTOR_REPOSITORY
+   :project: GaussianExtractor

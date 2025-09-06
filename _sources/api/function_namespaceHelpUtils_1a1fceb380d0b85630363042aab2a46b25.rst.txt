@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceHelpUtils_1a1fceb380d0b85630363042aab2a46b25:
+
+Function HelpUtils::print_help
+==============================
+
+- Defined in :ref:`file_core_help_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: HelpUtils::print_help(const std::string&)
+   :project: GaussianExtractor

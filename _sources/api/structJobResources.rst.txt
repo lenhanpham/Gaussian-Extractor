@@ -1,0 +1,17 @@
+.. _exhale_struct_structJobResources:
+
+Struct JobResources
+===================
+
+- Defined in :ref:`file_core_job_scheduler.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: JobResources
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

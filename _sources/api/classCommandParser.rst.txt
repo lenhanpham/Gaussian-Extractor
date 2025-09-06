@@ -1,0 +1,17 @@
+.. _exhale_class_classCommandParser:
+
+Class CommandParser
+===================
+
+- Defined in :ref:`file_core_command_system.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: CommandParser
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,17 @@
+.. _exhale_struct_structExtractSummary:
+
+Struct ExtractSummary
+=====================
+
+- Defined in :ref:`file_core_coord_extractor.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: ExtractSummary
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

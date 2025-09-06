@@ -1,0 +1,169 @@
+
+.. _file_core_config_manager.h:
+
+File config_manager.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_core>` (``core``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+
+Configuration management system for Gaussian Extractor. 
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``core/config_manager.h``)
+--------------------------------------
+
+
+
+
+Detailed Description
+--------------------
+
+Le Nhan Pham 
+
+2025
+
+This header defines a comprehensive configuration management system that handles loading, parsing, validation, and access to configuration settings from files and command-line overrides. The system supports hierarchical configuration with defaults, user preferences, and runtime overrides.
+
+
+Sources
+
+Configuration values are loaded from multiple sources in priority order:
+
+1. Built-in defaults (lowest priority)
+
+2. System-wide configuration files
+
+3. User-specific configuration files
+
+4. Command-line overrides (highest priority)
+
+
+
+
+
+Sources
+
+Settings are organized into logical categories:
+
+- GENERAL: Basic application behavior
+
+- EXTRACT: Data extraction parameters
+
+- JOB_CHECKER: Job status checking options
+
+- PERFORMANCE: Threading and resource limits
+
+- OUTPUT: Formatting and display preferences
+
+
+
+
+
+Format
+
+Configuration files use a simple key=value format with:
+
+- Comments starting with # character
+
+- Section headers for organization
+
+- Type-safe value conversion and validation
+
+- Support for various data types (string, int, double, bool)
+
+
+
+
+
+Safety
+
+The configuration system is designed for single-threaded initialization followed by read-only access from multiple threads. Write operations during runtime are supported but should be used carefully in multi-threaded environments. 
+
+
+
+
+
+Includes
+--------
+
+
+- ``filesystem``
+
+- ``fstream``
+
+- ``iostream``
+
+- ``string``
+
+- ``unordered_map``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_core_command_system.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_ConfigUtils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structConfigValue`
+
+- :ref:`exhale_class_classConfigManager`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_config__manager_8h_1a32f23b552ade08d96d49cc3061a27165`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_group__ConfigMacros_1ga680f26fa7361a2519724a27e6ef9f88f`
+
+- :ref:`exhale_define_group__ConfigMacros_1ga0147d53b34eb0335a4a6385abc13a5ca`
+
+- :ref:`exhale_define_group__ConfigMacros_1gadf01ea7dbf126644817dd5c05e05b9e3`
+
+- :ref:`exhale_define_group__ConfigMacros_1gaa2f220298348132a67571dad5507c26c`
+
+- :ref:`exhale_define_group__ConfigMacros_1ga8ea6856050a3db280ede6c6beef01a9a`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_group__ConfigConstants_1ga474675948b88b570377dde986b831027`
+
+- :ref:`exhale_variable_group__ConfigConstants_1gaf1c392dbe5c126556ae7fdcfcf13f312`
+
+- :ref:`exhale_variable_config__manager_8h_1a5dc02d7cc2dae80387b656e7d050e86c`
+

@@ -1,0 +1,14 @@
+.. _exhale_variable_group__PhysicsConstants_1ga2af4da1ed0b3553264e3d0b583f56277:
+
+Variable Po
+===========
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: Po
+   :project: GaussianExtractor

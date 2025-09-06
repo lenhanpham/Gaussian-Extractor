@@ -1,0 +1,17 @@
+.. _exhale_class_classParameterParser:
+
+Class ParameterParser
+=====================
+
+- Defined in :ref:`file_core_parameter_parser.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ParameterParser
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,17 @@
+.. _exhale_struct_structCreateSummary:
+
+Struct CreateSummary
+====================
+
+- Defined in :ref:`file_core_create_input.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: CreateSummary
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

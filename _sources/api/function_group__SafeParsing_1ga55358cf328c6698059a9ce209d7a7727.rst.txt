@@ -1,0 +1,14 @@
+.. _exhale_function_group__SafeParsing_1ga55358cf328c6698059a9ce209d7a7727:
+
+Function safe_stoul
+===================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: safe_stoul()
+   :project: GaussianExtractor

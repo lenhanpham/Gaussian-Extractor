@@ -1,0 +1,53 @@
+
+.. _namespace_HighLevelEnergyUtils:
+
+Namespace HighLevelEnergyUtils
+==============================
+
+
+Utility functions supporting high-level energy calculations. 
+
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+Detailed Description
+--------------------
+
+The :ref:`namespace_HighLevelEnergyUtils` namespace provides a comprehensive collection of utility functions that support high-level energy calculations including file operations, energy parsing, unit conversions, and data validation. 
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_group__EnergyParsingUtils_1ga95f6c769f275d3b7659d6f379b106b51`
+
+- :ref:`exhale_function_group__EnergyParsingUtils_1gaf1573e500ba7a88a65e5ccf978c00621`
+
+- :ref:`exhale_function_group__FileDirectoryUtils_1gaf8e0b2ee0b197f1fd5036b75f7d1a9fd`
+
+- :ref:`exhale_function_group__ConversionUtils_1gab18e95c3b82fcdbcecec7b278493157c`
+
+- :ref:`exhale_function_group__ConversionUtils_1ga25dfe5039543fe129bedb1e0892be135`
+
+- :ref:`exhale_function_group__FileDirectoryUtils_1ga9851a9bb4e49d1d90f71249aeebc61e6`
+
+- :ref:`exhale_function_group__FileDirectoryUtils_1gac1ff563cdfa290008403d17b0d2a91cd`
+
+- :ref:`exhale_function_group__EnergyParsingUtils_1ga0fa63ff04b8e0794254fe2546859f39d`
+
+- :ref:`exhale_function_group__ValidationUtils_1ga06764cec412d21151dc74bb9106095a1`
+
+- :ref:`exhale_function_group__ValidationUtils_1gabe3d651ced16adc942b77bd92be3116a`
+
+- :ref:`exhale_function_group__ValidationUtils_1gad41dd357e75a3c0219b5ed3a6b964aa6`

@@ -1,0 +1,14 @@
+.. _exhale_function_group__ModuleExecutors_1ga02765a7766f40fab78024f30a1b3f9ff:
+
+Function execute_check_pcm_command()
+====================================
+
+- Defined in :ref:`file_core_module_executor.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: execute_check_pcm_command()
+   :project: GaussianExtractor
