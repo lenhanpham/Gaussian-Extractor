@@ -1,0 +1,14 @@
+.. _exhale_function_group__ConfigMigration_1gafe82a56e2d192ad97f3cad5815add706:
+
+Function ConfigUtils::migrate_config_if_needed
+==============================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ConfigUtils::migrate_config_if_needed()
+   :project: GaussianExtractor

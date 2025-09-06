@@ -1,0 +1,85 @@
+
+.. _file_core_interactive_mode.h:
+
+File interactive_mode.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_core>` (``core``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+
+Interactive mode functionality on Windows. 
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``core/interactive_mode.h``)
+----------------------------------------
+
+
+
+
+Detailed Description
+--------------------
+
+Le Nhan Pham 
+
+2025
+
+This header declares functions for the interactive command-line interface of the Gaussian Extractor application. 
+
+
+
+
+Includes
+--------
+
+
+- ``string``
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_interactive__mode_8h_1a5f1a9bdbc166546e200c5bbb2aa5db30`
+
+- :ref:`exhale_function_interactive__mode_8h_1a97d4d0bad6dab32f1d5b92d4ea09c80b`
+
+- :ref:`exhale_function_interactive__mode_8h_1a530afea0ae66ae1aef943507742b3125`
+
+- :ref:`exhale_function_interactive__mode_8h_1a4f5c061099b04712ebc615b32108fdd5`
+
+- :ref:`exhale_function_interactive__mode_8h_1a02765a7766f40fab78024f30a1b3f9ff`
+
+- :ref:`exhale_function_interactive__mode_8h_1a6d8429398cd99549f485628a27b0623a`
+
+- :ref:`exhale_function_interactive__mode_8h_1a14f3f6b42735308c6063a97c3bb11279`
+
+- :ref:`exhale_function_interactive__mode_8h_1aa356f7897fc875da426df1cf3c9c5b99`
+
+- :ref:`exhale_function_interactive__mode_8h_1ab27343ef2ae55f92b21f39e17f788f4c`
+
+- :ref:`exhale_function_interactive__mode_8h_1ab1aa2594a8bb3d2789d37593f69cbc5e`
+
+- :ref:`exhale_function_interactive__mode_8h_1aefd8d559f7f798aaf8cb5f6feb9dce47`
+
+- :ref:`exhale_function_interactive__mode_8h_1a92486af52b1c217ef1affb1e8d9a6d72`
+
+- :ref:`exhale_function_interactive__mode_8h_1a7df3c083f83183ac64c8bfa5af8e0846`
+
+- :ref:`exhale_function_interactive__mode_8h_1a56f663d093a1a92e51d05f4f93d694fe`
+
+- :ref:`exhale_function_interactive__mode_8h_1af98c7951f5700d61e330561219d419fa`
+
+- :ref:`exhale_function_interactive__mode_8h_1a6b615c34054150d837dc45ed1c17b297`
+

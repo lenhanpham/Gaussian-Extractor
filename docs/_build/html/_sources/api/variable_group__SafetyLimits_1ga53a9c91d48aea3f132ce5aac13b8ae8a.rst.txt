@@ -1,0 +1,14 @@
+.. _exhale_variable_group__SafetyLimits_1ga53a9c91d48aea3f132ce5aac13b8ae8a:
+
+Variable DEFAULT_MAX_FILE_SIZE_MB
+=================================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: DEFAULT_MAX_FILE_SIZE_MB
+   :project: GaussianExtractor

@@ -1,0 +1,14 @@
+.. _exhale_define_group__VersionConstants_1ga841d6baf8ac26b79af6561620b8bb8bb:
+
+Define GAUSSIAN_EXTRACTOR_VERSION_STRING
+========================================
+
+- Defined in :ref:`file_core_version.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: GAUSSIAN_EXTRACTOR_VERSION_STRING
+   :project: GaussianExtractor

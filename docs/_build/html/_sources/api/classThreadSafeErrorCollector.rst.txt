@@ -1,0 +1,17 @@
+.. _exhale_class_classThreadSafeErrorCollector:
+
+Class ThreadSafeErrorCollector
+==============================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: ThreadSafeErrorCollector
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

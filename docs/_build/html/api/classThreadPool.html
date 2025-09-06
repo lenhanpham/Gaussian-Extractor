@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class ThreadPool &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class ThreadPool</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/classThreadPool.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-threadpool">
+<span id="exhale-class-classthreadpool"></span><h1>Class ThreadPool<a class="headerlink" href="#class-threadpool" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_core_high_level_energy.h.html#file-core-high-level-energy-h"><span class="std std-ref">File high_level_energy.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv410ThreadPool">
+<span id="_CPPv310ThreadPool"></span><span id="_CPPv210ThreadPool"></span><span id="ThreadPool"></span><span class="target" id="classThreadPool"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThreadPool</span></span></span><a class="headerlink" href="#_CPPv410ThreadPool" title="Link to this definition"></a><br /></dt>
+<dd><p>High-performance thread pool for parallel file processing. </p>
+<p>A thread-safe, efficient thread pool implementation designed specifically for high-throughput file processing tasks. Features dynamic work distribution, resource-aware task scheduling, and cluster-safe operation.</p>
+<section id="classThreadPool_1Features">
+<h3>Features<a class="headerlink" href="#classThreadPool_1Features" title="Link to this heading"></a></h3>
+<p id="classThreadPool_1Features"><ul class="simple">
+<li><p>Fixed-size thread pool to avoid creation/destruction overhead</p></li>
+<li><p>Task queue with condition variable synchronization</p></li>
+<li><p>Exception-safe task execution with error propagation</p></li>
+<li><p>Graceful shutdown with proper thread joining</p></li>
+<li><p>Memory-efficient task storage using std::function</p></li>
+</ul>
+</p>
+</section>
+<section id="classThreadPool_1Performance">
+<h3>Characteristics<a class="headerlink" href="#classThreadPool_1Performance" title="Link to this heading"></a></h3>
+<p id="classThreadPool_1Performance"><ul class="simple">
+<li><p>Zero allocation after initialization for task submission</p></li>
+<li><p>Lock-free task completion detection using atomics</p></li>
+<li><p>Optimized for I/O-bound tasks (file reading/parsing)</p></li>
+<li><p>Scales efficiently up to hardware thread limits </p></li>
+</ul>
+</p>
+</section>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10ThreadPool10ThreadPoolE6size_t">
+<span id="_CPPv3N10ThreadPool10ThreadPoolE6size_t"></span><span id="_CPPv2N10ThreadPool10ThreadPoolE6size_t"></span><span id="ThreadPool::ThreadPool__s"></span><span class="target" id="classThreadPool_1a931f8f409a49a27d5e779f2135eb5519"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThreadPool</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_threads</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10ThreadPool10ThreadPoolE6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor with thread count specification. </p>
+<p>
+Creates a fixed-size thread pool with the specified number of workers. Threads are created immediately and remain active until destruction.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Recommended thread count is typically between hardware_concurrency/2 and hardware_concurrency for I/O-bound workloads on clusters </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_threads</strong> – Number of worker threads to create</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10ThreadPoolD0Ev">
+<span id="_CPPv3N10ThreadPoolD0Ev"></span><span id="_CPPv2N10ThreadPoolD0Ev"></span><span id="ThreadPool::~ThreadPool"></span><span class="target" id="classThreadPool_1a44d3d2ab618970605e684efc216655eb"></span><span class="sig-name descname"><span class="n"><span class="pre">~ThreadPool</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10ThreadPoolD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor with graceful shutdown. </p>
+<p>Stops accepting new tasks, completes all pending tasks, and joins all worker threads. Ensures all resources are properly cleaned up. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN10ThreadPool7enqueueENSt6futureINSt13invoke_resultI1FDp4ArgsE4typeEEERR1FDpRR4Args">
+<span id="_CPPv3I0DpEN10ThreadPool7enqueueERR1FDpRR4Args"></span><span id="_CPPv2I0DpEN10ThreadPool7enqueueERR1FDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classThreadPool_1a26e67526c70650724a805bf9aee27ebb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enqueue</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0DpEN10ThreadPool7enqueueENSt6futureINSt13invoke_resultI1FDp4ArgsE4typeEEERR1FDpRR4Args" title="ThreadPool::enqueue::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN10ThreadPool7enqueueENSt6futureINSt13invoke_resultI1FDp4ArgsE4typeEEERR1FDpRR4Args" title="ThreadPool::enqueue::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">invoke_result</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN10ThreadPool7enqueueENSt6futureINSt13invoke_resultI1FDp4ArgsE4typeEEERR1FDpRR4Args" title="ThreadPool::enqueue::F"><span class="n"><span class="pre">F</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0DpEN10ThreadPool7enqueueENSt6futureINSt13invoke_resultI1FDp4ArgsE4typeEEERR1FDpRR4Args" title="ThreadPool::enqueue::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0DpEN10ThreadPool7enqueueENSt6futureINSt13invoke_resultI1FDp4ArgsE4typeEEERR1FDpRR4Args" title="Link to this definition"></a><br /></dt>
+<dd><p>Submit a task for asynchronous execution. </p>
+<p>
+Submits a task to the thread pool for asynchronous execution. The task will be executed by the next available worker thread. Returns a future that can be used to retrieve the result or wait for completion.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is thread-safe and can be called concurrently </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>F</strong> – Function type (automatically deduced) </p></li>
+<li><p><strong>Args</strong> – Argument types (automatically deduced) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>f</strong> – Function or callable to execute </p></li>
+<li><p><strong>args</strong> – Arguments to pass to the function </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>std::future&lt;return_type&gt; Future for task result</p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – if pool is shutting down </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10ThreadPool12active_countEv">
+<span id="_CPPv3NK10ThreadPool12active_countEv"></span><span id="_CPPv2NK10ThreadPool12active_countEv"></span><span id="ThreadPool::active_countC"></span><span class="target" id="classThreadPool_1a3768d5338cbccb4b4d800a24652fc5a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">active_count</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10ThreadPool12active_countEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get number of active (executing) tasks. </p>
+<p>
+Returns the number of tasks currently being executed by worker threads. Useful for monitoring load and determining when processing is complete. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Current number of tasks being executed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10ThreadPool19wait_for_completionEv">
+<span id="_CPPv3N10ThreadPool19wait_for_completionEv"></span><span id="_CPPv2N10ThreadPool19wait_for_completionEv"></span><span id="ThreadPool::wait_for_completion"></span><span class="target" id="classThreadPool_1a6004566814c3ca134fc87a0bb1ef2c54"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wait_for_completion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10ThreadPool19wait_for_completionEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Wait for all tasks to complete. </p>
+<p>Blocks until all submitted tasks have completed execution. Does not prevent new tasks from being submitted during the wait. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10ThreadPool16is_shutting_downEv">
+<span id="_CPPv3NK10ThreadPool16is_shutting_downEv"></span><span id="_CPPv2NK10ThreadPool16is_shutting_downEv"></span><span id="ThreadPool::is_shutting_downC"></span><span class="target" id="classThreadPool_1ae44c008630e2cf98a0f8a1a65f4595dc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_shutting_down</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10ThreadPool16is_shutting_downEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Check if thread pool is shutting down. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>true if shutdown has been initiated </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

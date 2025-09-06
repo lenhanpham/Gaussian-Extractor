@@ -1,0 +1,14 @@
+.. _exhale_variable_group__SafetyLimits_1ga99f41eb90c4eb0abba0d99171b29aa40:
+
+Variable MIN_MEMORY_MB
+======================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: MIN_MEMORY_MB
+   :project: GaussianExtractor

@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full API &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Full API</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/unabridged_orphan.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="full-api">
+<h1>Full API<a class="headerlink" href="#full-api" title="Link to this heading"></a></h1>
+<section id="directories">
+<h2>Directories<a class="headerlink" href="#directories" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dir_core.html">Directory core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dir_core.html#files">Files</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="files">
+<h2>Files<a class="headerlink" href="#files" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_command_system.h.html">File command_system.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_command_system.h.html#definition-core-command-system-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/command_system.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_command_system.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_command_system.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_command_system.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_command_system.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_command_system.h.html#enums">Enums</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_config_manager.h.html">File config_manager.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#definition-core-config-manager-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/config_manager.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#defines">Defines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_config_manager.h.html#variables">Variables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_coord_extractor.h.html">File coord_extractor.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_coord_extractor.h.html#definition-core-coord-extractor-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/coord_extractor.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_coord_extractor.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_coord_extractor.h.html#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_create_input.h.html">File create_input.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_create_input.h.html#definition-core-create-input-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/create_input.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_create_input.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_create_input.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_create_input.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_create_input.h.html#enums">Enums</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_gaussian_extractor.h.html">File gaussian_extractor.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_gaussian_extractor.h.html#definition-core-gaussian-extractor-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/gaussian_extractor.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_gaussian_extractor.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_gaussian_extractor.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_gaussian_extractor.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_gaussian_extractor.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_gaussian_extractor.h.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_gaussian_extractor.h.html#variables">Variables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_help_utils.h.html">File help_utils.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_help_utils.h.html#definition-core-help-utils-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/help_utils.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_help_utils.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_help_utils.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_help_utils.h.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_help_utils.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_high_level_energy.h.html">File high_level_energy.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_high_level_energy.h.html#definition-core-high-level-energy-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/high_level_energy.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_high_level_energy.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_high_level_energy.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_high_level_energy.h.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_high_level_energy.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_high_level_energy.h.html#defines">Defines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_high_level_energy.h.html#variables">Variables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_interactive_mode.h.html">File interactive_mode.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_interactive_mode.h.html#definition-core-interactive-mode-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/interactive_mode.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_interactive_mode.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_interactive_mode.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_interactive_mode.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_job_checker.h.html">File job_checker.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_checker.h.html#definition-core-job-checker-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/job_checker.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_checker.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_checker.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_checker.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_checker.h.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_checker.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_checker.h.html#enums">Enums</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_job_scheduler.h.html">File job_scheduler.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_scheduler.h.html#definition-core-job-scheduler-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/job_scheduler.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_scheduler.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_scheduler.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_scheduler.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_scheduler.h.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_job_scheduler.h.html#enums">Enums</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_metadata.h.html">File metadata.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_metadata.h.html#definition-core-metadata-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/metadata.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_metadata.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_metadata.h.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_metadata.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_module_executor.h.html">File module_executor.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_module_executor.h.html#definition-core-module-executor-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/module_executor.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_module_executor.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_module_executor.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_module_executor.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_parameter_parser.h.html">File parameter_parser.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_parameter_parser.h.html#definition-core-parameter-parser-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/parameter_parser.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_parameter_parser.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_parameter_parser.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_parameter_parser.h.html#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_utils.h.html">File utils.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_utils.h.html#definition-core-utils-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/utils.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_utils.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_utils.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_utils.h.html#included-by">Included By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_utils.h.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_utils.h.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_utils.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_core_version.h.html">File version.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_core_version.h.html#definition-core-version-h">Definition (<code class="docutils literal notranslate"><span class="pre">core/version.h</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_version.h.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_version.h.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_version.h.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_core_version.h.html#defines">Defines</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

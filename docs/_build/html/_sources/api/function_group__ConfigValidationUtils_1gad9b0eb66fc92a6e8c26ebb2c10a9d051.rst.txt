@@ -1,0 +1,14 @@
+.. _exhale_function_group__ConfigValidationUtils_1gad9b0eb66fc92a6e8c26ebb2c10a9d051:
+
+Function ConfigUtils::is_valid_thread_count
+===========================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ConfigUtils::is_valid_thread_count()
+   :project: GaussianExtractor

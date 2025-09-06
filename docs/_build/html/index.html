@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaussian Extractor User Manual &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation Guide" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Gaussian Extractor User Manual</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gaussian-extractor-user-manual">
+<h1>Gaussian Extractor User Manual<a class="headerlink" href="#gaussian-extractor-user-manual" title="Link to this heading"></a></h1>
+<p><strong>Gaussian Extractor</strong> is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.</p>
+<a class="reference internal image-reference" href="_images/im.png"><img alt="Gaussian Extractor Results" class="align-center" src="_images/im.png" style="width: 826.5px; height: 780.75px;" />
+</a>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Gaussian Extractor provides a comprehensive suite of tools for computational chemistry workflows:</p>
+<ul class="simple">
+<li><p><strong>Parallel Processing</strong>: Efficiently processes multiple Gaussian output files simultaneously</p></li>
+<li><p><strong>Job Management</strong>: Check and organize completed, failed, and problematic calculations</p></li>
+<li><p><strong>Energy Calculations</strong>: Extract thermodynamic data and calculate high-level energies</p></li>
+<li><p><strong>Coordinate Processing</strong>: Extract and organize molecular coordinates</p></li>
+<li><p><strong>Input Generation</strong>: Create Gaussian input files from XYZ coordinate files</p></li>
+<li><p><strong>Input prarameters template</strong>: Generate and reuse parameter templates for different calculation types</p></li>
+<li><p><strong>Windows interactive mode</strong>: Windows users can use all features plus popular linux commands in the interactive mode</p></li>
+</ul>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Scientific Capabilities</strong></dt><dd><ul class="simple">
+<li><p>Extract thermodynamic properties (Gibbs free energy, enthalpy, entropy)</p></li>
+<li><p>Check and organize job statuses (completed, failed, errors)</p></li>
+<li><p>Calculate high-level energies combining different theory levels</p></li>
+<li><p>Process coordinates and generate input files</p></li>
+</ul>
+</dd>
+<dt><strong>Performance &amp; Safety</strong></dt><dd><ul class="simple">
+<li><p>Multi-threaded processing with automatic resource detection</p></li>
+<li><p>Cluster-aware operation (SLURM, PBS, SGE, LSF)</p></li>
+<li><p>Memory management with automatic limits</p></li>
+<li><p>Graceful shutdown handling</p></li>
+</ul>
+</dd>
+<dt><strong>Workflow Integration</strong></dt><dd><ul class="simple">
+<li><p>Command-line interface with extensive options</p></li>
+<li><p>Configuration file support for defaults</p></li>
+<li><p>Template system for reproducible calculations</p></li>
+<li><p>Interactive mode for Windows users</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
+<p>New to Gaussian Extractor? Start here:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="installation.html"><span class="doc">Installation Guide</span></a> - Install the software on your system</p></li>
+<li><p><a class="reference internal" href="usage.html"><span class="doc">Usage Guide</span></a> - Learn how to use all features with examples</p></li>
+<li><p><span class="xref std std-doc">api</span> - Technical API documentation</p></li>
+</ol>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic usage - extract data from all .log files</span>
+gaussian_extractor.x
+
+<span class="c1"># Check job status and organize files</span>
+gaussian_extractor.x<span class="w"> </span><span class="k">done</span><span class="w">     </span><span class="c1"># Move completed jobs</span>
+gaussian_extractor.x<span class="w"> </span>errors<span class="w">   </span><span class="c1"># Move failed jobs</span>
+
+<span class="c1"># Generate input files from XYZ coordinates</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>opt_freq
+</pre></div>
+</div>
+</section>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#supported-compilers">Supported Compilers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#pre-compiled-binary-easiest">Pre-compiled Binary (Easiest)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#build-from-source">Build from Source)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#cluster-installation">Cluster Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#configuration-file">Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#environment-setup">Environment Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#verification">Verification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#common-build-issues">Common Build Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#runtime-issues">Runtime Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#cluster-specific-issues">Cluster-Specific Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#command-overview">Command Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#core-commands">Core Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#extract-default-command">1. Extract (Default Command)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#job-status-commands">2. Job Status Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#high-level-energy-calculations">3. High-Level Energy Calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#coordinate-extraction">4. Coordinate Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#create-input-files-ci">5. Create Input Files (ci)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#configuration-and-customization">Configuration and Customization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#configuration-file">Configuration File</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#performance-and-resource-management">Performance and Resource Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#thread-management">Thread Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#memory-management">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#file-size-handling">File Size Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#batch-processing">Batch Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#safety-features">Safety Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#cluster-environment-detection">Cluster Environment Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#graceful-shutdown">Graceful Shutdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#error-handling">Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#advanced-workflows">Advanced Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#complete-computational-chemistry-workflow">Complete Computational Chemistry Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#high-throughput-processing">High-Throughput Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#template-based-automation">Template-Based Automation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-issues-and-solutions">Common Issues and Solutions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#getting-help">Getting Help</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#project-overview">Project Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#architecture">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#new-modules-in-v0-5-0">New Modules in v0.5.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#key-design-principles">Key Design Principles</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#development-setup">Development Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#getting-the-source-code">Getting the Source Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#building-for-development">Building for Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#code-quality-tools">Code Quality Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#coding-standards">Coding Standards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#code-style">Code Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#documentation-standards">Documentation Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#memory-management">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#thread-safety">Thread Safety</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#contributing">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#development-workflow">Development Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#code-review-process">Code Review Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#testing-guidelines">Testing Guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#unit-testing">Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#integration-testing">Integration Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#performance-testing">Performance Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#continuous-integration">Continuous Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#ci-cd-pipeline">CI/CD Pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#release-process">Release Process</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#version-numbering">Version Numbering</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+<section id="support-contributing">
+<h1>Support &amp; Contributing<a class="headerlink" href="#support-contributing" title="Link to this heading"></a></h1>
+<p>For bug reports, feature requests, or safety concerns:</p>
+<ul class="simple">
+<li><ul>
+<li><p><strong>Issues</strong>: <a class="reference external" href="https://github.com/lenhanpham/gaussian-extractor/issues">GitHub Issues</a></p></li>
+</ul>
+</li>
+<li><p><strong>Documentation</strong>: This user manual</p></li>
+<li><p><strong>Help</strong>: Use <code class="docutils literal notranslate"><span class="pre">gaussian_extractor.x</span> <span class="pre">--help</span></code> for command-line help</p></li>
+</ul>
+</section>
+<section id="license">
+<h1>License<a class="headerlink" href="#license" title="Link to this heading"></a></h1>
+<p>Gaussian Extractor is released under the MIT License. See the LICENSE file for details.</p>
+</section>
+<section id="version-information">
+<h1>Version Information<a class="headerlink" href="#version-information" title="Link to this heading"></a></h1>
+<p>Current Version: <strong>v0.5.0</strong></p>
+<ul class="simple">
+<li><p><strong>v0.5</strong>: Interactive mode, enhanced coordinate processing, improved input generation</p></li>
+<li><p><strong>v0.4</strong>: Enhanced safety, job checking, high-level energy calculations</p></li>
+<li><p><strong>v0.3</strong>: Complete resource management and cluster awareness</p></li>
+<li><p><strong>v0.2</strong>: Multi-threaded processing capabilities</p></li>
+<li><p><strong>v0.1</strong>: Initial single-threaded version</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This documentation is for Gaussian Extractor v0.5.0. For older versions, please refer to the archived documentation.</p>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

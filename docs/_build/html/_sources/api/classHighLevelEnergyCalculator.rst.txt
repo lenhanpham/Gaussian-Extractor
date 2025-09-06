@@ -1,0 +1,17 @@
+.. _exhale_class_classHighLevelEnergyCalculator:
+
+Class HighLevelEnergyCalculator
+===============================
+
+- Defined in :ref:`file_core_high_level_energy.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: HighLevelEnergyCalculator
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

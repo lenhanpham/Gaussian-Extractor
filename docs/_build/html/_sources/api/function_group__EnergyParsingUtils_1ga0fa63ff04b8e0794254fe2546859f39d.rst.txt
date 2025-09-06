@@ -1,0 +1,14 @@
+.. _exhale_function_group__EnergyParsingUtils_1ga0fa63ff04b8e0794254fe2546859f39d:
+
+Function HighLevelEnergyUtils::parse_energy_value
+=================================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: HighLevelEnergyUtils::parse_energy_value()
+   :project: GaussianExtractor

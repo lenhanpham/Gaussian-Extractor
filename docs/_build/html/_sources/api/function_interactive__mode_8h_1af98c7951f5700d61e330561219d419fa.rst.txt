@@ -1,0 +1,14 @@
+.. _exhale_function_interactive__mode_8h_1af98c7951f5700d61e330561219d419fa:
+
+Function is_utility_command
+===========================
+
+- Defined in :ref:`file_core_interactive_mode.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: is_utility_command(const std::string&)
+   :project: GaussianExtractor

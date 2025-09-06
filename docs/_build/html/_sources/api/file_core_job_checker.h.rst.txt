@@ -1,0 +1,137 @@
+
+.. _file_core_job_checker.h:
+
+File job_checker.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_core>` (``core``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+
+Job status checking and file organization system for Gaussian calculations. 
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``core/job_checker.h``)
+-----------------------------------
+
+
+
+
+Detailed Description
+--------------------
+
+Le Nhan Pham 
+
+2025
+
+This header defines a comprehensive job management system for organizing Gaussian computational chemistry calculations based on their completion status. The system can identify completed jobs, failed jobs, and specific failure types like PCM convergence issues, then organize them into appropriate directories.
+
+
+Status Categories
+
+The system recognizes several job completion states:
+
+- COMPLETED: Normal termination with successful results
+
+- ERROR: General error termination requiring investigation
+
+- PCM_FAILED: Specific PCM (Polarizable Continuum Model) convergence failure
+
+- RUNNING: Job still in progress (not yet terminated)
+
+- UNKNOWN: Cannot determine status from available information
+
+
+
+
+
+Format
+
+The job checker can automatically organize files into directories based on status:
+
+- Completed jobs → "done" directory (configurable suffix)
+
+- Error jobs → "errorJobs" directory
+
+- PCM failures → "PCMMkU" directory
+
+- Related files (.gau, .chk) are moved together with .log files
+
+
+
+
+
+Integration
+
+The job checker integrates with the main processing system to provide:
+
+- Resource-aware processing with memory and thread management
+
+- Progress reporting for large job sets
+
+- Detailed error reporting and statistics
+
+- Thread-safe operation for concurrent job checking 
+
+
+
+
+
+
+
+Includes
+--------
+
+
+- ``filesystem``
+
+- ``gaussian_extractor.h`` (:ref:`file_core_gaussian_extractor.h`)
+
+- ``memory``
+
+- ``string``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_core_coord_extractor.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_JobCheckerUtils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structCheckSummary`
+
+- :ref:`exhale_struct_structJobCheckResult`
+
+- :ref:`exhale_class_classJobChecker`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_job__checker_8h_1a5df92147ec0babfdf2aa8856833bb4b8`
+

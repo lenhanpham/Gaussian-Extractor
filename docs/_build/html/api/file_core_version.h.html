@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File version.h &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">File version.h</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/file_core_version.h.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-version-h">
+<span id="file-core-version-h"></span><h1>File version.h<a class="headerlink" href="#file-version-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="dir_core.html#dir-core"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">core</span></code>)</p>
+<p>Version information and build metadata for Gaussian Extractor.</p>
+<nav class="contents local" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-core-version-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">core/version.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#detailed-description" id="id2">Detailed Description</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id3">Includes</a></p></li>
+<li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#defines" id="id5">Defines</a></p></li>
+</ul>
+</nav>
+<section id="definition-core-version-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">core/version.h</span></code>)<a class="headerlink" href="#definition-core-version-h" title="Link to this heading"></a></h2>
+</section>
+<section id="detailed-description">
+<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Link to this heading"></a></h2>
+<p>Le Nhan Pham</p>
+<p>2025</p>
+<p>This header file contains all version-related constants, macros, and utility functions for the Gaussian Extractor application. It provides centralized version management and build information that can be used throughout the application for display, logging, and compatibility checking.</p>
+<p>Management</p>
+<p>Version information is defined using semantic versioning (MAJOR.MINOR.PATCH):</p>
+<ul class="simple">
+<li><p>MAJOR: Incremented for incompatible API changes</p></li>
+<li><p>MINOR: Incremented for backward-compatible functionality additions</p></li>
+<li><p>PATCH: Incremented for backward-compatible bug fixes</p></li>
+</ul>
+<p>Information</p>
+<p>Additional build metadata includes:</p>
+<ul class="simple">
+<li><p>Application name and description</p></li>
+<li><p>Copyright and author information</p></li>
+<li><p>Repository URL for source code</p></li>
+</ul>
+<p>When updating version numbers, ensure CMakeLists.txt PROJECT(VERSION) is also updated to maintain consistency across build systems</p>
+</section>
+<section id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cstring</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></li>
+</ul>
+</section>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_GaussianExtractor.html#namespace-gaussianextractor"><span class="std std-ref">Namespace GaussianExtractor</span></a></p></li>
+</ul>
+</section>
+<section id="defines">
+<h2>Defines<a class="headerlink" href="#defines" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="define_group__AuthorInfo_1ga3eb846610f76bc8a47ff45bc10f45696.html#exhale-define-group-authorinfo-1ga3eb846610f76bc8a47ff45bc10f45696"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_AUTHOR</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__AuthorInfo_1ga0d6d426b032f450f0ac4828d142670a1.html#exhale-define-group-authorinfo-1ga0d6d426b032f450f0ac4828d142670a1"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_COPYRIGHT</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__BuildInfo_1gacd8b749a94b6a3362f4329aa020d39cc.html#exhale-define-group-buildinfo-1gacd8b749a94b6a3362f4329aa020d39cc"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_DESCRIPTION</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__BuildInfo_1gae0dc034eacb81462c564ca52f86728e3.html#exhale-define-group-buildinfo-1gae0dc034eacb81462c564ca52f86728e3"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_NAME</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__AuthorInfo_1ga3e32308b3b7392c05f939618fd9722a8.html#exhale-define-group-authorinfo-1ga3e32308b3b7392c05f939618fd9722a8"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_REPOSITORY</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__VersionConstants_1ga9f86c4acdbf0ca0cc4996915da5d2426.html#exhale-define-group-versionconstants-1ga9f86c4acdbf0ca0cc4996915da5d2426"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_VERSION_MAJOR</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__VersionConstants_1gab8f64056b9a878770492735f1b50e68e.html#exhale-define-group-versionconstants-1gab8f64056b9a878770492735f1b50e68e"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_VERSION_MINOR</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__VersionConstants_1ga1f42fd5602ac563c00f75e18e682fe73.html#exhale-define-group-versionconstants-1ga1f42fd5602ac563c00f75e18e682fe73"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_VERSION_PATCH</span></a></p></li>
+<li><p><a class="reference internal" href="define_group__VersionConstants_1ga841d6baf8ac26b79af6561620b8bb8bb.html#exhale-define-group-versionconstants-1ga841d6baf8ac26b79af6561620b8bb8bb"><span class="std std-ref">Define GAUSSIAN_EXTRACTOR_VERSION_STRING</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

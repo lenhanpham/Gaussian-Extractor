@@ -1,0 +1,14 @@
+.. _exhale_function_group__ConfigFileUtils_1ga09f057aaa03de2ed7c66d9a0ca26e047:
+
+Function ConfigUtils::get_config_search_paths
+=============================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ConfigUtils::get_config_search_paths()
+   :project: GaussianExtractor

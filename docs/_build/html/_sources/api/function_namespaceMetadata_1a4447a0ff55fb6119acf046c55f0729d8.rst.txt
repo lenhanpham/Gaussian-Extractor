@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceMetadata_1a4447a0ff55fb6119acf046c55f0729d8:
+
+Function Metadata::header
+=========================
+
+- Defined in :ref:`file_core_metadata.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: Metadata::header()
+   :project: GaussianExtractor

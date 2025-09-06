@@ -1,0 +1,17 @@
+.. _exhale_class_classJobChecker:
+
+Class JobChecker
+================
+
+- Defined in :ref:`file_core_job_checker.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: JobChecker
+   :project: GaussianExtractor
+   :members:
+   :protected-members:
+   :undoc-members:

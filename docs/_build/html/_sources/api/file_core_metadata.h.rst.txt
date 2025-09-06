@@ -1,0 +1,52 @@
+
+.. _file_core_metadata.h:
+
+File metadata.h
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_core>` (``core``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+
+:ref:`namespace_Metadata` utilities for standardized header and (future) summary blocks. 
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``core/metadata.h``)
+--------------------------------
+
+
+
+
+
+
+Includes
+--------
+
+
+- ``string``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_Metadata`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceMetadata_1a4447a0ff55fb6119acf046c55f0729d8`
+

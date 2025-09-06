@@ -1,0 +1,14 @@
+.. _exhale_function_group__JobFileUtils_1ga2946f175c06fc2a63a822b44db814ffa:
+
+Function JobCheckerUtils::is_valid_log_file
+===========================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: JobCheckerUtils::is_valid_log_file()
+   :project: GaussianExtractor

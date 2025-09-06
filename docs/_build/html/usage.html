@@ -1,0 +1,1145 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage Guide &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer Guide" href="developer.html" />
+    <link rel="prev" title="Installation Guide" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-overview">Command Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#core-commands">Core Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#extract-default-command">1. Extract (Default Command)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#job-status-commands">2. Job Status Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-energy-calculations">3. High-Level Energy Calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#coordinate-extraction">4. Coordinate Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-input-files-ci">5. Create Input Files (ci)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#configuration-and-customization">Configuration and Customization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-file">Configuration File</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#performance-and-resource-management">Performance and Resource Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#thread-management">Thread Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-management">Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-size-handling">File Size Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#batch-processing">Batch Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#safety-features">Safety Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cluster-environment-detection">Cluster Environment Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graceful-shutdown">Graceful Shutdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#advanced-workflows">Advanced Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#complete-computational-chemistry-workflow">Complete Computational Chemistry Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#high-throughput-processing">High-Throughput Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#template-based-automation">Template-Based Automation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#common-issues-and-solutions">Common Issues and Solutions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage Guide</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/usage.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage-guide">
+<h1>Usage Guide<a class="headerlink" href="#usage-guide" title="Link to this heading"></a></h1>
+<p>This comprehensive guide covers all features and commands of Gaussian Extractor with detailed examples and explanations.</p>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<p><strong>Basic Usage:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract data from all .log files in current directory</span>
+gaussian_extractor.x
+
+<span class="c1"># Process with custom settings</span>
+gaussian_extractor.x<span class="w"> </span>-t<span class="w"> </span><span class="m">300</span><span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span>-f<span class="w"> </span>csv<span class="w"> </span>-q
+
+<span class="c1"># Get help</span>
+gaussian_extractor.x<span class="w"> </span>--help
+</pre></div>
+</div>
+</section>
+<section id="command-overview">
+<h2>Command Overview<a class="headerlink" href="#command-overview" title="Link to this heading"></a></h2>
+<p>Gaussian Extractor supports the following commands:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extract</span></code></p></td>
+<td><p>Extract thermodynamic data (default)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">done</span></code></p></td>
+<td><p>Check and organize completed jobs</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">errors</span></code></p></td>
+<td><p>Check and organize failed jobs</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pcm</span></code></p></td>
+<td><p>Check PCM convergence failures</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">imode</span></code></p></td>
+<td><p>Check jobs with imaginary frequencies</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">check</span></code></p></td>
+<td><p>Run all job checks</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">high-kj</span></code></p></td>
+<td><p>Calculate high-level energies (kJ/mol)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">high-au</span></code></p></td>
+<td><p>Calculate high-level energies (atomic units)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">xyz</span></code></p></td>
+<td><p>Extract coordinates to XYZ format</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci</span></code></p></td>
+<td><p>Create Gaussian input files from XYZ</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">interactive</span></code></p></td>
+<td><p>Launch interactive mode (Windows)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="core-commands">
+<h1>Core Commands<a class="headerlink" href="#core-commands" title="Link to this heading"></a></h1>
+<section id="extract-default-command">
+<h2>1. Extract (Default Command)<a class="headerlink" href="#extract-default-command" title="Link to this heading"></a></h2>
+<p><strong>Purpose:</strong> Extract thermodynamic data from Gaussian log files.</p>
+<p><strong>Basic Usage:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process all .log files in current directory</span>
+gaussian_extractor.x
+
+<span class="c1"># Process .out files instead</span>
+gaussian_extractor.x<span class="w"> </span>-e<span class="w"> </span>out
+</pre></div>
+</div>
+<p><strong>Output Formats:</strong></p>
+<p><strong>Text Format (Default):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gaussian_extractor.x
+</pre></div>
+</div>
+<p><strong>CSV Format:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gaussian_extractor.x<span class="w"> </span>-f<span class="w"> </span>csv
+</pre></div>
+</div>
+<p><strong>Sample Output:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Found</span> <span class="mi">150</span> <span class="o">.</span><span class="n">log</span> <span class="n">files</span>
+<span class="n">Using</span> <span class="mi">4</span> <span class="n">threads</span> <span class="p">(</span><span class="n">requested</span><span class="p">:</span> <span class="n">half</span><span class="p">)</span>
+<span class="n">Processed</span> <span class="mi">75</span><span class="o">/</span><span class="mi">150</span> <span class="n">files</span> <span class="p">(</span><span class="mi">50</span><span class="o">%</span><span class="p">)</span>
+<span class="n">Processed</span> <span class="mi">150</span><span class="o">/</span><span class="mi">150</span> <span class="n">files</span> <span class="p">(</span><span class="mi">100</span><span class="o">%</span><span class="p">)</span>
+
+<span class="n">Results</span> <span class="n">written</span> <span class="n">to</span> <span class="n">project_directory</span><span class="o">.</span><span class="n">results</span>
+<span class="n">Total</span> <span class="n">execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">12.347</span> <span class="n">seconds</span>
+<span class="n">Memory</span> <span class="n">usage</span><span class="p">:</span> <span class="mf">256.7</span> <span class="n">MB</span> <span class="o">/</span> <span class="mf">4.0</span> <span class="n">GB</span>
+</pre></div>
+</div>
+<p><strong>Output Columns Explanation:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Output name</p></td>
+<td><p>Name of the Gaussian output file</p></td>
+</tr>
+<tr class="row-odd"><td><p>ETG kJ/mol</p></td>
+<td><p>Gibbs free energy with phase correction</p></td>
+</tr>
+<tr class="row-even"><td><p>Low FC</p></td>
+<td><p>Lowest vibrational frequency</p></td>
+</tr>
+<tr class="row-odd"><td><p>ETG a.u</p></td>
+<td><p>Gibbs free energy in atomic units</p></td>
+</tr>
+<tr class="row-even"><td><p>Nuclear E au</p></td>
+<td><p>Nuclear repulsion energy</p></td>
+</tr>
+<tr class="row-odd"><td><p>SCFE</p></td>
+<td><p>SCF energy in atomic units</p></td>
+</tr>
+<tr class="row-even"><td><p>ZPE</p></td>
+<td><p>Zero-point energy</p></td>
+</tr>
+<tr class="row-odd"><td><p>Status</p></td>
+<td><p>Job status (DONE/UNDONE)</p></td>
+</tr>
+<tr class="row-even"><td><p>PCorr</p></td>
+<td><p>Phase correction applied (YES/NO)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Round</p></td>
+<td><p>Number of Gaussian calculation rounds</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Advanced Options:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Custom temperature and concentration</span>
+gaussian_extractor.x<span class="w"> </span>-t<span class="w"> </span><span class="m">310</span>.15<span class="w"> </span>-c<span class="w"> </span><span class="m">5</span>
+
+<span class="c1"># Sort by different column (2=ETG kJ/mol, 3=Low FC, 6=SCFE)</span>
+gaussian_extractor.x<span class="w"> </span>-col<span class="w"> </span><span class="m">6</span>
+
+<span class="c1"># Quiet mode (minimal output)</span>
+gaussian_extractor.x<span class="w"> </span>-q
+
+<span class="c1"># Use specific number of threads</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span><span class="m">8</span>
+
+<span class="c1"># Process files larger than default 100MB limit</span>
+gaussian_extractor.x<span class="w"> </span>--max-file-size<span class="w"> </span><span class="m">500</span>
+</pre></div>
+</div>
+<p><strong>Temperature and Phase Correction:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use temperature from input files (default)</span>
+gaussian_extractor.x
+
+<span class="c1"># Override with custom temperature</span>
+gaussian_extractor.x<span class="w"> </span>-t<span class="w"> </span><span class="m">298</span>.15
+
+<span class="c1"># Custom concentration for phase correction</span>
+gaussian_extractor.x<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="c1"># 2M concentration</span>
+</pre></div>
+</div>
+<p><strong>Understanding Phase Correction:</strong></p>
+<p>Phase correction converts gas-phase energies to solution-phase:</p>
+<ul class="simple">
+<li><p><strong>Gas phase (1 atm)</strong> → <strong>Solution (1M standard state)</strong></p></li>
+<li><p>Applied automatically for SCRF calculations</p></li>
+<li><p>Critical for accurate free energy comparisons</p></li>
+</ul>
+</section>
+<section id="job-status-commands">
+<h2>2. Job Status Commands<a class="headerlink" href="#job-status-commands" title="Link to this heading"></a></h2>
+<p><strong>Purpose:</strong> Check and organize Gaussian jobs by completion status.</p>
+<p><strong>Check Completed Jobs:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move completed jobs to {dirname}-done/</span>
+gaussian_extractor.x<span class="w"> </span><span class="k">done</span>
+
+<span class="c1"># Custom directory suffix</span>
+gaussian_extractor.x<span class="w"> </span><span class="k">done</span><span class="w"> </span>--dir-suffix<span class="w"> </span>completed
+</pre></div>
+</div>
+<p><strong>Check Failed Jobs:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move failed jobs to errorJobs/</span>
+gaussian_extractor.x<span class="w"> </span>errors
+
+<span class="c1"># Show detailed error messages</span>
+gaussian_extractor.x<span class="w"> </span>errors<span class="w"> </span>--show-details
+
+<span class="c1"># Custom target directory</span>
+gaussian_extractor.x<span class="w"> </span>errors<span class="w"> </span>--target-dir<span class="w"> </span>failed_calculations
+</pre></div>
+</div>
+<p><strong>Check PCM Failures:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move PCM convergence failures to PCMMkU/</span>
+gaussian_extractor.x<span class="w"> </span>pcm
+</pre></div>
+</div>
+<p><strong>Check Imaginary Frequencies:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move jobs with imaginary frequencies to imaginary_freqs/</span>
+gaussian_extractor.x<span class="w"> </span>imode
+</pre></div>
+</div>
+<p><strong>Run All Checks:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Execute all job checks in sequence</span>
+gaussian_extractor.x<span class="w"> </span>check
+</pre></div>
+</div>
+<p><strong>Workflow Example:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Run calculations</span>
+<span class="c1"># (submit your Gaussian jobs)</span>
+
+<span class="c1"># 2. Check completion status</span>
+gaussian_extractor.x<span class="w"> </span><span class="k">done</span>
+
+<span class="c1"># 3. Check for failures</span>
+gaussian_extractor.x<span class="w"> </span>errors
+
+<span class="c1"># 4. Check PCM issues</span>
+gaussian_extractor.x<span class="w"> </span>pcm
+
+<span class="c1"># 5. Check vibrational analysis</span>
+gaussian_extractor.x<span class="w"> </span>imode
+</pre></div>
+</div>
+</section>
+<section id="high-level-energy-calculations">
+<h2>3. High-Level Energy Calculations<a class="headerlink" href="#high-level-energy-calculations" title="Link to this heading"></a></h2>
+<p><strong>Purpose:</strong> Calculate energies using high-level electronic energies combined with low-level thermal corrections.</p>
+<p><strong>Directory Structure:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>project/
+├── low_level/          # Opt + Freq calculations
+│   ├── molecule1.log
+│   └── molecule2.log
+└── high_level/         # Single point calculations
+    ├── molecule1.log
+    └── molecule2.log
+</pre></div>
+</div>
+<p><strong>Basic Usage:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navigate to high-level directory</span>
+<span class="nb">cd</span><span class="w"> </span>high_level
+
+<span class="c1"># Calculate energies in kJ/mol</span>
+gaussian_extractor.x<span class="w"> </span>high-kj
+
+<span class="c1"># Calculate detailed energies in atomic units</span>
+gaussian_extractor.x<span class="w"> </span>high-au
+</pre></div>
+</div>
+<p><strong>Energy Combination Process:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>High-level electronic energy</strong> from current directory</p></li>
+<li><p><strong>Thermal corrections</strong> from parent directory (../)</p></li>
+<li><p><strong>Combined result</strong>: E_high + (E_low_thermal - E_low_electronic)</p></li>
+</ol>
+<p><strong>Output Formats:</strong></p>
+<p><strong>high-kj (kJ/mol):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Name</span>              <span class="n">G</span> <span class="n">kJ</span><span class="o">/</span><span class="n">mol</span>    <span class="n">Status</span>
+<span class="n">molecule1</span>         <span class="o">-</span><span class="mf">1234.56</span>    <span class="n">DONE</span>
+<span class="n">molecule2</span>         <span class="o">-</span><span class="mf">2345.67</span>    <span class="n">DONE</span>
+</pre></div>
+</div>
+<p><strong>high-au (Atomic Units - Detailed):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Name</span>    <span class="n">E</span> <span class="n">high</span>    <span class="n">E</span> <span class="n">low</span>     <span class="n">ZPE</span>      <span class="n">TC</span>       <span class="n">TS</span>       <span class="n">H</span>        <span class="n">G</span>
+<span class="n">mol1</span>    <span class="o">-</span><span class="mf">456.78</span>   <span class="o">-</span><span class="mf">450.12</span>   <span class="mf">0.123</span>    <span class="mf">0.456</span>    <span class="mf">0.789</span>    <span class="o">-</span><span class="mf">455.67</span>  <span class="o">-</span><span class="mf">456.46</span>
+</pre></div>
+</div>
+<p><strong>Advanced Options:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Custom temperature</span>
+gaussian_extractor.x<span class="w"> </span>high-kj<span class="w"> </span>-t<span class="w"> </span><span class="m">310</span>.15
+
+<span class="c1"># Custom concentration</span>
+gaussian_extractor.x<span class="w"> </span>high-kj<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span>
+
+<span class="c1"># Sort by different column</span>
+gaussian_extractor.x<span class="w"> </span>high-kj<span class="w"> </span>-col<span class="w"> </span><span class="m">4</span>
+
+<span class="c1"># CSV output</span>
+gaussian_extractor.x<span class="w"> </span>high-kj<span class="w"> </span>-f<span class="w"> </span>csv
+</pre></div>
+</div>
+</section>
+<section id="coordinate-extraction">
+<h2>4. Coordinate Extraction<a class="headerlink" href="#coordinate-extraction" title="Link to this heading"></a></h2>
+<p><strong>Purpose:</strong> Extract final Cartesian coordinates from Gaussian log files and organize them.</p>
+<p><strong>Basic Usage:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract coordinates from all log files</span>
+gaussian_extractor.x<span class="w"> </span>xyz
+
+<span class="c1"># Extract from specific files</span>
+gaussian_extractor.x<span class="w"> </span>xyz<span class="w"> </span>-f<span class="w"> </span>molecule1.log<span class="w"> </span>molecule2.log
+</pre></div>
+</div>
+<p><strong>Output Organization:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>current_directory/
+├── molecule1.log
+├── molecule2.log
+└── current_directory_final_coord/
+    ├── molecule1.xyz
+    └── molecule2.xyz
+</pre></div>
+</div>
+<p><strong>Directory Structure:</strong></p>
+<ul class="simple">
+<li><p><strong>Completed jobs</strong> → <code class="docutils literal notranslate"><span class="pre">{dirname}_final_coord/</span></code></p></li>
+<li><p><strong>Incomplete jobs</strong> → <code class="docutils literal notranslate"><span class="pre">{dirname}_running_coord/</span></code></p></li>
+</ul>
+<p><strong>XYZ File Format:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">12</span>
+<span class="n">molecule1</span><span class="o">.</span><span class="n">log</span> <span class="n">Final</span> <span class="n">coordinates</span>
+<span class="n">C</span>     <span class="mf">0.000000</span>    <span class="mf">0.000000</span>    <span class="mf">0.000000</span>
+<span class="n">H</span>     <span class="mf">1.089000</span>    <span class="mf">0.000000</span>    <span class="mf">0.000000</span>
+<span class="n">H</span>    <span class="o">-</span><span class="mf">0.363000</span>    <span class="mf">1.032000</span>    <span class="mf">0.000000</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p><strong>Advanced Usage:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process .out files</span>
+gaussian_extractor.x<span class="w"> </span>xyz<span class="w"> </span>-e<span class="w"> </span>out
+
+<span class="c1"># Use multiple threads</span>
+gaussian_extractor.x<span class="w"> </span>xyz<span class="w"> </span>-nt<span class="w"> </span><span class="m">8</span>
+
+<span class="c1"># Quiet mode</span>
+gaussian_extractor.x<span class="w"> </span>xyz<span class="w"> </span>-q
+</pre></div>
+</div>
+</section>
+<section id="create-input-files-ci">
+<h2>5. Create Input Files (ci)<a class="headerlink" href="#create-input-files-ci" title="Link to this heading"></a></h2>
+<p><strong>Purpose:</strong> Generate Gaussian input files from XYZ coordinate files.</p>
+<p><strong>Supported Calculation Types:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sp</span></code></p></td>
+<td><p>Single point energy (default)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">opt_freq</span></code></p></td>
+<td><p>Geometry optimization + frequency</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ts_freq</span></code></p></td>
+<td><p>Transition state search + frequency</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">oss_ts_freq</span></code></p></td>
+<td><p>Open-shell singlet TS + frequency</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">modre_ts_freq</span></code></p></td>
+<td><p>Modredundant TS + frequency</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">oss_check_sp</span></code></p></td>
+<td><p>Open-shell singlet stability check</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">high_sp</span></code></p></td>
+<td><p>High-level single point</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">irc_forward</span></code></p></td>
+<td><p>IRC calculation (forward direction)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">irc_reverse</span></code></p></td>
+<td><p>IRC calculation (reverse direction)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">irc</span></code></p></td>
+<td><p>IRC calculation (both directions)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Basic Examples:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Single point energy calculation (default)</span>
+gaussian_extractor.x<span class="w"> </span>ci
+
+<span class="c1"># Geometry optimization + frequency</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>opt_freq
+
+<span class="c1"># Transition state search</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>ts_freq
+</pre></div>
+</div>
+<p><strong>Advanced Examples:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Transition state with frozen bond</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>modre_ts_freq<span class="w"> </span>--freeze-atoms<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span>
+
+<span class="c1"># High-level single point with custom functional</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>high_sp<span class="w"> </span>--functional<span class="w"> </span>B3LYP<span class="w"> </span>--basis<span class="w"> </span><span class="m">6</span>-311+G**
+
+<span class="c1"># Solvent calculation</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>opt_freq<span class="w"> </span>--solvent<span class="w"> </span>water<span class="w"> </span>--solvent-model<span class="w"> </span>smd
+
+<span class="c1"># IRC from transition state</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>irc<span class="w"> </span>--tschk-path<span class="w"> </span>../ts_checkpoints
+
+<span class="c1"># Custom settings</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>opt_freq<span class="w"> </span>--charge<span class="w"> </span><span class="m">1</span><span class="w"> </span>--mult<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<p><strong>Multiple XYZ Files:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process multiple files (comma-separated)</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>file1.xyz,file2.xyz,file3.xyz
+
+<span class="c1"># Mixed separators (space and comma)</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>file1.xyz<span class="w"> </span>file2.xyz,file3.xyz
+
+<span class="c1"># With calculation type</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>opt_freq<span class="w"> </span>file1.xyz,file2.xyz
+</pre></div>
+</div>
+<p><strong>Template System:</strong></p>
+<p><strong>Generate Templates:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate template for specific calculation type</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--genci-params<span class="w"> </span>opt_freq
+
+<span class="c1"># Generate all available templates</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--genci-all-params
+
+<span class="c1"># Generate in specific directory</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--genci-params<span class="w"> </span>opt_freq<span class="w"> </span>./my_templates
+</pre></div>
+</div>
+<p><strong>Use Templates:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use specific parameter file</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--param-file<span class="w"> </span>opt_freq.params
+
+<span class="c1"># Use default parameter file</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--param-file
+</pre></div>
+</div>
+<p><strong>Template Workflow:</strong></p>
+<ol class="arabic">
+<li><p><strong>Generate Template:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--genci-params<span class="w"> </span>opt_freq
+</pre></div>
+</div>
+</li>
+<li><p><strong>Edit Template (opt_freq.params):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">calc_type</span> <span class="o">=</span> <span class="n">opt_freq</span>
+<span class="n">functional</span> <span class="o">=</span> <span class="n">B3LYP</span>
+<span class="n">basis</span> <span class="o">=</span> <span class="mi">6</span><span class="o">-</span><span class="mi">31</span><span class="n">G</span><span class="o">*</span>
+<span class="n">solvent</span> <span class="o">=</span> <span class="n">chloroform</span>
+<span class="n">charge</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">mult</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">extra_keywords</span> <span class="o">=</span> <span class="n">Int</span><span class="o">=</span><span class="n">UltraFine</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use Template:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--param-file<span class="w"> </span>opt_freq.params
+</pre></div>
+</div>
+</li>
+</ol>
+<p><strong>Generated Input File Example:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">chk</span><span class="o">=</span><span class="n">molecule1</span><span class="o">.</span><span class="n">chk</span>
+<span class="c1"># B3LYP/6-31G* Opt Freq</span>
+
+<span class="n">molecule1</span> <span class="n">B3LYP</span><span class="o">/</span><span class="mi">6</span><span class="o">-</span><span class="mi">31</span><span class="n">G</span><span class="o">*</span> <span class="n">Opt</span> <span class="n">Freq</span>
+
+<span class="mi">1</span> <span class="mi">2</span>
+<span class="n">C</span>     <span class="mf">0.000000</span>    <span class="mf">0.000000</span>    <span class="mf">0.000000</span>
+<span class="n">H</span>     <span class="mf">1.089000</span>    <span class="mf">0.000000</span>    <span class="mf">0.000000</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration-and-customization">
+<h1>Configuration and Customization<a class="headerlink" href="#configuration-and-customization" title="Link to this heading"></a></h1>
+<section id="configuration-file">
+<h2>Configuration File<a class="headerlink" href="#configuration-file" title="Link to this heading"></a></h2>
+<p><strong>Create Default Configuration:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gaussian_extractor.x<span class="w"> </span>--create-config
+</pre></div>
+</div>
+<p><strong>Configuration File Location:</strong></p>
+<ul class="simple">
+<li><p><strong>Linux/macOS:</strong> <code class="docutils literal notranslate"><span class="pre">~/.gaussian_extractor.conf</span></code></p></li>
+<li><p><strong>Windows:</strong> <code class="docutils literal notranslate"><span class="pre">%USERPROFILE%\.gaussian_extractor.conf</span></code></p></li>
+</ul>
+<p><strong>Sample Configuration:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Default temperature for calculations</span>
+<span class="n">default_temperature</span> <span class="o">=</span> <span class="mf">298.15</span>
+
+<span class="c1"># Default concentration for phase correction</span>
+<span class="n">default_concentration</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># Default output format</span>
+<span class="n">output_format</span> <span class="o">=</span> <span class="n">text</span>
+
+<span class="c1"># Default thread count (half, max, or number)</span>
+<span class="n">default_threads</span> <span class="o">=</span> <span class="n">half</span>
+
+<span class="c1"># File extensions to process</span>
+<span class="n">output_extensions</span> <span class="o">=</span> <span class="o">.</span><span class="n">log</span><span class="p">,</span><span class="o">.</span><span class="n">out</span>
+<span class="n">input_extensions</span> <span class="o">=</span> <span class="o">.</span><span class="n">com</span><span class="p">,</span><span class="o">.</span><span class="n">gjf</span><span class="p">,</span><span class="o">.</span><span class="n">gau</span>
+</pre></div>
+</div>
+<p><strong>Configuration Options:</strong></p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Configuration Options</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="2"><p>default_temperature | Default temperature (K)</p></td>
+</tr>
+<tr class="row-odd"><td colspan="2"><p>default_concentration | Default concentration (M)</p></td>
+</tr>
+<tr class="row-even"><td><p>output_format</p></td>
+<td><p>Default output format (text/csv)</p></td>
+</tr>
+<tr class="row-odd"><td><p>default_threads</p></td>
+<td><p>Default thread count (half/max/number)</p></td>
+</tr>
+<tr class="row-even"><td><p>output_extensions</p></td>
+<td><p>File extensions to process</p></td>
+</tr>
+<tr class="row-odd"><td><p>input_extensions</p></td>
+<td><p>Input file extensions</p></td>
+</tr>
+<tr class="row-even"><td><p>max_file_size</p></td>
+<td><p>Maximum file size (MB)</p></td>
+</tr>
+<tr class="row-odd"><td><p>memory_limit</p></td>
+<td><p>Memory usage limit (MB)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="performance-and-resource-management">
+<h1>Performance and Resource Management<a class="headerlink" href="#performance-and-resource-management" title="Link to this heading"></a></h1>
+<section id="thread-management">
+<h2>Thread Management<a class="headerlink" href="#thread-management" title="Link to this heading"></a></h2>
+<p><strong>Automatic Thread Detection:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use half of available cores (recommended)</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span>half
+
+<span class="c1"># Use all available cores</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span>max
+
+<span class="c1"># Use specific number</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span><span class="m">8</span>
+</pre></div>
+</div>
+<p><strong>Cluster Safety:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Conservative settings for head nodes</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span><span class="m">2</span><span class="w"> </span>-q
+
+<span class="c1"># Optimal for compute nodes</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span>half
+</pre></div>
+</div>
+</section>
+<section id="memory-management">
+<h2>Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading"></a></h2>
+<p><strong>Automatic Memory Limits:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check current resource usage</span>
+gaussian_extractor.x<span class="w"> </span>--resource-info
+
+<span class="c1"># Set custom memory limit</span>
+gaussian_extractor.x<span class="w"> </span>--memory-limit<span class="w"> </span><span class="m">8192</span>
+</pre></div>
+</div>
+<p><strong>Memory Allocation Strategy:</strong></p>
+<ul class="simple">
+<li><p><strong>1-4 threads:</strong> 30% of system RAM</p></li>
+<li><p><strong>5-8 threads:</strong> 40% of system RAM</p></li>
+<li><p><strong>9-16 threads:</strong> 50% of system RAM</p></li>
+<li><p><strong>17+ threads:</strong> 60% of system RAM</p></li>
+</ul>
+</section>
+<section id="file-size-handling">
+<h2>File Size Handling<a class="headerlink" href="#file-size-handling" title="Link to this heading"></a></h2>
+<p><strong>Large File Processing:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Increase file size limit (default: 100MB)</span>
+gaussian_extractor.x<span class="w"> </span>--max-file-size<span class="w"> </span><span class="m">500</span>
+
+<span class="c1"># Process very large files</span>
+gaussian_extractor.x<span class="w"> </span>--max-file-size<span class="w"> </span><span class="m">1000</span>
+</pre></div>
+</div>
+</section>
+<section id="batch-processing">
+<h2>Batch Processing<a class="headerlink" href="#batch-processing" title="Link to this heading"></a></h2>
+<p><strong>Large Directory Handling:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable batch processing</span>
+gaussian_extractor.x<span class="w"> </span>--batch-size<span class="w"> </span><span class="m">50</span>
+
+<span class="c1"># Auto batch size (default)</span>
+gaussian_extractor.x<span class="w"> </span>--batch-size<span class="w"> </span><span class="m">0</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="safety-features">
+<h1>Safety Features<a class="headerlink" href="#safety-features" title="Link to this heading"></a></h1>
+<section id="cluster-environment-detection">
+<h2>Cluster Environment Detection<a class="headerlink" href="#cluster-environment-detection" title="Link to this heading"></a></h2>
+<p>Gaussian Extractor automatically detects cluster environments:</p>
+<ul class="simple">
+<li><p><strong>SLURM:</strong> <code class="docutils literal notranslate"><span class="pre">sbatch</span></code>, <code class="docutils literal notranslate"><span class="pre">srun</span></code> detection</p></li>
+<li><p><strong>PBS/Torque:</strong> <code class="docutils literal notranslate"><span class="pre">qsub</span></code>, <code class="docutils literal notranslate"><span class="pre">qstat</span></code> detection</p></li>
+<li><p><strong>SGE:</strong> <code class="docutils literal notranslate"><span class="pre">qsub</span></code> detection</p></li>
+<li><p><strong>LSF:</strong> <code class="docutils literal notranslate"><span class="pre">bsub</span></code>, <code class="docutils literal notranslate"><span class="pre">bjobs</span></code> detection</p></li>
+</ul>
+<p><strong>Cluster-Specific Behavior:</strong></p>
+<ul class="simple">
+<li><p>Conservative thread limits on head nodes</p></li>
+<li><p>Automatic resource detection</p></li>
+<li><p>Safe memory allocation</p></li>
+</ul>
+</section>
+<section id="graceful-shutdown">
+<h2>Graceful Shutdown<a class="headerlink" href="#graceful-shutdown" title="Link to this heading"></a></h2>
+<p><strong>Signal Handling:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Program responds to SIGINT (Ctrl+C) and SIGTERM</span>
+<span class="c1"># Press Ctrl+C to gracefully stop processing</span>
+</pre></div>
+</div>
+<p><strong>Shutdown Process:</strong></p>
+<ol class="arabic simple">
+<li><p>Signal received</p></li>
+<li><p>Current file processing completes</p></li>
+<li><p>Results written to disk</p></li>
+<li><p>Clean exit with proper resource cleanup</p></li>
+</ol>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<p><strong>File Processing Errors:</strong></p>
+<ul class="simple">
+<li><p>Corrupted log files are skipped with warnings</p></li>
+<li><p>Large files (&gt;100MB) automatically skipped by default</p></li>
+<li><p>Memory limits prevent system overload</p></li>
+<li><p>Thread-safe error reporting</p></li>
+</ul>
+<p><strong>Common Error Scenarios:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Handle large files</span>
+gaussian_extractor.x<span class="w"> </span>--max-file-size<span class="w"> </span><span class="m">500</span>
+
+<span class="c1"># Reduce memory usage</span>
+gaussian_extractor.x<span class="w"> </span>--memory-limit<span class="w"> </span><span class="m">4096</span><span class="w"> </span>-nt<span class="w"> </span><span class="m">2</span>
+
+<span class="c1"># Check system resources</span>
+gaussian_extractor.x<span class="w"> </span>--resource-info
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-workflows">
+<h1>Advanced Workflows<a class="headerlink" href="#advanced-workflows" title="Link to this heading"></a></h1>
+<section id="complete-computational-chemistry-workflow">
+<h2>Complete Computational Chemistry Workflow<a class="headerlink" href="#complete-computational-chemistry-workflow" title="Link to this heading"></a></h2>
+<p><strong>Step 1: Generate Input Files</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create optimization inputs</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--calc-type<span class="w"> </span>opt_freq
+
+<span class="c1"># Submit jobs to queue</span>
+<span class="c1"># (use your cluster&#39;s job submission system)</span>
+</pre></div>
+</div>
+<p><strong>Step 2: Check Job Status</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check completed jobs</span>
+gaussian_extractor.x<span class="w"> </span><span class="k">done</span>
+
+<span class="c1"># Check for failures</span>
+gaussian_extractor.x<span class="w"> </span>errors
+
+<span class="c1"># Check vibrational analysis</span>
+gaussian_extractor.x<span class="w"> </span>imode
+</pre></div>
+</div>
+<p><strong>Step 3: Extract Results</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract thermodynamic data</span>
+gaussian_extractor.x<span class="w"> </span>-t<span class="w"> </span><span class="m">298</span>.15<span class="w"> </span>-c<span class="w"> </span><span class="m">1</span>
+
+<span class="c1"># Extract coordinates for next step</span>
+gaussian_extractor.x<span class="w"> </span>xyz
+</pre></div>
+</div>
+<p><strong>Step 4: High-Level Calculations</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navigate to high-level directory</span>
+<span class="nb">cd</span><span class="w"> </span>high_level
+
+<span class="c1"># Calculate refined energies</span>
+gaussian_extractor.x<span class="w"> </span>high-kj
+</pre></div>
+</div>
+</section>
+<section id="high-throughput-processing">
+<h2>High-Throughput Processing<a class="headerlink" href="#high-throughput-processing" title="Link to this heading"></a></h2>
+<p><strong>Batch Processing Setup:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process large datasets</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span><span class="m">16</span><span class="w"> </span>--max-file-size<span class="w"> </span><span class="m">500</span><span class="w"> </span>--memory-limit<span class="w"> </span><span class="m">16384</span>
+
+<span class="c1"># Quiet mode for scripts</span>
+gaussian_extractor.x<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span>csv
+
+<span class="c1"># Resource monitoring</span>
+gaussian_extractor.x<span class="w"> </span>--resource-info
+</pre></div>
+</div>
+<p><strong>Script Integration:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># Process multiple directories</span>
+
+<span class="k">for</span><span class="w"> </span>dir<span class="w"> </span><span class="k">in</span><span class="w"> </span>dataset1<span class="w"> </span>dataset2<span class="w"> </span>dataset3<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">cd</span><span class="w"> </span><span class="nv">$dir</span>
+<span class="w">    </span>gaussian_extractor.x<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span>csv
+<span class="w">    </span><span class="nb">cd</span><span class="w"> </span>..
+<span class="k">done</span>
+</pre></div>
+</div>
+</section>
+<section id="template-based-automation">
+<h2>Template-Based Automation<a class="headerlink" href="#template-based-automation" title="Link to this heading"></a></h2>
+<p><strong>Create Reusable Templates:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate comprehensive template library</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--generate-all-templates<span class="w"> </span>./templates
+
+<span class="c1"># Customize templates for different methods</span>
+<span class="c1"># Edit template files with your preferred settings</span>
+</pre></div>
+</div>
+<p><strong>Automated Processing:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process different molecule types</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--param-file<span class="w"> </span>./templates/opt_freq.params<span class="w"> </span>molecule1.xyz
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--param-file<span class="w"> </span>./templates/ts_freq.params<span class="w"> </span>molecule2.xyz
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--param-file<span class="w"> </span>./templates/high_sp.params<span class="w"> </span>molecule3.xyz
+</pre></div>
+</div>
+</section>
+</section>
+<section id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
+<section id="common-issues-and-solutions">
+<h2>Common Issues and Solutions<a class="headerlink" href="#common-issues-and-solutions" title="Link to this heading"></a></h2>
+<p><strong>Memory Issues:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reduce thread count</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span><span class="m">2</span>
+
+<span class="c1"># Set memory limit</span>
+gaussian_extractor.x<span class="w"> </span>--memory-limit<span class="w"> </span><span class="m">4096</span>
+
+<span class="c1"># Check system resources</span>
+gaussian_extractor.x<span class="w"> </span>--resource-info
+</pre></div>
+</div>
+<p><strong>File Processing Issues:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Handle large files</span>
+gaussian_extractor.x<span class="w"> </span>--max-file-size<span class="w"> </span><span class="m">500</span>
+
+<span class="c1"># Process different file types</span>
+gaussian_extractor.x<span class="w"> </span>-e<span class="w"> </span>out
+
+<span class="c1"># Check file permissions</span>
+ls<span class="w"> </span>-la<span class="w"> </span>*.log
+</pre></div>
+</div>
+<p><strong>Performance Issues:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optimize thread usage</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span>half
+
+<span class="c1"># Use batch processing</span>
+gaussian_extractor.x<span class="w"> </span>--batch-size<span class="w"> </span><span class="m">25</span>
+
+<span class="c1"># Monitor progress</span>
+gaussian_extractor.x<span class="w">  </span><span class="c1"># (remove -q for progress display)</span>
+</pre></div>
+</div>
+<p><strong>Configuration Issues:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset configuration</span>
+gaussian_extractor.x<span class="w"> </span>--create-config
+
+<span class="c1"># Check configuration</span>
+gaussian_extractor.x<span class="w"> </span>--show-config
+
+<span class="c1"># Validate setup</span>
+gaussian_extractor.x<span class="w"> </span>--resource-info
+</pre></div>
+</div>
+</section>
+</section>
+<section id="best-practices">
+<h1>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h1>
+<p><strong>For Interactive Use:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start with resource check</span>
+gaussian_extractor.x<span class="w"> </span>--resource-info
+
+<span class="c1"># Use conservative settings</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span><span class="m">4</span><span class="w"> </span>-q
+
+<span class="c1"># Monitor progress</span>
+gaussian_extractor.x
+</pre></div>
+</div>
+<p><strong>For Batch Processing:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optimize for throughput</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span>half<span class="w"> </span>--max-file-size<span class="w"> </span><span class="m">500</span><span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span>csv
+
+<span class="c1"># Use templates for consistency</span>
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--param-file<span class="w"> </span>template.params
+</pre></div>
+</div>
+<p><strong>For Cluster Environments:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Head node safety</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span><span class="m">2</span><span class="w"> </span>-q
+
+<span class="c1"># Compute node optimization</span>
+gaussian_extractor.x<span class="w"> </span>-nt<span class="w"> </span>max<span class="w"> </span>--memory-limit<span class="w"> </span><span class="m">16384</span>
+</pre></div>
+</div>
+<p><strong>Data Management:</strong></p>
+<ul class="simple">
+<li><p>Use descriptive filenames</p></li>
+<li><p>Organize by calculation type</p></li>
+<li><p>Keep raw log files for reference</p></li>
+<li><p>Use CSV format for data analysis</p></li>
+<li><p>Backup important results</p></li>
+</ul>
+</section>
+<section id="command-reference">
+<h1>Command Reference<a class="headerlink" href="#command-reference" title="Link to this heading"></a></h1>
+<p><strong>Global Options:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-h,</span> <span class="pre">--help</span></code></p></td>
+<td><p>Show help message</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--version</span></code></p></td>
+<td><p>Show version information</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-q,</span> <span class="pre">--quiet</span></code></p></td>
+<td><p>Quiet mode</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-nt,</span> <span class="pre">--threads</span></code></p></td>
+<td><p>Thread count (number/half/max)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-e,</span> <span class="pre">--ext</span></code></p></td>
+<td><p>File extension (.log/.out)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--max-file-size</span></code></p></td>
+<td><p>Maximum file size (MB)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--memory-limit</span></code></p></td>
+<td><p>Memory limit (MB)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--resource-info</span></code></p></td>
+<td><p>Show system resource information</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Extract Command Options:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-t,</span> <span class="pre">--temp</span></code></p></td>
+<td><p>Temperature (K)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-c,</span> <span class="pre">--cm</span></code></p></td>
+<td><p>Concentration (M)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-col,</span> <span class="pre">--column</span></code></p></td>
+<td><p>Sort column (2-10)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-f,</span> <span class="pre">--format</span></code></p></td>
+<td><p>Output format (text/csv)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--use-input-temp</span></code></p></td>
+<td><p>Use temperature from files</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Job Checker Options:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dir-suffix</span></code></p></td>
+<td><p>Directory suffix for done jobs</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--target-dir</span></code></p></td>
+<td><p>Custom target directory</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--show-details</span></code></p></td>
+<td><p>Show detailed error messages</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Create Input Options:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--calc-type</span></code></p></td>
+<td><p>Calculation type</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--functional</span></code></p></td>
+<td><p>DFT functional</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--basis</span></code></p></td>
+<td><p>Basis set</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--solvent</span></code></p></td>
+<td><p>Solvent name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--charge</span></code></p></td>
+<td><p>Molecular charge</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mult</span></code></p></td>
+<td><p>Multiplicity</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--freeze-atoms</span></code></p></td>
+<td><p>Atoms to freeze for TS</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--genci-params</span></code></p></td>
+<td><p>Generate parameter template</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--param-file</span></code></p></td>
+<td><p>Use parameter file</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="getting-help">
+<h1>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h1>
+<p><strong>Built-in Help:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># General help</span>
+gaussian_extractor.x<span class="w"> </span>--help
+
+<span class="c1"># Command-specific help</span>
+gaussian_extractor.x<span class="w"> </span>extract<span class="w"> </span>--help
+gaussian_extractor.x<span class="w"> </span>ci<span class="w"> </span>--help
+
+<span class="c1"># Configuration help</span>
+gaussian_extractor.x<span class="w"> </span>--config-help
+</pre></div>
+</div>
+<p><strong>Resource Information:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># System resource check</span>
+gaussian_extractor.x<span class="w"> </span>--resource-info
+
+<span class="c1"># Configuration status</span>
+gaussian_extractor.x<span class="w"> </span>--show-config
+</pre></div>
+</div>
+<p><strong>Version Information:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gaussian_extractor.x<span class="w"> </span>--version
+</pre></div>
+</div>
+<p>This guide covers all major features and usage patterns of Gaussian Extractor. For the most up-to-date information, always refer to the built-in help system.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="developer.html" class="btn btn-neutral float-right" title="Developer Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

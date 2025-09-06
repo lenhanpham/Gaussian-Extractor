@@ -1,0 +1,14 @@
+.. _exhale_function_group__FileDirectoryUtils_1gaf8e0b2ee0b197f1fd5036b75f7d1a9fd:
+
+Function HighLevelEnergyUtils::get_current_directory_name
+=========================================================
+
+.. did not find file this was defined in
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: HighLevelEnergyUtils::get_current_directory_name()
+   :project: GaussianExtractor

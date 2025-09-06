@@ -1,0 +1,14 @@
+.. _exhale_define_group__VersionConstants_1ga1f42fd5602ac563c00f75e18e682fe73:
+
+Define GAUSSIAN_EXTRACTOR_VERSION_PATCH
+=======================================
+
+- Defined in :ref:`file_core_version.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: GAUSSIAN_EXTRACTOR_VERSION_PATCH
+   :project: GaussianExtractor

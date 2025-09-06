@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Struct JobCheckResult &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Struct JobCheckResult</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/structJobCheckResult.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="struct-jobcheckresult">
+<span id="exhale-struct-structjobcheckresult"></span><h1>Struct JobCheckResult<a class="headerlink" href="#struct-jobcheckresult" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_core_job_checker.h.html#file-core-job-checker-h"><span class="std std-ref">File job_checker.h</span></a></p></li>
+</ul>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv414JobCheckResult">
+<span id="_CPPv314JobCheckResult"></span><span id="_CPPv214JobCheckResult"></span><span id="JobCheckResult"></span><span class="target" id="structJobCheckResult"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JobCheckResult</span></span></span><a class="headerlink" href="#_CPPv414JobCheckResult" title="Link to this definition"></a><br /></dt>
+<dd><p>Complete result information for a single job status check. </p>
+<p>This structure contains all information gathered during job status checking for a single Gaussian log file. It includes the determined status, any error messages found, and lists of related files that should be moved together.</p>
+<section id="group__FileOperations_1Related">
+<h3>Files<a class="headerlink" href="#group__FileOperations_1Related" title="Link to this heading"></a></h3>
+<p id="group__FileOperations_1Related">Gaussian calculations typically generate multiple files:<ul class="simple">
+<li><p>.log: Main output file with results and status</p></li>
+<li><p>.gau: Input file used for the calculation</p></li>
+<li><p>.chk: Checkpoint file with intermediate data</p></li>
+<li><p>.fchk: Formatted checkpoint file (sometimes)</p></li>
+</ul>
+</p>
+<p>All related files are moved together to maintain calculation integrity. </p>
+</section>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N14JobCheckResult14JobCheckResultEv">
+<span id="_CPPv3N14JobCheckResult14JobCheckResultEv"></span><span id="_CPPv2N14JobCheckResult14JobCheckResultEv"></span><span id="JobCheckResult::JobCheckResult"></span><span class="target" id="structJobCheckResult_1a5d8c6933eab732f7b0ea01378b2ec154"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JobCheckResult</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14JobCheckResult14JobCheckResultEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Default constructor creating unknown status result. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N14JobCheckResult14JobCheckResultERKNSt6stringE9JobStatus">
+<span id="_CPPv3N14JobCheckResult14JobCheckResultERKNSt6stringE9JobStatus"></span><span id="_CPPv2N14JobCheckResult14JobCheckResultERKNSt6stringE9JobStatus"></span><span id="JobCheckResult::JobCheckResult__ssCR.JobStatus"></span><span class="target" id="structJobCheckResult_1a39687a1edd4333e4841c6c5fdc09821b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JobCheckResult</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file</span></span>, <a class="reference internal" href="enum_job__checker_8h_1a5df92147ec0babfdf2aa8856833bb4b8.html#_CPPv49JobStatus" title="JobStatus"><span class="n"><span class="pre">JobStatus</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">stat</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14JobCheckResult14JobCheckResultERKNSt6stringE9JobStatus" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor with filename and status. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> – Log file name </p></li>
+<li><p><strong>stat</strong> – Determined job status </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14JobCheckResult8filenameE">
+<span id="_CPPv3N14JobCheckResult8filenameE"></span><span id="_CPPv2N14JobCheckResult8filenameE"></span><span id="JobCheckResult::filename__ss"></span><span class="target" id="structJobCheckResult_1a676b98618b645bfcf0810f51e5a2bf4f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">filename</span></span></span><a class="headerlink" href="#_CPPv4N14JobCheckResult8filenameE" title="Link to this definition"></a><br /></dt>
+<dd><p>Original log file name. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14JobCheckResult6statusE">
+<span id="_CPPv3N14JobCheckResult6statusE"></span><span id="_CPPv2N14JobCheckResult6statusE"></span><span id="JobCheckResult::status__JobStatus"></span><span class="target" id="structJobCheckResult_1aa5b0241a9be504244d47a1219e9e263c"></span><a class="reference internal" href="enum_job__checker_8h_1a5df92147ec0babfdf2aa8856833bb4b8.html#_CPPv49JobStatus" title="JobStatus"><span class="n"><span class="pre">JobStatus</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">status</span></span></span><a class="headerlink" href="#_CPPv4N14JobCheckResult6statusE" title="Link to this definition"></a><br /></dt>
+<dd><p>Determined job status. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14JobCheckResult13error_messageE">
+<span id="_CPPv3N14JobCheckResult13error_messageE"></span><span id="_CPPv2N14JobCheckResult13error_messageE"></span><span id="JobCheckResult::error_message__ss"></span><span class="target" id="structJobCheckResult_1aecaf29500256bba658148c6e4fb5648c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_message</span></span></span><a class="headerlink" href="#_CPPv4N14JobCheckResult13error_messageE" title="Link to this definition"></a><br /></dt>
+<dd><p>Error message if job failed. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14JobCheckResult13related_filesE">
+<span id="_CPPv3N14JobCheckResult13related_filesE"></span><span id="_CPPv2N14JobCheckResult13related_filesE"></span><span id="JobCheckResult::related_files__std::vector:ss:"></span><span class="target" id="structJobCheckResult_1a6221ece9dfae2ddab81b7e7ca024d0ba"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">related_files</span></span></span><a class="headerlink" href="#_CPPv4N14JobCheckResult13related_filesE" title="Link to this definition"></a><br /></dt>
+<dd><p>List of related files (.gau, .chk, etc.) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

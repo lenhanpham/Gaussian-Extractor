@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Struct JobResources &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Struct JobResources</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/structJobResources.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="struct-jobresources">
+<span id="exhale-struct-structjobresources"></span><h1>Struct JobResources<a class="headerlink" href="#struct-jobresources" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_core_job_scheduler.h.html#file-core-job-scheduler-h"><span class="std std-ref">File job_scheduler.h</span></a></p></li>
+</ul>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv412JobResources">
+<span id="_CPPv312JobResources"></span><span id="_CPPv212JobResources"></span><span id="JobResources"></span><span class="target" id="structJobResources"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JobResources</span></span></span><a class="headerlink" href="#_CPPv412JobResources" title="Link to this definition"></a><br /></dt>
+<dd><p>Complete resource allocation information from job scheduler. </p>
+<p>This structure contains all resource allocation information extracted from the job scheduler environment. It provides a unified interface for resource information regardless of the underlying scheduler type.</p>
+<section id="group__CoreFunctions_1Resource">
+<h3>Management<a class="headerlink" href="#group__CoreFunctions_1Resource" title="Link to this heading"></a></h3>
+<p id="group__CoreFunctions_1Resource">The structure captures:<ul class="simple">
+<li><p>CPU allocation (cores, tasks, nodes)</p></li>
+<li><p>Memory allocation (total and per-node limits)</p></li>
+<li><p>Job identification and queue information</p></li>
+<li><p>Resource limit flags for validation</p></li>
+</ul>
+</p>
+</section>
+<section id="structJobResources_1JobResources">
+<h3>Usage<a class="headerlink" href="#structJobResources_1JobResources" title="Link to this heading"></a></h3>
+<p id="structJobResources_1JobResources">This structure is populated by <a class="reference internal" href="classJobSchedulerDetector.html#classJobSchedulerDetector"><span class="std std-ref">JobSchedulerDetector</span></a> and used throughout the application to make resource allocation decisions that respect cluster limits and prevent resource conflicts. </p>
+</section>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources14scheduler_typeE">
+<span id="_CPPv3N12JobResources14scheduler_typeE"></span><span id="_CPPv2N12JobResources14scheduler_typeE"></span><span id="JobResources::scheduler_type__SchedulerType"></span><span class="target" id="structJobResources_1a961b71b7f789d0dac210ef2fddc96d96"></span><a class="reference internal" href="enum_job__scheduler_8h_1a342cd0e47545da3e679b393fc548c6b1.html#_CPPv413SchedulerType" title="SchedulerType"><span class="n"><span class="pre">SchedulerType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scheduler_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_job__scheduler_8h_1a342cd0e47545da3e679b393fc548c6b1.html#_CPPv413SchedulerType" title="SchedulerType"><span class="n"><span class="pre">SchedulerType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="enum_job__scheduler_8h_1a342cd0e47545da3e679b393fc548c6b1.html#_CPPv4N13SchedulerType4NONEE" title="SchedulerType::NONE"><span class="n"><span class="pre">NONE</span></span></a><a class="headerlink" href="#_CPPv4N12JobResources14scheduler_typeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Type of detected job scheduler. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources6job_idE">
+<span id="_CPPv3N12JobResources6job_idE"></span><span id="_CPPv2N12JobResources6job_idE"></span><span id="JobResources::job_id__ss"></span><span class="target" id="structJobResources_1a23756bdc73cf0d3b8f25feedf8321408"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">job_id</span></span></span><a class="headerlink" href="#_CPPv4N12JobResources6job_idE" title="Link to this definition"></a><br /></dt>
+<dd><p>Unique job identifier from scheduler. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources14allocated_cpusE">
+<span id="_CPPv3N12JobResources14allocated_cpusE"></span><span id="_CPPv2N12JobResources14allocated_cpusE"></span><span id="JobResources::allocated_cpus__unsigned-i"></span><span class="target" id="structJobResources_1af5f05dd30e60823e285af4a1860a8ed7"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocated_cpus</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N12JobResources14allocated_cpusE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of CPU cores allocated to job. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources19allocated_memory_mbE">
+<span id="_CPPv3N12JobResources19allocated_memory_mbE"></span><span id="_CPPv2N12JobResources19allocated_memory_mbE"></span><span id="JobResources::allocated_memory_mb__s"></span><span class="target" id="structJobResources_1aa1f9910816b31e8b5bc4a1ac56548cda"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocated_memory_mb</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N12JobResources19allocated_memory_mbE" title="Link to this definition"></a><br /></dt>
+<dd><p>Memory allocated to job in megabytes. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources5nodesE">
+<span id="_CPPv3N12JobResources5nodesE"></span><span id="_CPPv2N12JobResources5nodesE"></span><span id="JobResources::nodes__unsigned-i"></span><span class="target" id="structJobResources_1a52bdce4c9300f42dd60fd42631887f50"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nodes</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N12JobResources5nodesE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of compute nodes allocated. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources14tasks_per_nodeE">
+<span id="_CPPv3N12JobResources14tasks_per_nodeE"></span><span id="_CPPv2N12JobResources14tasks_per_nodeE"></span><span id="JobResources::tasks_per_node__unsigned-i"></span><span class="target" id="structJobResources_1ab5512faa6d2b285e5ceb91b14ac93737"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tasks_per_node</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N12JobResources14tasks_per_nodeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of tasks per compute node. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources13has_cpu_limitE">
+<span id="_CPPv3N12JobResources13has_cpu_limitE"></span><span id="_CPPv2N12JobResources13has_cpu_limitE"></span><span id="JobResources::has_cpu_limit__b"></span><span class="target" id="structJobResources_1a22ce75129b189f410aa968fe9b0afacc"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_cpu_limit</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N12JobResources13has_cpu_limitE" title="Link to this definition"></a><br /></dt>
+<dd><p>Whether CPU limit is explicitly specified. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources16has_memory_limitE">
+<span id="_CPPv3N12JobResources16has_memory_limitE"></span><span id="_CPPv2N12JobResources16has_memory_limitE"></span><span id="JobResources::has_memory_limit__b"></span><span class="target" id="structJobResources_1a77b3f3c3de0a52e95b5ee3237ab81356"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_memory_limit</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N12JobResources16has_memory_limitE" title="Link to this definition"></a><br /></dt>
+<dd><p>Whether memory limit is explicitly specified. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources9partitionE">
+<span id="_CPPv3N12JobResources9partitionE"></span><span id="_CPPv2N12JobResources9partitionE"></span><span id="JobResources::partition__ss"></span><span class="target" id="structJobResources_1aa98db070eb47821fe0fc45146ae60540"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">partition</span></span></span><a class="headerlink" href="#_CPPv4N12JobResources9partitionE" title="Link to this definition"></a><br /></dt>
+<dd><p>Partition/queue name where job is running. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12JobResources7accountE">
+<span id="_CPPv3N12JobResources7accountE"></span><span id="_CPPv2N12JobResources7accountE"></span><span id="JobResources::account__ss"></span><span class="target" id="structJobResources_1a1e90ecf5e152b3b78acff2afb1132710"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">account</span></span></span><a class="headerlink" href="#_CPPv4N12JobResources7accountE" title="Link to this definition"></a><br /></dt>
+<dd><p>Account/project name for resource billing. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

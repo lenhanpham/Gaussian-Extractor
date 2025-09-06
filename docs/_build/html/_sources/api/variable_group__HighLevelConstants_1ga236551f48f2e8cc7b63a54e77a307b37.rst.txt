@@ -1,0 +1,14 @@
+.. _exhale_variable_group__HighLevelConstants_1ga236551f48f2e8cc7b63a54e77a307b37:
+
+Variable KB_CONSTANT
+====================
+
+- Defined in :ref:`file_core_high_level_energy.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: KB_CONSTANT
+   :project: GaussianExtractor

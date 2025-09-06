@@ -1,0 +1,207 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Struct ExtractSummary &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Struct ExtractSummary</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/structExtractSummary.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="struct-extractsummary">
+<span id="exhale-struct-structextractsummary"></span><h1>Struct ExtractSummary<a class="headerlink" href="#struct-extractsummary" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_core_coord_extractor.h.html#file-core-coord-extractor-h"><span class="std std-ref">File coord_extractor.h</span></a></p></li>
+</ul>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv414ExtractSummary">
+<span id="_CPPv314ExtractSummary"></span><span id="_CPPv214ExtractSummary"></span><span id="ExtractSummary"></span><span class="target" id="structExtractSummary"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractSummary</span></span></span><a class="headerlink" href="#_CPPv414ExtractSummary" title="Link to this definition"></a><br /></dt>
+<dd><p>Statistical summary of coordinate extraction operations. </p>
+<p>Collects statistics about extraction operations including file counts, success rates, errors, and performance metrics. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary14ExtractSummaryEv">
+<span id="_CPPv3N14ExtractSummary14ExtractSummaryEv"></span><span id="_CPPv2N14ExtractSummary14ExtractSummaryEv"></span><span id="ExtractSummary::ExtractSummary"></span><span class="target" id="structExtractSummary_1aa7b137c65b77f503a250691517106978"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtractSummary</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14ExtractSummary14ExtractSummaryEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary11total_filesE">
+<span id="_CPPv3N14ExtractSummary11total_filesE"></span><span id="_CPPv2N14ExtractSummary11total_filesE"></span><span id="ExtractSummary::total_files__s"></span><span class="target" id="structExtractSummary_1acb3ca6163f5a2fca7a3a8368103d4059"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">total_files</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary11total_filesE" title="Link to this definition"></a><br /></dt>
+<dd><p>Total number of files considered. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary15processed_filesE">
+<span id="_CPPv3N14ExtractSummary15processed_filesE"></span><span id="_CPPv2N14ExtractSummary15processed_filesE"></span><span id="ExtractSummary::processed_files__s"></span><span class="target" id="structExtractSummary_1a6279d5b9f12dc9c6084ea3cc3a45cf22"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">processed_files</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary15processed_filesE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of files successfully processed. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary15extracted_filesE">
+<span id="_CPPv3N14ExtractSummary15extracted_filesE"></span><span id="_CPPv2N14ExtractSummary15extracted_filesE"></span><span id="ExtractSummary::extracted_files__s"></span><span class="target" id="structExtractSummary_1a3ff7d6b1e9a26c4854104387e47089af"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">extracted_files</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary15extracted_filesE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of files with successful extraction. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary12failed_filesE">
+<span id="_CPPv3N14ExtractSummary12failed_filesE"></span><span id="_CPPv2N14ExtractSummary12failed_filesE"></span><span id="ExtractSummary::failed_files__s"></span><span class="target" id="structExtractSummary_1a9b56ed24f471c59ebcd2b2b766022679"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">failed_files</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary12failed_filesE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of files where extraction failed. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary14moved_to_finalE">
+<span id="_CPPv3N14ExtractSummary14moved_to_finalE"></span><span id="_CPPv2N14ExtractSummary14moved_to_finalE"></span><span id="ExtractSummary::moved_to_final__s"></span><span class="target" id="structExtractSummary_1a37952def4fe08354605476243472b732"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">moved_to_final</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary14moved_to_finalE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of XYZ files moved to final_coord dir. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary16moved_to_runningE">
+<span id="_CPPv3N14ExtractSummary16moved_to_runningE"></span><span id="_CPPv2N14ExtractSummary16moved_to_runningE"></span><span id="ExtractSummary::moved_to_running__s"></span><span class="target" id="structExtractSummary_1a8953c43ce1f7e935ee90c03b69353ee1"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">moved_to_running</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary16moved_to_runningE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of XYZ files moved to running_coord dir. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary6errorsE">
+<span id="_CPPv3N14ExtractSummary6errorsE"></span><span id="_CPPv2N14ExtractSummary6errorsE"></span><span id="ExtractSummary::errors__std::vector:ss:"></span><span class="target" id="structExtractSummary_1ae8e20d0b9ffcfbf99e1d9a6d8df9ce7b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">errors</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary6errorsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Collection of error messages encountered. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N14ExtractSummary14execution_timeE">
+<span id="_CPPv3N14ExtractSummary14execution_timeE"></span><span id="_CPPv2N14ExtractSummary14execution_timeE"></span><span id="ExtractSummary::execution_time__double"></span><span class="target" id="structExtractSummary_1a12089f2b99cce027ad732bd953ca92b1"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execution_time</span></span></span><a class="headerlink" href="#_CPPv4N14ExtractSummary14execution_timeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Total execution time in seconds. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

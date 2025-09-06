@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class JobChecker &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class JobChecker</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/classJobChecker.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-jobchecker">
+<span id="exhale-class-classjobchecker"></span><h1>Class JobChecker<a class="headerlink" href="#class-jobchecker" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_core_job_checker.h.html#file-core-job-checker-h"><span class="std std-ref">File job_checker.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv410JobChecker">
+<span id="_CPPv310JobChecker"></span><span id="_CPPv210JobChecker"></span><span id="JobChecker"></span><span class="target" id="classJobChecker"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JobChecker</span></span></span><a class="headerlink" href="#_CPPv410JobChecker" title="Link to this definition"></a><br /></dt>
+<dd><p>Comprehensive job status checking and file organization system. </p>
+<p>The <a class="reference internal" href="#classJobChecker"><span class="std std-ref">JobChecker</span></a> class provides a complete solution for analyzing Gaussian calculation job status and organizing files based on their completion state. It supports multiple checking modes and provides detailed reporting and statistics for job management workflows.</p>
+<section id="gaussian__extractor_8h_1Key">
+<h3>Features<a class="headerlink" href="#gaussian__extractor_8h_1Key" title="Link to this heading"></a></h3>
+<p id="gaussian__extractor_8h_1Key"><ul class="simple">
+<li><p>Multi-threaded job status analysis with resource management</p></li>
+<li><p>Automatic file organization based on job status</p></li>
+<li><p>Comprehensive error detection and reporting</p></li>
+<li><p>Integration with job scheduler resource limits</p></li>
+<li><p>Progress reporting for large job sets</p></li>
+<li><p>Thread-safe operation for concurrent processing</p></li>
+</ul>
+</p>
+</section>
+<section id="classJobChecker_1Checking">
+<h3>Modes<a class="headerlink" href="#classJobChecker_1Checking" title="Link to this heading"></a></h3>
+<p id="classJobChecker_1Checking"><ul class="simple">
+<li><p>check_completed_jobs(): Organize successfully completed calculations</p></li>
+<li><p>check_error_jobs(): Organize jobs that terminated with errors</p></li>
+<li><p>check_pcm_failures(): Specifically handle PCM convergence failures</p></li>
+<li><p>check_all_job_types(): Comprehensive checking of all job types</p></li>
+</ul>
+</p>
+</section>
+<section id="group__CoreFunctions_1Resource">
+<h3>Management<a class="headerlink" href="#group__CoreFunctions_1Resource" title="Link to this heading"></a></h3>
+<p id="group__CoreFunctions_1Resource">The <a class="reference internal" href="#classJobChecker"><span class="std std-ref">JobChecker</span></a> uses the <a class="reference internal" href="structProcessingContext.html#structProcessingContext"><span class="std std-ref">ProcessingContext</span></a> to coordinate resource usage:<ul class="simple">
+<li><p>Memory usage monitoring and limiting</p></li>
+<li><p>File handle management to prevent exhaustion</p></li>
+<li><p>Thread-safe error collection and reporting</p></li>
+<li><p>Integration with system and job scheduler limits</p></li>
+</ul>
+</p>
+<p></p>
+</section>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All checking operations are designed to be safe and reversible, with comprehensive logging and error reporting </p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10JobChecker10JobCheckerENSt10shared_ptrI17ProcessingContextEEbb">
+<span id="_CPPv3N10JobChecker10JobCheckerENSt10shared_ptrI17ProcessingContextEEbb"></span><span id="_CPPv2N10JobChecker10JobCheckerENSt10shared_ptrI17ProcessingContextEEbb"></span><span id="JobChecker::JobChecker__std::shared_ptr:ProcessingContext:.b.b"></span><span class="target" id="classJobChecker_1aaf3869d0ad6b97c4c2a707dcac6cd0a2"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JobChecker</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structProcessingContext.html#_CPPv417ProcessingContext" title="ProcessingContext"><span class="n"><span class="pre">ProcessingContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctx</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">quiet</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">show_details</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10JobChecker10JobCheckerENSt10shared_ptrI17ProcessingContextEEbb" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor with processing context and display options. </p>
+<p>
+Creates a <a class="reference internal" href="#classJobChecker"><span class="std std-ref">JobChecker</span></a> instance with the specified processing context and display preferences. The processing context provides access to shared resource managers and coordination with other system components. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> – Shared processing context for resource coordination </p></li>
+<li><p><strong>quiet</strong> – Suppress non-essential output (default: false) </p></li>
+<li><p><strong>show_details</strong> – Display detailed error messages (default: false)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

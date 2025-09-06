@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Struct ProcessingContext &mdash; Gaussian Extractor 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Gaussian Extractor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#uninstallation">Uninstallation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#core-commands">Core Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#configuration-and-customization">Configuration and Customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#performance-and-resource-management">Performance and Resource Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#safety-features">Safety Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#advanced-workflows">Advanced Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#command-reference">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#project-overview">Project Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#coding-standards">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#testing-guidelines">Testing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#release-process">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html#support-and-communication">Support and Communication</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gaussian Extractor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Struct ProcessingContext</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/lenhanpham/gaussian-extractor/blob/main/docs/api/structProcessingContext.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="struct-processingcontext">
+<span id="exhale-struct-structprocessingcontext"></span><h1>Struct ProcessingContext<a class="headerlink" href="#struct-processingcontext" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_core_gaussian_extractor.h.html#file-core-gaussian-extractor-h"><span class="std std-ref">File gaussian_extractor.h</span></a></p></li>
+</ul>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv417ProcessingContext">
+<span id="_CPPv317ProcessingContext"></span><span id="_CPPv217ProcessingContext"></span><span id="ProcessingContext"></span><span class="target" id="structProcessingContext"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessingContext</span></span></span><a class="headerlink" href="#_CPPv417ProcessingContext" title="Link to this definition"></a><br /></dt>
+<dd><p>Complete context for thread-safe file processing operations. </p>
+<p>The <a class="reference internal" href="#structProcessingContext"><span class="std std-ref">ProcessingContext</span></a> encapsulates all resources, parameters, and state needed for safe multi-threaded processing of Gaussian log files. It provides shared access to resource managers and maintains processing parameters consistent across all worker threads.</p>
+<section id="structProcessingContext_1Design">
+<h3>Pattern<a class="headerlink" href="#structProcessingContext_1Design" title="Link to this heading"></a></h3>
+<p id="structProcessingContext_1Design"><ul class="simple">
+<li><p>Immutable after construction to prevent race conditions</p></li>
+<li><p>Shared resource managers for coordinated resource usage</p></li>
+<li><p>Integration with job scheduler resource limits</p></li>
+<li><p>Parameter validation and safe defaults</p></li>
+</ul>
+</p>
+</section>
+<section id="group__CoreFunctions_1Resource">
+<h3>Management<a class="headerlink" href="#group__CoreFunctions_1Resource" title="Link to this heading"></a></h3>
+<p id="group__CoreFunctions_1Resource">The context owns shared resource managers that coordinate access to:<ul class="simple">
+<li><p>System memory through <a class="reference internal" href="classMemoryMonitor.html#classMemoryMonitor"><span class="std std-ref">MemoryMonitor</span></a></p></li>
+<li><p>File handles through <a class="reference internal" href="classFileHandleManager.html#classFileHandleManager"><span class="std std-ref">FileHandleManager</span></a></p></li>
+<li><p>Error collection through <a class="reference internal" href="classThreadSafeErrorCollector.html#classThreadSafeErrorCollector"><span class="std std-ref">ThreadSafeErrorCollector</span></a></p></li>
+</ul>
+</p>
+<p></p>
+</section>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All resource managers are thread-safe and can be accessed simultaneously from multiple processing threads </p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext17ProcessingContextEdibjRKNSt6stringE6size_tRK12JobResources">
+<span id="_CPPv3N17ProcessingContext17ProcessingContextEdibjRKNSt6stringE6size_tRK12JobResources"></span><span id="_CPPv2N17ProcessingContext17ProcessingContextEdibjRKNSt6stringE6size_tRK12JobResources"></span><span id="ProcessingContext::ProcessingContext__double.i.b.unsigned-i.ssCR.s.JobResourcesCR"></span><span class="target" id="structProcessingContext_1a5c4f6e3ebcfb7639912a2189c538d39d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessingContext</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temp</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">C</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">use_temp</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thread_count</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ext</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;.log&quot;</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_file_mb</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="variable_group__SafetyLimits_1ga53a9c91d48aea3f132ce5aac13b8ae8a.html#_CPPv424DEFAULT_MAX_FILE_SIZE_MB" title="DEFAULT_MAX_FILE_SIZE_MB"><span class="n"><span class="pre">DEFAULT_MAX_FILE_SIZE_MB</span></span></a>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structJobResources.html#_CPPv412JobResources" title="JobResources"><span class="n"><span class="pre">JobResources</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">job_res</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="structJobResources.html#_CPPv412JobResources" title="JobResources"><span class="n"><span class="pre">JobResources</span></span></a><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N17ProcessingContext17ProcessingContextEdibjRKNSt6stringE6size_tRK12JobResources" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor with parameter validation and resource setup. </p>
+<p>
+Creates a complete processing context with:<ul class="simple">
+<li><p>Optimally configured resource managers</p></li>
+<li><p>Validated processing parameters</p></li>
+<li><p>Integration with job scheduler limits</p></li>
+<li><p>Thread-safe resource sharing setup</p></li>
+</ul>
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Memory limits are automatically calculated based on thread count and available system resources </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp</strong> – Base temperature for thermodynamic calculations (K) </p></li>
+<li><p><strong>C</strong> – Concentration for phase corrections (mM) </p></li>
+<li><p><strong>use_temp</strong> – Whether to use temperatures from input files </p></li>
+<li><p><strong>thread_count</strong> – Number of processing threads to use </p></li>
+<li><p><strong>ext</strong> – File extension to process (default: “.log”) </p></li>
+<li><p><strong>max_file_mb</strong> – Maximum individual file size in MB (default: 100) </p></li>
+<li><p><strong>job_res</strong> – Job scheduler resource information</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext14memory_monitorE">
+<span id="_CPPv3N17ProcessingContext14memory_monitorE"></span><span id="_CPPv2N17ProcessingContext14memory_monitorE"></span><span id="ProcessingContext::memory_monitor__std::shared_ptr:MemoryMonitor:"></span><span class="target" id="structProcessingContext_1adc60c2274a5d832e1891407a8fc89e8e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classMemoryMonitor.html#_CPPv413MemoryMonitor" title="MemoryMonitor"><span class="n"><span class="pre">MemoryMonitor</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memory_monitor</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext14memory_monitorE" title="Link to this definition"></a><br /></dt>
+<dd><p>Shared memory usage monitor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext12file_managerE">
+<span id="_CPPv3N17ProcessingContext12file_managerE"></span><span id="_CPPv2N17ProcessingContext12file_managerE"></span><span id="ProcessingContext::file_manager__std::shared_ptr:FileHandleManager:"></span><span class="target" id="structProcessingContext_1a398b7660ebdcf4af058560a826dddf39"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classFileHandleManager.html#_CPPv417FileHandleManager" title="FileHandleManager"><span class="n"><span class="pre">FileHandleManager</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">file_manager</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext12file_managerE" title="Link to this definition"></a><br /></dt>
+<dd><p>Shared file handle manager. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext15error_collectorE">
+<span id="_CPPv3N17ProcessingContext15error_collectorE"></span><span id="_CPPv2N17ProcessingContext15error_collectorE"></span><span id="ProcessingContext::error_collector__std::shared_ptr:ThreadSafeErrorCollector:"></span><span class="target" id="structProcessingContext_1aabe3631c7d38037e245be46ca741c656"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classThreadSafeErrorCollector.html#_CPPv424ThreadSafeErrorCollector" title="ThreadSafeErrorCollector"><span class="n"><span class="pre">ThreadSafeErrorCollector</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_collector</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext15error_collectorE" title="Link to this definition"></a><br /></dt>
+<dd><p>Shared error collector. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext9base_tempE">
+<span id="_CPPv3N17ProcessingContext9base_tempE"></span><span id="_CPPv2N17ProcessingContext9base_tempE"></span><span id="ProcessingContext::base_temp__double"></span><span class="target" id="structProcessingContext_1a5b7573ed1f861acd4f8ec0a0a40354e9"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base_temp</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext9base_tempE" title="Link to this definition"></a><br /></dt>
+<dd><p>Base temperature for calculations (K) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext13concentrationE">
+<span id="_CPPv3N17ProcessingContext13concentrationE"></span><span id="_CPPv2N17ProcessingContext13concentrationE"></span><span id="ProcessingContext::concentration__i"></span><span class="target" id="structProcessingContext_1a27feefa71d5a7c0ebbf7484f498461a3"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">concentration</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext13concentrationE" title="Link to this definition"></a><br /></dt>
+<dd><p>Concentration for phase corrections (mM) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext14use_input_tempE">
+<span id="_CPPv3N17ProcessingContext14use_input_tempE"></span><span id="_CPPv2N17ProcessingContext14use_input_tempE"></span><span id="ProcessingContext::use_input_temp__b"></span><span class="target" id="structProcessingContext_1aa1522c2b18e20b28bb9373e7ae001250"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_input_temp</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext14use_input_tempE" title="Link to this definition"></a><br /></dt>
+<dd><p>Whether to use temperature from input files. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext9extensionE">
+<span id="_CPPv3N17ProcessingContext9extensionE"></span><span id="_CPPv2N17ProcessingContext9extensionE"></span><span id="ProcessingContext::extension__ss"></span><span class="target" id="structProcessingContext_1a745d04f8845e55521f6c0def7620a702"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">extension</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext9extensionE" title="Link to this definition"></a><br /></dt>
+<dd><p>File extension to process. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext17requested_threadsE">
+<span id="_CPPv3N17ProcessingContext17requested_threadsE"></span><span id="_CPPv2N17ProcessingContext17requested_threadsE"></span><span id="ProcessingContext::requested_threads__unsigned-i"></span><span class="target" id="structProcessingContext_1a3a29669a75e2e90e65d43f5b860a6f6a"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">requested_threads</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext17requested_threadsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of requested processing threads. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext16max_file_size_mbE">
+<span id="_CPPv3N17ProcessingContext16max_file_size_mbE"></span><span id="_CPPv2N17ProcessingContext16max_file_size_mbE"></span><span id="ProcessingContext::max_file_size_mb__s"></span><span class="target" id="structProcessingContext_1a6a945e50b779297b172746cba968b0d3"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_file_size_mb</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext16max_file_size_mbE" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum individual file size in MB. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17ProcessingContext13job_resourcesE">
+<span id="_CPPv3N17ProcessingContext13job_resourcesE"></span><span id="_CPPv2N17ProcessingContext13job_resourcesE"></span><span id="ProcessingContext::job_resources__JobResources"></span><span class="target" id="structProcessingContext_1adddea306b071249c12762a93bd4603a8"></span><a class="reference internal" href="structJobResources.html#_CPPv412JobResources" title="JobResources"><span class="n"><span class="pre">JobResources</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">job_resources</span></span></span><a class="headerlink" href="#_CPPv4N17ProcessingContext13job_resourcesE" title="Link to this definition"></a><br /></dt>
+<dd><p>Job scheduler resource information. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Le Nhan Pham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

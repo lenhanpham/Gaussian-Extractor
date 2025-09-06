@@ -1,0 +1,14 @@
+.. _exhale_variable_config__manager_8h_1a5dc02d7cc2dae80387b656e7d050e86c:
+
+Variable g_config_manager
+=========================
+
+- Defined in :ref:`file_core_config_manager.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: g_config_manager
+   :project: GaussianExtractor

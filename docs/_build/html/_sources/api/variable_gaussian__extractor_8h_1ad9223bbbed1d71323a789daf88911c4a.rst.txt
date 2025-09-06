@@ -1,0 +1,14 @@
+.. _exhale_variable_gaussian__extractor_8h_1ad9223bbbed1d71323a789daf88911c4a:
+
+Variable g_shutdown_requested
+=============================
+
+- Defined in :ref:`file_core_gaussian_extractor.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: g_shutdown_requested
+   :project: GaussianExtractor

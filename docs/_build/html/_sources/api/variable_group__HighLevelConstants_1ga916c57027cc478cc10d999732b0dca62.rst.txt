@@ -1,0 +1,14 @@
+.. _exhale_variable_group__HighLevelConstants_1ga916c57027cc478cc10d999732b0dca62:
+
+Variable R_CONSTANT
+===================
+
+- Defined in :ref:`file_core_high_level_energy.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: R_CONSTANT
+   :project: GaussianExtractor
