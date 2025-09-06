@@ -41,6 +41,10 @@
 #include <vector>
 
 /**
+ * @file command_system.h
+ * @brief Defines core command types for the Gaussian Extractor tool.
+ */
+/**
  * @enum CommandType
  * @brief Enumeration of available command types in Gaussian Extractor
  *

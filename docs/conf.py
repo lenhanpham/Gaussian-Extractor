@@ -35,11 +35,64 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'breathe'
+    'breathe',
+    'exhale',  
 ]
 
+exhale_args = {
+    "containmentFolder": "./api",
+    "rootFileName": "api.rst",
+    "rootFileTitle": "Gaussian Extractor API",
+    "doxygenStripFromPath": os.path.abspath("../src"),
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin": """
+        PROJECT_NAME = Gaussian Extractor
+        INPUT = ../src
+        FILE_PATTERNS = *.cpp *.hpp *.h *.cxx *.cc
+        RECURSIVE = YES
+        GENERATE_XML = YES
+        XML_OUTPUT = xml
+        EXTRACT_ALL = YES
+        EXTRACT_PRIVATE = YES
+        EXTRACT_STATIC = YES
+        EXTRACT_LOCAL_CLASSES = YES
+        EXTRACT_LOCAL_METHODS = YES
+        EXTRACT_ANON_NSPACES = YES
+        ENABLE_PREPROCESSING = YES
+        VERBATIM_HEADERS = NO
+        XML_PROGRAMLISTING = NO
+        MACRO_EXPANSION = YES
+        EXPAND_ONLY_PREDEF = YES
+        INLINE_SOURCES = YES
+        STRIP_FROM_PATH = ../src
+        SHOW_FILES = YES
+        EXCLUDE_PATTERNS = */test/* */tests/* */example/* */examples/*
+        HAVE_DOT = YES
+        UML_LOOK = YES
+        CALL_GRAPH = YES
+        CALLER_GRAPH = YES
+        INCLUDE_GRAPH = YES
+        INCLUDED_BY_GRAPH = YES
+        COLLABORATION_GRAPH = YES
+        CLASS_DIAGRAMS = YES
+        CLASS_GRAPH = YES
+        GRAPHICAL_HIERARCHY = YES
+        DIRECTORY_GRAPH = YES
+        DOT_IMAGE_FORMAT = svg
+        INTERACTIVE_SVG = YES
+        DOT_TRANSPARENT = YES
+        DOT_MULTI_TARGETS = YES
+    """,
+    "createTreeView": True,
+    "afterTitleDescription": "Comprehensive API documentation for the Gaussian Extractor.",
+    "exhaleFullApiNoDuplicates": True,
+    "verboseBuild": False,  # Disable verbose logging to reduce warning noise
+    "exhaleSilent": True,   # Suppress non-critical warnings
+}
+
+
 breathe_projects = {
-    'GaussianExtractor': './xml/'  # Path to xml/ relative to docs/
+    'GaussianExtractor': './xml/'  # Path to Doxygen XML output
 }
 breathe_default_project = 'GaussianExtractor'
 
@@ -101,7 +154,6 @@ texinfo_documents = [
 # Intersphinx mapping
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
-    'cpp': ('https://en.cppreference.com/w/', None),
 }
 
 # If true, `todo` and `todoList` produce output.
@@ -151,9 +203,9 @@ pdf_documents = [
 # -- Linkcheck configuration ------------------------------------------------
 
 linkcheck_ignore = [
-    r'https://github\.com/sst/opencode/.*',
-    r'https://docs\.python\.org/.*',
-    r'https://en\.cppreference\.com/.*',
+    r'https://github.com/lenhanpham/gaussian-extractor/.*',
+    r'https://docs.python.org/.*',
+    r'https://en.cppreference.com/.*',
 ]
 
 # -- Custom build commands --------------------------------------------------

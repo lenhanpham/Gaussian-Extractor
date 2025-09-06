@@ -144,23 +144,6 @@ struct Result
 };
 
 /**
- * @defgroup ResourceManagement Resource Management Classes
- * @brief Classes for managing system resources during multi-threaded processing
- *
- * These classes provide thread-safe resource management to prevent system
- * overload during intensive file processing operations. They work together
- * to ensure stable operation even when processing hundreds of large files
- * concurrently.
- *
- * @section Design Philosophy
- * - Fail-safe: Better to refuse work than crash the system
- * - Observable: Provide metrics for performance tuning
- * - Configurable: Adapt to different system capabilities
- * - Thread-safe: Work correctly in multi-threaded environments
- *
- * @{
- */
-/**
  * @class MemoryMonitor
  * @brief Thread-safe memory usage tracking and limiting system
  *
@@ -169,19 +152,21 @@ struct Result
  * It uses atomic operations for thread-safe tracking and provides both current
  * and peak usage statistics.
  *
- * @section Features
+ * @section Memory Features
  * - Thread-safe memory usage tracking
  * - Configurable memory limits with safety margins
  * - Peak usage tracking for performance analysis
  * - Integration with system memory detection
  * - Automatic memory limit calculation based on thread count
  *
- * @section Usage Pattern
+ * @section MemoryMonitor Usage Pattern
  * 1. Create MemoryMonitor with desired limit
- * 2. Check can_allocate() before large allocations
+ * 2. Check can_allocate() before
+ * large allocations
  * 3. Call add_usage() when allocating memory
  * 4. Call remove_usage() when freeing memory
- * 5. Monitor current and peak usage for optimization
+ * 5.
+ * Monitor current and peak usage for optimization
  *
  * @note All methods are thread-safe and can be called from multiple threads
  *       simultaneously without external synchronization
@@ -296,12 +281,14 @@ public:
  * FileGuard class to ensure file handles are properly released even if
  * exceptions occur during file processing.
  *
- * @section Usage Pattern
+ * @section FileHandleManager Usage Pattern
  * 1. Call acquire() to get a FileGuard
- * 2. Check is_acquired() to ensure handle was obtained
+ * 2. Check is_acquired() to ensure
+ * handle was obtained
  * 3. Open file if guard is acquired
  * 4. Process file content
- * 5. FileGuard destructor automatically releases handle
+ * 5. FileGuard destructor
+ * automatically releases handle
  *
  * @note The manager is designed to prevent system file handle exhaustion
  *       which can cause application crashes or system instability
@@ -327,7 +314,7 @@ public:
      * using RAII principles. It ensures that file handles are properly released
      * even if exceptions occur during file processing.
      *
-     * @section Features
+     * @section FileGuard Features
      * - Automatic handle release in destructor
      * - Move semantics for efficient transfer
      * - Non-copyable to prevent handle duplication
@@ -523,10 +510,9 @@ public:
     void clear();
 };
 
-/** @} */  // end of ResourceManagement group
 
 /**
- * @struct ProcessingContext
+ * @struct ProcessingContext 
  * @brief Complete context for thread-safe file processing operations
  *
  * The ProcessingContext encapsulates all resources, parameters, and state
@@ -763,7 +749,7 @@ std::string formatMemorySize(size_t bytes);
 
 /**
  * @brief Print resource usage statistics from processing context
- * @param context ProcessingContext containing resource managers
+ * @param context Context containing resource managers
  * @param quiet Suppress output in quiet mode
  *
  * Displays detailed resource usage statistics including:

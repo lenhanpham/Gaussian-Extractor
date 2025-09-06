@@ -8,7 +8,7 @@ System Requirements
 
 **Minimum Requirements:**
 
-- **Operating System**: Linux, Windows 10+, or macOS (limited support)
+- **Operating System**: Linux, Windows 10+, or macOS (not tested)
 - **Compiler**: C++20 compatible compiler
 - **Memory**: 2GB RAM minimum, 8GB recommended
 - **Storage**: 100MB for installation
@@ -37,10 +37,10 @@ Gaussian Extractor supports multiple C++20 compilers:
 Installation Methods
 ====================
 
-Method 1: Pre-compiled Binary (Easiest)
------------------------------------------
-
 **Windows Users:**
+
+Pre-compiled Binary (Easiest)
+-----------------------------------------
 
 1. Download the latest release from GitHub
 2. Extract the ZIP file to your desired location
@@ -51,34 +51,11 @@ Method 1: Pre-compiled Binary (Easiest)
 
       gaussian_extractor.x --version
 
+      double-click gaussian_extractor.x to run interactive mode
+
 **Linux/macOS Users:**
 
-1. Download the appropriate binary for your system
-2. Extract and make executable:
-
-   .. code-block:: bash
-
-      tar -xzf gaussian_extractor-linux-x64.tar.gz
-      cd gaussian_extractor
-      chmod +x gaussian_extractor.x
-
-3. Add to PATH or copy to system location:
-
-   .. code-block:: bash
-
-      # Option 1: Add to PATH
-      export PATH=$PATH:/path/to/gaussian_extractor
-
-      # Option 2: Copy to system directory
-      sudo cp gaussian_extractor.x /usr/local/bin/
-
-4. Test installation:
-
-   .. code-block:: bash
-
-      gaussian_extractor.x --version
-
-Method 2: Build from Source (Recommended for Development)
+Build from Source)
 ----------------------------------------------------------
 
 Prerequisites
@@ -121,7 +98,7 @@ Automatic Build (Recommended)
 .. code-block:: bash
 
    # Clone the repository
-   git clone https://github.com/sst/opencode.git
+   git clone https://github.com/lenhanpham/gaussian-extractor.git
    cd gaussian-extractor
 
    # Build with auto-detected compiler
@@ -187,7 +164,7 @@ CMake Build (Cross-platform)
    # Custom installation directory
    cmake -DCMAKE_INSTALL_PREFIX=/opt/gaussian_extractor ..
 
-Method 3: Cluster Installation
+Cluster Installation
 -------------------------------
 
 **Load Required Modules:**

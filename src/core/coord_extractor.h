@@ -10,6 +10,11 @@
 #include <unordered_set>
 #include <vector>
 
+
+/**
+ * @file coord_extractor.h
+ * @brief Header file for coordinate extraction command xyz to extract coordinates from Gaussian outputs
+ */
 /**
  * @struct ExtractSummary
  * @brief Statistical summary of coordinate extraction operations

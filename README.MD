@@ -2,7 +2,7 @@
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It  in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
-![results](./resources/results.png)
+<img src="./docs/im.png" title="" alt="results" data-align="center">
 
 ## Key Features
 
@@ -13,6 +13,7 @@
 * **Extract coodinates**: Coordinates of gaussian outputs can be extracted
 * **Create Input Files**: Generate Gaussian input files from XYZ coordinate files with customizable calculation parameters
 * **Parameter Templates**: Generate and reuse parameter templates for different calculation types
+* **Windows interactive mode**: Windows users can use all features plus popular linux commands in the interactive mode 
 * **Important note**: **Large files (>100MB) automatically skipped by default**. Users need to set flag --max-file-size xxxxx to increase the size limit
 
 ## Installation and Compilation
@@ -172,7 +173,7 @@ Total execution time: 12.347 seconds
 Memory usage: 256.7 MB / 4.0 GB
 ```
 
-![results](./resources/results.png)
+<img src="./docs/results.png" title="" alt="results" data-align="center">
 
 ***Output explanation:***
 
@@ -420,7 +421,7 @@ Single point calculations are done at a higher level of theory and electronic en
 - Subdirectory (e.g., `higher_level`): Single point calculations at higher theory level
 - Log files must have the same names in both directories
 
-![dirs](./resources/tree_dir.png)
+<img src="./docs/tree_dir.png" title="" alt="dirs" data-align="center">
 
 **Basic Usage:**
 

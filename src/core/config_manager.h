@@ -105,10 +105,12 @@ enum class ConfigCategory
  * 3. Potentially overridden by command-line arguments
  * 4. Accessed throughout application lifecycle via type-safe getters
  *
- * @section Metadata Usage
+ * @section ConfigValue Metadata Usage
  * - description: Used in help output and configuration file generation
- * - category: Used for organizing settings in help and validation
- * - user_set: Tracks whether user has explicitly set this value
+ * -
+ * category: Used for organizing settings in help and validation
+ * - user_set: Tracks whether user has explicitly set
+ * this value
  * - default_value: Preserved for reset operations and help display
  */
 struct ConfigValue
@@ -158,11 +160,13 @@ struct ConfigValue
  * - Category-based organization for large configuration sets
  * - Thread-safe read operations after initialization
  *
- * @section Usage Pattern
+ * @section ConfigManager Usage Pattern
  * 1. Create ConfigManager instance (typically global)
- * 2. Call load_config() to initialize from files
+ * 2. Call load_config()
+ * to initialize from files
  * 3. Use type-safe getters (get_string, get_int, etc.) to access values
- * 4. Optionally apply command-line overrides
+ * 4. Optionally
+ * apply command-line overrides
  * 5. Use throughout application lifetime for configuration access
  *
  * @section Error Handling

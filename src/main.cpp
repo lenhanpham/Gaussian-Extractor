@@ -9,7 +9,7 @@
  * The application supports various commands including extraction, job checking, and
  * high-level energy calculations.
  *
- * @section Features
+ * @section Safety, resouce management, and features 
  * - Multi-threaded file processing with resource management
  * - Job scheduler integration (SLURM, PBS, SGE, LSF)
  * - Comprehensive error detection and job status checking

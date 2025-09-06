@@ -1,3 +1,14 @@
+/**
+ * @file utils.h
+ * @brief Universial functions and classes for all modules
+ * @author Le Nhan Pham
+ * @date 2025
+ *
+ * This header defines all universial functions, classes and other objects
+ * used that can be used in all modules multiple times.
+ */
+
+
 #ifndef UTILS_H
 #define UTILS_H
 

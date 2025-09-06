@@ -6,9 +6,9 @@
 Gaussian Extractor User Manual
 ==============================
 
-**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract energies from Gaussian computational chemistry outputs. It processes multiple log files in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
+**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
-.. image:: results.png
+.. image:: _static/im.png
    :alt: Gaussian Extractor Results
    :align: center
    :scale: 75%
@@ -23,24 +23,25 @@ Gaussian Extractor provides a comprehensive suite of tools for computational che
 * **Energy Calculations**: Extract thermodynamic data and calculate high-level energies
 * **Coordinate Processing**: Extract and organize molecular coordinates
 * **Input Generation**: Create Gaussian input files from XYZ coordinate files
-* **Template System**: Generate and reuse parameter templates for different calculation types
+* **Input prarameters template**: Generate and reuse parameter templates for different calculation types
+* **Windows interactive mode**: Windows users can use all features plus popular linux commands in the interactive mode 
 
 Key Features
 ------------
 
-🔬 **Scientific Capabilities**
+ **Scientific Capabilities**
    - Extract thermodynamic properties (Gibbs free energy, enthalpy, entropy)
+   - Check and organize job statuses (completed, failed, errors)
    - Calculate high-level energies combining different theory levels
    - Process coordinates and generate input files
-   - Support for various DFT functionals and basis sets
 
-⚡ **Performance & Safety**
+ **Performance & Safety**
    - Multi-threaded processing with automatic resource detection
    - Cluster-aware operation (SLURM, PBS, SGE, LSF)
    - Memory management with automatic limits
    - Graceful shutdown handling
 
-🛠️ **Workflow Integration**
+ **Workflow Integration**
    - Command-line interface with extensive options
    - Configuration file support for defaults
    - Template system for reproducible calculations
@@ -111,12 +112,13 @@ Gaussian Extractor is released under the MIT License. See the LICENSE file for d
 Version Information
 ===================
 
-Current Version: **v0.4.4**
+Current Version: **v0.5.0**
 
+- **v0.5**: Interactive mode, enhanced coordinate processing, improved input generation
 - **v0.4**: Enhanced safety, job checking, high-level energy calculations
 - **v0.3**: Complete resource management and cluster awareness
 - **v0.2**: Multi-threaded processing capabilities
 - **v0.1**: Initial single-threaded version
 
 .. note::
-   This documentation is for Gaussian Extractor v0.4.4. For older versions, please refer to the archived documentation.
+    This documentation is for Gaussian Extractor v0.5.0. For older versions, please refer to the archived documentation.

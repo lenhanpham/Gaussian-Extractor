@@ -1,6 +1,6 @@
 /**
  * @file help_utils.h
- * @brief Header file for help utility functions
+ * @brief Help utility functions for all commands
  * @author Le Nhan Pham
  * @date 2025
  *

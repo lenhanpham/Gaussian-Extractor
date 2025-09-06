@@ -76,7 +76,7 @@ struct CreateSummary
  * - Detailed reporting and error handling
  * - Support for complex multi-section inputs
  *
- * @section Usage
+ * @section CreateInput Usage
  * The class processes XYZ files and creates corresponding Gaussian input files
  * with appropriate route sections, molecular specifications, and coordinate data.
  */

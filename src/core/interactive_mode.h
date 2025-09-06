@@ -1,6 +1,6 @@
 /**
  * @file interactive_mode.h
- * @brief Header file for interactive mode functionality
+ * @brief Interactive mode functionality on Windows
  * @author Le Nhan Pham
  * @date 2025
  *

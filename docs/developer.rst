@@ -13,29 +13,67 @@ Gaussian Extractor is a C++20 application designed for high-performance processi
 
 .. code-block::
 
-   gaussian-extractor/
-   ├── src/
-   │   ├── main.cpp                 # Application entry point
-   │   └── core/                    # Core functionality
-   │       ├── command_system.h/.cpp # Command parsing and execution
-   │       ├── config_manager.h/.cpp # Configuration management
-   │       ├── gaussian_extractor.h/.cpp # Core extraction logic
-   │       ├── job_scheduler.h/.cpp  # Job scheduler integration
-   │       ├── module_executor.h/.cpp # Command execution dispatch
-   │       ├── help_utils.h/.cpp     # Help system utilities
-   │       ├── interactive_mode.h/.cpp # Interactive mode
-   │       ├── coord_extractor.h/.cpp # Coordinate extraction
-   │       ├── create_input.h/.cpp   # Input file generation
-   │       ├── high_level_energy.h/.cpp # High-level energy calculations
-   │       ├── job_checker.h/.cpp    # Job status checking
-   │       ├── metadata.h/.cpp       # File metadata handling
-   │       ├── parameter_parser.h/.cpp # Parameter file parsing
-   │       ├── utils.h/.cpp          # Utility functions
-   │       └── version.h             # Version information
-   ├── tests/                        # Test files and data
-   ├── docs/                         # Documentation
-   ├── Makefile                      # Build system
-   └── README.MD                     # User documentation
+		gaussian-extractor/
+		├── src/
+		│   ├── main.cpp                 # Application entry point
+		│   └── core/                    # Core functionality
+		│       ├── command_system.h/.cpp # Command parsing and execution
+		│       ├── config_manager.h/.cpp # Configuration management
+		│       ├── gaussian_extractor.h/.cpp # Core extraction logic
+		│       ├── job_scheduler.h/.cpp  # Job scheduler integration
+		│       ├── module_executor.h/.cpp # Command execution dispatch
+		│       ├── help_utils.h/.cpp     # Help system utilities
+		│       ├── interactive_mode.h/.cpp # Interactive mode for Windows
+		│       ├── coord_extractor.h/.cpp # Coordinate extraction and XYZ processing
+		│       ├── create_input.h/.cpp   # Gaussian input file generation
+		│       ├── high_level_energy.h/.cpp # High-level energy calculations
+		│       ├── job_checker.h/.cpp    # Job status checking and organization
+		│       ├── metadata.h/.cpp       # File metadata handling
+		│       ├── parameter_parser.h/.cpp # Parameter file parsing
+		│       ├── utils.h/.cpp          # Utility functions
+		│       └── version.h             # Version information
+	├── tests/                        # Test files and data
+	├── docs/                         # Documentation
+	├── Makefile                      # Build system
+	└── README.MD                     # User documentation
+
+New Modules in v0.5.0
+---------------------
+
+**Interactive Mode (interactive_mode.h/.cpp)**
+    - Windows-specific interactive interface
+    - Menu-driven command selection
+    - Automatic extraction before entering interactive mode
+
+**Coordinate Processing (coord_extractor.h/.cpp)**
+    - Extract final Cartesian coordinates from log files
+    - XYZ format conversion and organization
+    - Support for completed and running job separation
+
+**Input Generation (create_input.h/.cpp)**
+    - Generate Gaussian input files from XYZ coordinates
+    - Template system for reusable parameter sets
+    - Support for multiple calculation types (SP, OPT, TS, IRC)
+
+**High-Level Energy Calculations (high_level_energy.h/.cpp)**
+    - Combine high-level electronic energies with low-level thermal corrections
+    - Support for kJ/mol and atomic unit outputs
+    - Directory-based energy combination workflow
+
+**Job Status Management (job_checker.h/.cpp)**
+    - Comprehensive job status checking and organization
+    - Support for multiple error types (PCM, imaginary frequencies)
+    - Automated file organization by job status
+
+**Metadata Handling (metadata.h/.cpp)**
+    - File metadata extraction and validation
+    - Job completion status detection
+    - File size and timestamp tracking
+
+**Parameter File Parsing (parameter_parser.h/.cpp)**
+    - Template parameter file parsing
+    - Configuration file format support
+    - Validation and error reporting
 
 Key Design Principles
 ---------------------
@@ -86,7 +124,7 @@ Getting the Source Code
 .. code-block:: bash
 
    # Clone the repository
-   git clone https://github.com/sst/opencode.git
+   git clone https://github.com/lenhanpham/gaussian-extractor.git
    cd gaussian-extractor
 
    # Create a development branch

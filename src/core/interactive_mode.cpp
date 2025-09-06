@@ -866,7 +866,7 @@ int run_interactive_loop()
             std::cout << "  high-kj           Calculate high-level energies in kJ/mol" << std::endl;
             std::cout << "  high-au           Calculate high-level energies in atomic units" << std::endl;
             std::cout << "  xyz               Extract coordinates to XYZ format" << std::endl;
-            std::cout << "  ci, create-input, --create-input  Create Gaussian input files from XYZ files" << std::endl;
+            std::cout << "  ci                Create Gaussian input files from XYZ files" << std::endl;
             std::cout << "  help              Show this help message" << std::endl;
             std::cout << "  --version         Show version information" << std::endl;
             std::cout << "  --config-help     Show configuration help" << std::endl;
@@ -1130,8 +1130,7 @@ int run_interactive_loop()
                                                                            {"high-kj", CommandType::HIGH_LEVEL_KJ},
                                                                            {"high-au", CommandType::HIGH_LEVEL_AU},
                                                                            {"xyz", CommandType::EXTRACT_COORDS},
-                                                                           {"ci", CommandType::CREATE_INPUT},
-                                                                           {"create-input", CommandType::CREATE_INPUT}};
+                                                                           {"ci", CommandType::CREATE_INPUT}};
 
             auto it = command_map.find(help_arg);
             if (it != command_map.end())
@@ -1329,7 +1328,6 @@ int run_interactive_loop()
                                                                         "xyz",
                                                                         "--extract-coord",
                                                                         "ci",
-                                                                        "create-input",
                                                                         "--create-input"};
 
                 bool is_valid_gaussian_command = false;
@@ -1471,7 +1469,8 @@ bool is_shell_command(const std::string& cmd)
         "cd",   "ls",    "dir",    "pwd",  "mkdir", "rmdir", "cp",   "mv",     "rm",      "cat",     "more",  "less",
         "head", "tail",  "grep",   "find", "which", "echo",  "date", "time",   "touch",   "history", "alias", "export",
         "set",  "unset", "source", "bash", "sh",    "zsh",   "fish", "python", "python3", "pip",     "pip3",  "git",
-        "make", "cmake", "gcc",    "g++",  "clang", "vim",   "nano", "emacs",  "code",    "subl",    "atom",  "del"};
+        "make", "cmake", "gcc",    "g++",  "clang", "vim",   "nano", "emacs",  "code",    "subl",    "atom",  "del",
+        "clear", "cls", "exit"};
 
     // Check if command starts with any shell command
     for (const auto& shell_cmd : shell_commands)
