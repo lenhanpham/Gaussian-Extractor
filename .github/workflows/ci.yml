@@ -169,7 +169,7 @@ jobs:
         run: |
           mkdir -p _static _templates
           cp -r ../docs/html/*.svg _static/ && echo "SVGs copied to _static/" || echo "No SVGs found in docs/html/, continuing"
-          make clean && make html
+          make html
           if [ -s build_warnings.log ]; then
             echo "Warnings during Sphinx HTML build:"
             cat build_warnings.log
