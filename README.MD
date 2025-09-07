@@ -1,6 +1,6 @@
 # Gaussian Extractor v0.5.0
 
-**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It  in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
+**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It runs in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
 <img src="./docs/im.png" title="" alt="results" data-align="center">
 
@@ -15,6 +15,10 @@
 * **Parameter Templates**: Generate and reuse parameter templates for different calculation types
 * **Windows interactive mode**: Windows users can use all features plus popular linux commands in the interactive mode 
 * **Important note**: **Large files (>100MB) automatically skipped by default**. Users need to set flag --max-file-size xxxxx to increase the size limit
+
+## Full features and User Manual:
+
+**Visit**: [Gaussian Extractor documentation](https://lenhanpham.github.io/gaussian-extractor/)
 
 ## Installation and Compilation
 

@@ -25,16 +25,17 @@
  */
 enum class CalculationType
 {
-    SP,            ///< Single point energy calculation
-    OPT_FREQ,      ///< Geometry optimization + frequency analysis
-    TS_FREQ,       ///< Transition state search + frequency analysis
-    OSS_TS_FREQ,   ///< Openshell singlet TS search + frequency analysis
-    OSS_CHECK_SP,  ///< Openshell singlet check single point
-    HIGH_SP,       ///< High-level single point with larger basis set
-    IRC_FORWARD,   ///< IRC calculation in forward direction
-    IRC_REVERSE,   ///< IRC calculation in reverse direction
-    IRC,           ///< IRC calculation in both directions
-    MODRE_TS_FREQ  ///< Modredundant TS search + frequency analysis
+    SP,             ///< Single point energy calculation
+    OPT_FREQ,       ///< Geometry optimization + frequency analysis
+    TS_FREQ,        ///< Transition state search + frequency analysis
+    OSS_TS_FREQ,    ///< Openshell singlet TS search + frequency analysis
+    OSS_CHECK_SP,   ///< Openshell singlet check single point
+    HIGH_SP,        ///< High-level single point with larger basis set
+    IRC_FORWARD,    ///< IRC calculation in forward direction
+    IRC_REVERSE,    ///< IRC calculation in reverse direction
+    IRC,            ///< IRC calculation in both directions
+    MODRE_TS_FREQ,  ///< Modredundant TS search + frequency analysis
+    MODRE_OPT       ///< Modredundant single point energy calculation
 };
 
 /**
@@ -119,6 +120,12 @@ public:
     std::string generate_title();
 
     /**
+     * @brief Overload Generate title for current calculation type
+     * @return Title string
+     */
+    std::string generate_title(CalculationType calc_type);
+
+    /**
      * @brief Smartly select the appropriate basis set based on calculation type
      * @return The selected basis set string
      */
@@ -136,6 +143,12 @@ public:
      * @throws std::runtime_error if requirements are not met
      */
     void validate_gen_basis_requirements() const;
+
+    /**
+     * @brief Validates requirements for MODRE_TS_FREQ and OSS_TS_FREQ calculations
+     * @throws std::runtime_error if neither freeze_atoms nor modre is provided
+     */
+    void validate_modre_requirements() const;
 
     /**
      * @brief Main method to create input files from XYZ files
@@ -182,10 +195,16 @@ public:
     void set_print_level(const std::string& print_level);
 
     /**
-     * @brief Set extra keywords for route section
-     * @param keywords Additional Gaussian keywords
+     * @brief Set extra keywords
+     * @param keywords Extra keywords string
      */
     void set_extra_keywords(const std::string& keywords);
+
+    /**
+     * @brief Set extra keyword section
+     * @param section Extra keyword section string
+     */
+    void set_extra_keyword_section(const std::string& section);
 
     /**
      * @brief Set molecular charge and multiplicity
@@ -199,6 +218,12 @@ public:
      * @param tail Additional text at end of input
      */
     void set_tail(const std::string& tail);
+
+    /**
+     * @brief Set modredundant text for TS calculations
+     * @param modre Modredundant text to replace frozen bond line
+     */
+    void set_modre(const std::string& modre);
 
     /**
      * @brief Set file extension for output
@@ -267,20 +292,22 @@ private:
     bool                               quiet_mode;  ///< Quiet mode flag
 
     // Calculation parameters
-    CalculationType     calc_type_;       ///< Type of calculation
-    std::string         functional_;      ///< DFT functional
-    std::string         basis_;           ///< Basis set
-    std::string         large_basis_;     ///< Large basis set
-    std::string         solvent_;         ///< Solvent name
-    std::string         solvent_model_;   ///< Solvent model
-    std::string         print_level_;     ///< Print level for route
-    std::string         extra_keywords_;  ///< Extra keywords
-    int                 charge_;          ///< Molecular charge
-    int                 mult_;            ///< Multiplicity
-    std::string         tail_;            ///< Tail text
-    std::string         extension_;       ///< Output file extension
-    std::string         tschk_path_;      ///< TS checkpoint path
-    std::pair<int, int> freeze_atoms_;    ///< Atoms to freeze (1-based indices)
+    CalculationType     calc_type_;              ///< Type of calculation
+    std::string         functional_;             ///< DFT functional
+    std::string         basis_;                  ///< Basis set
+    std::string         large_basis_;            ///< Large basis set
+    std::string         solvent_;                ///< Solvent name
+    std::string         solvent_model_;          ///< Solvent model
+    std::string         print_level_;            ///< Print level for route
+    std::string         extra_keywords_;         ///< Extra keywords
+    int                 charge_;                 ///< Molecular charge
+    int                 mult_;                   ///< Multiplicity
+    std::string         tail_;                   ///< Tail text
+    std::string         modre_;                  ///< Modredundant text for TS calculations
+    std::string         extra_keyword_section_;  ///< Extra keyword text for additional input sections
+    std::string         extension_;              ///< Output file extension
+    std::string         tschk_path_;             ///< TS checkpoint path
+    std::pair<int, int> freeze_atoms_;           ///< Atoms to freeze (1-based indices)
 
     // Configurable cycle and optimization parameters (-1 means use default)
     int scf_maxcycle_;   ///< Override for SCF MaxCycle
@@ -319,6 +346,27 @@ private:
      * @return Molecule section string
      */
     std::string generate_molecule_section(const std::string& coordinates);
+
+    /**
+     * @brief Generate content for a single-section calculation type
+     * @param type The calculation type
+     * @param isomer_name Name of the isomer
+     * @param coordinates Coordinate data
+     * @param checkpoint_suffix Suffix for checkpoint file (empty for default)
+     * @return Complete section content
+     */
+    std::string generate_single_section_calc_type(CalculationType    type,
+                                                  const std::string& isomer_name,
+                                                  const std::string& coordinates,
+                                                  const std::string& checkpoint_suffix = "");
+
+    /**
+     * @brief Generate route section for a single-section calculation type
+     * @param type The calculation type
+     * @param isomer_name Name of the isomer
+     * @return Route section string
+     */
+    std::string generate_route_for_single_section_calc_type(CalculationType type, const std::string& isomer_name);
 
     /**
      * @brief Read coordinates from XYZ file
@@ -360,6 +408,13 @@ private:
      * @param error Error message
      */
     void log_error(const std::string& error);
+
+    /**
+     * @brief Parse extra keywords string to handle multiple keywords separated by delimiters
+     * @param keywords_str Raw keywords string from parameter file
+     * @return Parsed keywords string with single spaces between keywords
+     */
+    std::string parseExtraKeywords(const std::string& keywords_str);
 
     /**
      * @brief Parse freeze atoms string into vector of atom indices

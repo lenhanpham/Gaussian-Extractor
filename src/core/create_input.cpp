@@ -27,8 +27,9 @@ extern std::atomic<bool> g_shutdown_requested;
 CreateInput::CreateInput(std::shared_ptr<ProcessingContext> ctx, bool quiet)
     : context(ctx), quiet_mode(quiet), calc_type_(CalculationType::SP), functional_("UwB97XD"), basis_("Def2SVPP"),
       large_basis_(""), solvent_(""), solvent_model_("smd"), print_level_(""), extra_keywords_(""), charge_(0),
-      mult_(1), tail_(""), extension_(".gau"), tschk_path_(""), freeze_atoms_({0, 0}), scf_maxcycle_(-1),
-      opt_maxcycles_(-1), irc_maxpoints_(-1), irc_recalc_(-1), irc_maxcycle_(-1), irc_stepsize_(-1)
+      mult_(1), tail_(""), modre_(""), extra_keyword_section_(""), extension_(".gau"), tschk_path_(""),
+      freeze_atoms_({0, 0}), scf_maxcycle_(-1), opt_maxcycles_(-1), irc_maxpoints_(-1), irc_recalc_(-1),
+      irc_maxcycle_(-1), irc_stepsize_(-1)
 {}
 
 std::string CreateInput::select_basis_for_calculation() const
@@ -121,12 +122,46 @@ void CreateInput::validate_gen_basis_requirements() const
     }
 }
 
+void CreateInput::validate_modre_requirements() const
+{
+    // For MODRE_TS_FREQ and OSS_TS_FREQ, either freeze_atoms or modre must be provided
+    if (calc_type_ == CalculationType::MODRE_TS_FREQ || calc_type_ == CalculationType::OSS_TS_FREQ)
+    {
+        bool has_freeze_atoms = (freeze_atoms_.first != 0 && freeze_atoms_.second != 0);
+        bool has_modre        = !modre_.empty();
+
+        if (!has_freeze_atoms && !has_modre)
+        {
+            std::string calc_type_name =
+                (calc_type_ == CalculationType::MODRE_TS_FREQ) ? "MODRE_TS_FREQ" : "OSS_TS_FREQ";
+            throw std::runtime_error("Error: " + calc_type_name +
+                                     " calculation requires either freeze_atoms or modre parameter.\n"
+                                     "Please specify --freeze-atoms 1 2 or provide modre in the parameter file.\n"
+                                     "Example freeze_atoms: freeze_atoms = 1,2\n"
+                                     "Example modre:\n"
+                                     "modre =\n"
+                                     "B 1 2 F\n"
+                                     "X 1 F");
+        }
+
+        if (has_modre && modre_.empty())
+        {
+            std::string calc_type_name =
+                (calc_type_ == CalculationType::MODRE_TS_FREQ) ? "MODRE_TS_FREQ" : "OSS_TS_FREQ";
+            throw std::runtime_error("Error: " + calc_type_name +
+                                     " calculation with modre parameter requires non-empty modre content.\n"
+                                     "Please provide valid modre content in the parameter file.");
+        }
+    }
+}
+
 
 CreateInput::CreateInput(std::shared_ptr<ProcessingContext> ctx, const std::string& param_file, bool quiet)
     : context(ctx), quiet_mode(quiet), calc_type_(CalculationType::SP), functional_("UwB97XD"), basis_("Def2SVPP"),
       large_basis_(""), solvent_(""), solvent_model_("smd"), print_level_(""), extra_keywords_(""), charge_(0),
-      mult_(1), tail_(""), extension_(".gau"), tschk_path_(""), freeze_atoms_({0, 0}), scf_maxcycle_(-1),
-      opt_maxcycles_(-1), irc_maxpoints_(-1), irc_recalc_(-1), irc_maxcycle_(-1), irc_stepsize_(-1)
+      mult_(1), tail_(""), modre_(""), extra_keyword_section_(""), extension_(".gau"), tschk_path_(""),
+      freeze_atoms_({0, 0}), scf_maxcycle_(-1), opt_maxcycles_(-1), irc_maxpoints_(-1), irc_recalc_(-1),
+      irc_maxcycle_(-1), irc_stepsize_(-1)
 {
     if (!loadParameters(param_file))
     {
@@ -162,10 +197,16 @@ bool CreateInput::loadParameters(const std::string& param_file)
 
     // Advanced parameters
     print_level_    = parser.getString("print_level", "");
-    extra_keywords_ = parser.getString("extra_keywords", "");
+    extra_keywords_ = parseExtraKeywords(parser.getString("route_extra_keywords", ""));
 
     // Tail section
     tail_ = parser.getString("tail", "");
+
+    // Modredundant section for TS calculations
+    modre_ = parser.getString("modre", "");
+
+    // Extra keyword section
+    extra_keyword_section_ = parser.getString("extra_options", "");
 
     // TS-specific parameters (loaded but only used for relevant calc types)
     large_basis_ = parser.getString("large_basis", "");
@@ -447,202 +488,213 @@ bool CreateInput::create_from_file(const std::string& xyz_file, std::string& err
     }
 }
 
-std::string CreateInput::generate_input_content(const std::string& isomer_name, const std::string& coordinates)
+std::string CreateInput::generate_single_section_calc_type(CalculationType    type,
+                                                           const std::string& isomer_name,
+                                                           const std::string& coordinates,
+                                                           const std::string& checkpoint_suffix)
 {
-    // Validate GEN/GENECP basis requirements for all relevant calculation types
-    if (calc_type_ == CalculationType::SP || calc_type_ == CalculationType::OPT_FREQ ||
-        calc_type_ == CalculationType::TS_FREQ || calc_type_ == CalculationType::OSS_TS_FREQ ||
-        calc_type_ == CalculationType::OSS_CHECK_SP || calc_type_ == CalculationType::MODRE_TS_FREQ ||
-        calc_type_ == CalculationType::HIGH_SP || calc_type_ == CalculationType::IRC_FORWARD ||
-        calc_type_ == CalculationType::IRC_REVERSE || calc_type_ == CalculationType::IRC)
-    {
-        validate_gen_basis_requirements();
-    }
-
-    std::string route_section    = generate_route_section(isomer_name);
-    std::string molecule_section = generate_molecule_section(coordinates);
-
     std::ostringstream content;
 
-    // Determine defaults for configurable parameters (for multi-section)
-    int scf_mc = (scf_maxcycle_ != -1) ? scf_maxcycle_ : 300;  // Default 300 for multi-section types
-    int opt_mc = (opt_maxcycles_ != -1) ? opt_maxcycles_ : 300;
-
-    // For multi-section inputs (OSS_TS_FREQ, MODRE_TS_FREQ), handle differently
-    if (calc_type_ == CalculationType::OSS_TS_FREQ)
+    // Generate checkpoint section
+    if (!checkpoint_suffix.empty())
     {
-        // Pound sign for multi-section
-        std::string pound1, pound2, pound3;
-        if (print_level_.empty())
-        {
-            pound1 = pound2 = pound3 = "# ";
-        }
-        else if (print_level_ == "N" || print_level_ == "P" || print_level_ == "T")
-        {
-            pound1 = pound2 = pound3 = "#" + print_level_ + " ";
-        }
-        else
-        {
-            pound1 = pound2 = pound3 = "#" + print_level_ + " ";
-        }
-
-        // Section 1: Stable Opt
-        content << generate_checkpoint_section(isomer_name + "-StableOpt") << "\n";
-        content << pound1 << "Stable=Opt scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/"
-                << select_basis_for_calculation();
-        if (!solvent_.empty())
-        {
-            content << " scrf=(" << solvent_model_ << ",solvent=" << solvent_ << ")";
-        }
-        content << " " << extra_keywords_ << "\n\n";
-        content << "Stable Opt to check openshell singlet\n\n";
-        content << molecule_section;  // This already ends with \n
-        if (!tail_.empty())
-        {
-            content << "\n" << tail_ << "\n";  // Add blank line before tail
-        }
-        content << "\n";  // One blank line after everything
-
-        // Section 2: Modredundant
-        content << "--Link1--\n";
-        content << "%OldChk=" << isomer_name << "-StableOpt.chk\n";
-        content << "%chk=" << isomer_name << "-modre.chk\n";
-        std::string basis_to_use2 = select_basis_for_calculation();
-        content << pound2 << "opt(maxcycles=" << opt_mc << ",modredundant) scf(maxcycle=" << scf_mc << ",xqc) "
-                << functional_ << "/" << basis_to_use2;
-        if (!solvent_.empty())
-        {
-            content << " scrf=(" << solvent_model_ << ",solvent=" << solvent_ << ")";
-        }
-        content << " Guess(read) " << extra_keywords_ << "\n\n";
-        content << "Modredundant calculation to freeze the transition state bond\n\n";
-        content << molecule_section;  // This already ends with \n
-
-        if (freeze_atoms_.first != 0 && freeze_atoms_.second != 0)
-        {
-            content << "\n";  // Blank line before B line
-            content << "B " << freeze_atoms_.first << " " << freeze_atoms_.second << " F\n";
-        }
-
-        if (!tail_.empty())
-        {
-            content << "\n" << tail_ << "\n";  // Blank line before tail
-        }
-        content << "\n";  // One blank line after everything
-
-        // Section 3: TS optimization
-        content << "--Link1--\n";
-        content << "%OldChk=" << isomer_name << "-modre.chk\n";
-        content << "%Chk=" << isomer_name << ".chk\n";
-        std::string basis_to_use3 = select_basis_for_calculation();
-        content << pound3 << "opt(maxcycles=" << opt_mc
-                << ",ts,noeigen,calcfc,NoFreeze,MaxStep=5) freq scf(maxcycle=" << scf_mc << ",xqc) " << functional_
-                << "/" << basis_to_use3;
-        if (!solvent_.empty())
-        {
-            content << " scrf=(" << solvent_model_ << ",solvent=" << solvent_ << ")";
-        }
-        content << " Guess(read) Geom(Allcheck) " << extra_keywords_ << "\n\n";
-        if (!tail_.empty())
-        {
-            content << tail_ << "\n";
-        }
+        content << "%chk=" << isomer_name << checkpoint_suffix << ".chk\n";
     }
-    else if (calc_type_ == CalculationType::MODRE_TS_FREQ)
+    else if (type != CalculationType::HIGH_SP)
     {
-        // MODRE_TS_FREQ case
-        // Pound sign for multi-section
-        std::string pound1, pound2;
-        if (print_level_.empty())
-        {
-            pound1 = pound2 = "# ";
-        }
-        else if (print_level_ == "N" || print_level_ == "P" || print_level_ == "T")
-        {
-            pound1 = pound2 = "#" + print_level_ + " ";
-        }
-        else
-        {
-            pound1 = pound2 = "#" + print_level_ + " ";
-        }
+        content << "%chk=" << isomer_name << ".chk\n";
+    }
 
-        // Section 1: Modredundant
-        content << "%chk=" << isomer_name << "-modre.chk\n";
-        std::string basis_to_use1 = select_basis_for_calculation();
-        content << pound1 << "opt(maxcycles=" << opt_mc << ",modredundant) scf(maxcycle=" << scf_mc << ",xqc) "
-                << functional_ << "/" << basis_to_use1;
-        if (!solvent_.empty())
-        {
-            content << " scrf=(" << solvent_model_ << ",solvent=" << solvent_ << ")";
-        }
-        content << " " << extra_keywords_ << "\n\n";
-        content << "Modredundant calculation to freeze the transition state bond\n\n";
-        content << molecule_section;  // This already ends with \n
+    // Generate route section for this specific type
+    content << generate_route_for_single_section_calc_type(type, isomer_name) << "\n\n";
 
-        if (freeze_atoms_.first != 0 && freeze_atoms_.second != 0)
-        {
-            content << "\n";  // Blank line before B line
-            content << "B " << freeze_atoms_.first << " " << freeze_atoms_.second << " F\n";
-        }
-
-        if (!tail_.empty())
-        {
-            content << "\n" << tail_ << "\n";  // Blank line before tail
-        }
-        content << "\n";  // One blank line after everything
-
-        // Section 2: TS optimization
-        content << "--Link1--\n";
-        content << "%OldChk=" << isomer_name << "-modre.chk\n";
-        content << "%Chk=" << isomer_name << ".chk\n";
-        content << pound2 << "opt(maxcycles=" << opt_mc
-                << ",ts,noeigen,calcfc,NoFreeze,MaxStep=5) freq scf(maxcycle=" << scf_mc << ",xqc) " << functional_
-                << "/" << basis_;
-        if (!solvent_.empty())
-        {
-            content << " scrf=(" << solvent_model_ << ",solvent=" << solvent_ << ")";
-        }
-        content << " Guess(read) Geom(Allcheck) " << extra_keywords_ << "\n\n";
-        if (!tail_.empty())
+    // Handle Geom(AllCheck) cases
+    if (content.str().find("Geom(AllCheck)") != std::string::npos)
+    {
+        if (type == CalculationType::HIGH_SP && is_gen_basis(select_basis_for_calculation()))
         {
             content << tail_ << "\n";
+            if (!extra_keyword_section_.empty())
+                content << "\n" << extra_keyword_section_;
         }
+        else if (!extra_keyword_section_.empty())
+        {
+            content << extra_keyword_section_;
+        }
+        content << "\n\n";
     }
     else
     {
-        // Single section inputs
-        content << route_section << "\n\n";
+        // Regular sections with title and coordinates
+        content << generate_title(type) << "\n\n";
+        content << generate_molecule_section(coordinates);
 
-        // For calculations with Geom(AllCheck), don't include title, charge, multiplicity, or coordinates
-        if (route_section.find("Geom(AllCheck)") != std::string::npos)
+        // Add modre content for MODRE_OPT
+        if (type == CalculationType::MODRE_OPT)
         {
+            if (!modre_.empty())
+            {
+                content << "\n" << modre_ << "\n";
+            }
+            else if (freeze_atoms_.first != 0 && freeze_atoms_.second != 0)
+            {
+                content << "\nB " << freeze_atoms_.first << " " << freeze_atoms_.second << " F\n";
+            }
+        }
 
-            // For HIGH_SP with GEN/GENECP, include tail with proper spacing
-            if (calc_type_ == CalculationType::HIGH_SP && is_gen_basis(select_basis_for_calculation()))
-            {
-                content << tail_ << "\n\n";  // Changed: Removed extra "\n" before tail_ to avoid extra blank line
-            }
-            else
-            {
-                // Just add blank lines at the end
-                content << "\n";  // Changed: Reduced to "\n" for two blank lines at end (improved consistency)
-            }
+        if (!tail_.empty())
+            content << "\n" << tail_ << "\n";
+        if (!extra_keyword_section_.empty())
+            content << "\n" << extra_keyword_section_;
+        content << "\n\n";
+    }
+
+    return content.str();
+}
+
+std::string CreateInput::generate_route_for_single_section_calc_type(CalculationType    type,
+                                                                     const std::string& isomer_name)
+{
+    std::ostringstream route;
+
+    // Handle special checkpoint cases
+    if (type == CalculationType::HIGH_SP || type == CalculationType::IRC_FORWARD ||
+        type == CalculationType::IRC_REVERSE)
+    {
+        std::string ts_chk_path =
+            tschk_path_.empty() ? std::filesystem::current_path().parent_path().string() + "/" + isomer_name + ".chk"
+                                : tschk_path_ + "/" + isomer_name + ".chk";
+        route << "%OldChk=" << ts_chk_path << "\n";
+
+        if (type == CalculationType::IRC_FORWARD || type == CalculationType::IRC_REVERSE)
+        {
+            route << "%chk=" << isomer_name << (type == CalculationType::IRC_FORWARD ? "F" : "R") << ".chk\n";
         }
         else
         {
-            // Validate GEN/GENECP basis requirements for non-Geom(AllCheck) calculations
-            if (calc_type_ == CalculationType::SP || calc_type_ == CalculationType::OPT_FREQ ||
-                calc_type_ == CalculationType::TS_FREQ || calc_type_ == CalculationType::OSS_TS_FREQ ||
-                calc_type_ == CalculationType::OSS_CHECK_SP || calc_type_ == CalculationType::MODRE_TS_FREQ)
-            {
-                validate_gen_basis_requirements();
-            }
-
-            content << generate_title() << "\n\n";
-            content << molecule_section;
-            if (!tail_.empty())
-                content << "\n" << tail_ << "\n\n";
+            route << "%chk=" << isomer_name << ".chk\n";
         }
+    }
+
+    // Generate pound sign
+    std::string pound = print_level_.empty() ? "#"
+                        : (print_level_ == "N" || print_level_ == "P" || print_level_ == "T")
+                            ? "#" + print_level_
+                            : "#" + print_level_ + " ";
+
+    // Generate route based on type
+    int scf_mc =
+        (scf_maxcycle_ != -1) ? scf_maxcycle_
+        : (type == CalculationType::SP || type == CalculationType::OPT_FREQ || type == CalculationType::HIGH_SP) ? 500
+                                                                                                                 : 300;
+    int opt_mc = (opt_maxcycles_ != -1) ? opt_maxcycles_ : 300;
+
+    route << pound;
+
+    switch (type)
+    {
+        case CalculationType::SP:
+            route << " scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/" << basis_;
+            break;
+        case CalculationType::OPT_FREQ:
+            route << " opt(maxcycles=" << opt_mc << ") freq scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/"
+                  << basis_;
+            break;
+        case CalculationType::TS_FREQ: {
+            std::string basis_to_use = select_basis_for_calculation();
+            route << " opt(maxcycles=" << opt_mc << ",ts,noeigen,calcfc) freq scf(maxcycle=" << scf_mc << ",xqc) "
+                  << functional_ << "/" << basis_to_use;
+        }
+        break;
+        case CalculationType::OSS_CHECK_SP:
+            route << " Stable=Opt scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/" << basis_;
+            break;
+        case CalculationType::MODRE_OPT:
+            route << " opt(maxcycles=" << opt_mc << ",modredundant) scf(maxcycle=" << scf_mc << ",xqc) " << functional_
+                  << "/" << basis_;
+            break;
+        case CalculationType::HIGH_SP: {
+            std::string basis_to_use = select_basis_for_calculation();
+            route << " scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/" << basis_to_use
+                  << " Guess(Read) Geom(AllCheck)";
+        }
+        break;
+        case CalculationType::IRC_FORWARD:
+        case CalculationType::IRC_REVERSE: {
+            std::string basis_to_use = select_basis_for_calculation();
+            std::string direction    = (type == CalculationType::IRC_FORWARD) ? "Forward" : "Reverse";
+            int         maxpoints    = (irc_maxpoints_ != -1) ? irc_maxpoints_ : 50;
+            int         recalc       = (irc_recalc_ != -1) ? irc_recalc_ : 10;
+            int         maxcyc       = (irc_maxcycle_ != -1) ? irc_maxcycle_ : 350;
+            int         stepsz       = (irc_stepsize_ != -1) ? irc_stepsize_ : 10;
+            route << " irc=(" << direction << ",RCFC,MaxPoints=" << maxpoints << ",Recalc=" << recalc
+                  << ",MaxCycle=" << maxcyc << ",StepSize=" << stepsz << ",loose,LQA,nogradstop) " << functional_ << "/"
+                  << basis_to_use << " Guess(Read) Geom(AllCheck)";
+        }
+        break;
+        case CalculationType::IRC:
+            // IRC is handled separately in the main function
+            break;
+        case CalculationType::OSS_TS_FREQ:
+            // OSS_TS_FREQ is handled as multi-section
+            break;
+        case CalculationType::MODRE_TS_FREQ:
+            // MODRE_TS_FREQ is handled as multi-section
+            break;
+    }
+
+    // Add solvent and extra keywords
+    if (!solvent_.empty())
+    {
+        route << " scrf(" << solvent_model_ << ",solvent=" << solvent_ << ")";
+    }
+    if (!extra_keywords_.empty())
+    {
+        route << " " << extra_keywords_;
+    }
+
+    return route.str();
+}
+
+std::string CreateInput::generate_input_content(const std::string& isomer_name, const std::string& coordinates)
+{
+    validate_gen_basis_requirements();
+    validate_modre_requirements();
+
+    std::ostringstream content;
+
+    switch (calc_type_)
+    {
+        case CalculationType::OSS_TS_FREQ:
+            // oss_ts_freq = oss_check_sp + modre_opt + ts_freq
+            content << generate_single_section_calc_type(
+                CalculationType::OSS_CHECK_SP, isomer_name, coordinates, "-StableOpt");
+            content << "--Link1--\n%OldChk=" << isomer_name << "-StableOpt.chk\n";
+            content << generate_single_section_calc_type(
+                CalculationType::MODRE_OPT, isomer_name, coordinates, "-modre");
+            content << "--Link1--\n%OldChk=" << isomer_name << "-modre.chk\n%Chk=" << isomer_name << ".chk\n";
+            content << generate_single_section_calc_type(CalculationType::TS_FREQ, isomer_name, coordinates);
+            break;
+
+        case CalculationType::MODRE_TS_FREQ:
+            // modre_ts_freq = modre_opt + ts_freq
+            content << generate_single_section_calc_type(
+                CalculationType::MODRE_OPT, isomer_name, coordinates, "-modre");
+            content << "--Link1--\n%OldChk=" << isomer_name << "-modre.chk\n%Chk=" << isomer_name << ".chk\n";
+            content << generate_single_section_calc_type(CalculationType::TS_FREQ, isomer_name, coordinates);
+            break;
+
+        case CalculationType::IRC:
+            // IRC creates two files: forward and reverse
+            content << generate_single_section_calc_type(CalculationType::IRC_FORWARD, isomer_name, coordinates);
+            content << "\n--Link1--\n";
+            content << generate_single_section_calc_type(CalculationType::IRC_REVERSE, isomer_name, coordinates);
+            break;
+
+        default:
+            // Single-section calculations
+            content << generate_single_section_calc_type(calc_type_, isomer_name, coordinates);
+            break;
     }
 
     return content.str();
@@ -773,6 +825,10 @@ std::string CreateInput::generate_route_section(const std::string& isomer_name)
         case CalculationType::IRC:
             // Handled separately in generate_input_content
             break;
+        case CalculationType::MODRE_OPT:
+            route << " opt(maxcycles=" << opt_mc << ", modredundant" << ") scf(maxcycle=" << scf_mc << ",xqc) "
+                  << functional_ << "/" << basis_;
+            break;
     }
 
     // Add solvent if specified
@@ -819,10 +875,42 @@ std::string CreateInput::generate_title()
             return "Title: Openshell singlet transition state search and frequency calculation";
         case CalculationType::MODRE_TS_FREQ:
             return "Title: Modredundant transition state search and frequency calculation";
+        case CalculationType::MODRE_OPT:
+            return "Title: Modredundant geometrical optimization";
         default:
             return "Title: Gaussian calculation";
     }
 }
+
+std::string CreateInput::generate_title(CalculationType calc_type)
+{
+    switch (calc_type)
+    {
+        case CalculationType::SP:
+            return "Title: Normal single point calculation";
+        case CalculationType::OPT_FREQ:
+            return "Title: Geometrical optimization and frequency calculation";
+        case CalculationType::TS_FREQ:
+            return "Title: transition state search and frequency calculation";
+        case CalculationType::OSS_CHECK_SP:
+            return "Title: Stable Opt to check openshell singlet";
+        case CalculationType::HIGH_SP:
+            return "Title: Single point calculation with higher level of theory (larger basis set)";
+        case CalculationType::IRC_FORWARD:
+            return "Title: IRC forward";
+        case CalculationType::IRC_REVERSE:
+            return "Title: IRC reverse";
+        case CalculationType::OSS_TS_FREQ:
+            return "Title: Openshell singlet transition state search and frequency calculation";
+        case CalculationType::MODRE_TS_FREQ:
+            return "Title: Modredundant transition state search and frequency calculation";
+        case CalculationType::MODRE_OPT:
+            return "Title: Modredundant geometrical optimization";
+        default:
+            return "Title: Gaussian calculation";
+    }
+}
+
 
 std::string CreateInput::generate_molecule_section(const std::string& coordinates)
 {
@@ -988,6 +1076,11 @@ void CreateInput::set_extra_keywords(const std::string& keywords)
     extra_keywords_ = keywords;
 }
 
+void CreateInput::set_extra_keyword_section(const std::string& section)
+{
+    extra_keyword_section_ = section;
+}
+
 void CreateInput::set_molecular_specs(int charge, int mult)
 {
     charge_ = charge;
@@ -997,6 +1090,11 @@ void CreateInput::set_molecular_specs(int charge, int mult)
 void CreateInput::set_tail(const std::string& tail)
 {
     tail_ = tail;
+}
+
+void CreateInput::set_modre(const std::string& modre)
+{
+    modre_ = modre;
 }
 
 void CreateInput::set_extension(const std::string& extension)
@@ -1042,6 +1140,77 @@ void CreateInput::set_irc_maxcycle(int maxcycle)
 void CreateInput::set_irc_stepsize(int stepsize)
 {
     irc_stepsize_ = stepsize;
+}
+
+/**
+ * @brief Parse extra keywords string to handle multiple keywords separated by delimiters
+ * @param keywords_str Raw keywords string from parameter file
+ * @return Parsed keywords string with single spaces between keywords
+ */
+std::string CreateInput::parseExtraKeywords(const std::string& keywords_str)
+{
+    if (keywords_str.empty())
+    {
+        return "";
+    }
+
+    std::vector<std::string> keywords;
+    std::string              cleaned_str = keywords_str;
+
+    // Remove leading/trailing whitespace
+    cleaned_str.erase(cleaned_str.begin(), std::find_if(cleaned_str.begin(), cleaned_str.end(), [](unsigned char ch) {
+                          return !std::isspace(ch);
+                      }));
+    cleaned_str.erase(std::find_if(cleaned_str.rbegin(),
+                                   cleaned_str.rend(),
+                                   [](unsigned char ch) {
+                                       return !std::isspace(ch);
+                                   })
+                          .base(),
+                      cleaned_str.end());
+
+    // Split by delimiters: spaces, commas, semicolons
+    std::stringstream ss(cleaned_str);
+    std::string       token;
+    while (std::getline(ss, token, ' ') || std::getline(ss, token, ',') || std::getline(ss, token, ';'))
+    {
+        // Trim whitespace from token
+        token.erase(token.begin(), std::find_if(token.begin(), token.end(), [](unsigned char ch) {
+                        return !std::isspace(ch);
+                    }));
+        token.erase(std::find_if(token.rbegin(),
+                                 token.rend(),
+                                 [](unsigned char ch) {
+                                     return !std::isspace(ch);
+                                 })
+                        .base(),
+                    token.end());
+
+        // Skip empty tokens
+        if (!token.empty())
+        {
+            keywords.push_back(token);
+        }
+    }
+
+    // If no delimiters found, treat the whole string as one keyword
+    if (keywords.empty() && !cleaned_str.empty())
+    {
+        keywords.push_back(cleaned_str);
+    }
+
+    // Join keywords with single spaces
+    std::string result;
+    for (size_t i = 0; i < keywords.size(); ++i)
+    {
+        if (i > 0)
+        {
+            result += " ";
+        }
+        result += keywords[i];
+    }
+
+    return result;
 }
 
 std::vector<int> CreateInput::parseFreezeAtomsString(const std::string& freeze_str)

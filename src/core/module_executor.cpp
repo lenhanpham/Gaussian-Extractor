@@ -1246,6 +1246,10 @@ int execute_create_input_command(const CommandContext& context)
         {
             calc_type = CalculationType::TS_FREQ;
         }
+        else if (context.ci_calc_type == "modre_opt")
+        {
+            calc_type = CalculationType::MODRE_OPT;
+        }       
         else if (context.ci_calc_type == "oss_ts_freq")
         {
             calc_type = CalculationType::OSS_TS_FREQ;
@@ -1276,16 +1280,19 @@ int execute_create_input_command(const CommandContext& context)
         }
         // Default is SP for any other value
 
-        // Validate freeze atoms for OSS_TS_FREQ and MODRE_TS_FREQ
+        // Validate freeze atoms or modre for OSS_TS_FREQ and MODRE_TS_FREQ
         if (calc_type == CalculationType::OSS_TS_FREQ || calc_type == CalculationType::MODRE_TS_FREQ)
         {
-            if (context.ci_freeze_atom1 == 0 || context.ci_freeze_atom2 == 0)
+            bool has_freeze_atoms = (context.ci_freeze_atom1 != 0 && context.ci_freeze_atom2 != 0);
+            bool has_modre        = !context.ci_modre.empty();
+
+            if (!has_freeze_atoms && !has_modre)
             {
                 std::string calc_type_name =
                     (calc_type == CalculationType::OSS_TS_FREQ) ? "oss_ts_freq" : "modre_ts_freq";
-                std::cerr << "Error: --freeze-atoms is required for " << calc_type_name << " calculation type."
-                          << std::endl;
-                std::cerr << "Please specify two atom indices to freeze, e.g., --freeze-atoms 1 2" << std::endl;
+                std::cerr << "Error: --freeze-atoms or modre parameter is required for " << calc_type_name
+                          << " calculation type." << std::endl;
+                std::cerr << "Please specify --freeze-atoms 1 2 or provide modre in the parameter file." << std::endl;
                 return 1;
             }
         }
@@ -1303,8 +1310,10 @@ int execute_create_input_command(const CommandContext& context)
         }
         creator.set_print_level(context.ci_print_level);
         creator.set_extra_keywords(context.ci_extra_keywords);
+        creator.set_extra_keyword_section(context.ci_extra_keyword_section);
         creator.set_molecular_specs(context.ci_charge, context.ci_mult);
         creator.set_tail(context.ci_tail);
+        creator.set_modre(context.ci_modre);
         creator.set_extension(context.ci_extension);
         creator.set_tschk_path(context.ci_tschk_path);
         if (context.ci_freeze_atom1 != 0 && context.ci_freeze_atom2 != 0)

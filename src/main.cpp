@@ -9,7 +9,7 @@
  * The application supports various commands including extraction, job checking, and
  * high-level energy calculations.
  *
- * @section Safety, resouce management, and features 
+ * @section Safety, resouce management, and features
  * - Multi-threaded file processing with resource management
  * - Job scheduler integration (SLURM, PBS, SGE, LSF)
  * - Comprehensive error detection and job status checking
@@ -139,27 +139,25 @@ int main(int argc, char* argv[])
         if (no_arguments)
         {
 #ifdef _WIN32
-            // On Windows, no arguments means double-clicked - run extract + enter interactive mode
-            std::cout << "Running default EXTRACT command..." << std::endl;
-            CommandContext extract_context = CommandParser::parse(1, argv);
+            // On Windows, no arguments means double-clicked - show intro and enter interactive mode
+            std::cout << std::endl;
+            std::cout << "==================================================" << std::endl;
+            std::cout << GaussianExtractor::get_version_info() << std::endl;
+            std::cout << "==================================================" << std::endl;
+            std::cout << std::endl;
 
-            // Show warnings if any
-            if (!extract_context.warnings.empty() && !extract_context.quiet)
-            {
-                for (const auto& warning : extract_context.warnings)
-                {
-                    std::cerr << warning << std::endl;
-                }
-                std::cerr << std::endl;
-            }
-
-            // Execute EXTRACT
-            int extract_result = execute_extract_command(extract_context);
-            if (extract_result != 0)
-            {
-                std::cerr << "EXTRACT command failed with exit code: " << extract_result << std::endl;
-                std::cerr << "Continuing to interactive mode..." << std::endl;
-            }
+            std::cout << "Welcome to GX interactive mode!" << std::endl;
+            std::cout << std::endl;
+            std::cout << "This tool helps you play with computational chemistry using Gaussian:" << std::endl;
+            std::cout << "> High-performance multi-threaded extraction of thermodynamic data and energy components" << std::endl;
+            std::cout << "> Job status checking and error detection" << std::endl;
+            std::cout << "> High-level theoryGibbs free energy calculations with thermal corrections " << std::endl;
+            std::cout << "> Coordinate extraction and Gaussian input file generation" << std::endl;
+            std::cout << std::endl;
+            std::cout << "For help and available commands, type 'help' in interactive mode." << std::endl;
+            std::cout << "Type 'help <command>' for command-specific help, e.g. 'help ci' for input creation." << std::endl;
+            std::cout << "To exit, type 'exit' or 'quit'." << std::endl;
+            std::cout << std::endl;
 
             // Enter interactive mode for Windows users
             return run_interactive_loop();

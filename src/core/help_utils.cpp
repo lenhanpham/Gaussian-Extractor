@@ -23,7 +23,7 @@ namespace HelpUtils
         std::cout << "Gaussian Extractor (Version " << GaussianExtractor::get_version_info() << ")\n\n";
         std::cout << "Usage: " << program_name << " [command] [options]\n\n";
         std::cout << "Commands:\n";
-        std::cout << "  extract           Extract thermodynamic data from Gaussian log files (default)\n";
+        std::cout << "  extract           Extract thermodynamic data and energy components from Gaussian outputs (default)\n";
         std::cout << "  done              Check and move completed Gaussian jobs\n";
         std::cout << "  errors            Check and move jobs with errors\n";
         std::cout << "  pcm               Check and move jobs with PCM convergence failures\n";
@@ -156,6 +156,7 @@ namespace HelpUtils
                 std::cout << "  ts_freq               Transition state search + frequency analysis\n";
                 std::cout << "  oss_ts_freq           Openshell singlet TS search + frequency analysis\n";
                 std::cout << "  modre_ts_freq         Modredundant TS search + frequency analysis\n";
+                std::cout << "  modre_opt             Modredundant geometry optimization\n";
                 std::cout << "  oss_check_sp          Openshell singlet stability check\n";
                 std::cout << "  high_sp               High-level single point with larger basis set\n";
                 std::cout << "  irc_forward           IRC calculation in forward direction\n";
@@ -168,6 +169,7 @@ namespace HelpUtils
                 std::cout << "  ts_freq: Transition state optimization with frequency analysis (requires TS guess)\n";
                 std::cout << "  oss_ts_freq: Openshell singlet TS search with stability check and frequency analysis\n";
                 std::cout << "  modre_ts_freq: TS search using modredundant to freeze bond, then optimization\n";
+                std::cout << "  modre_opt: Geometrical optimization with modredundant constraints\n";
                 std::cout << "  oss_check_sp: Check openshell singlet stability of optimized geometry\n";
                 std::cout << "  high_sp: High-level single point using larger basis set (requires TS checkpoint)\n";
                 std::cout << "  irc_forward: Intrinsic reaction coordinate from TS to reactants\n";

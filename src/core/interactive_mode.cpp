@@ -271,7 +271,6 @@ public:
                              "high-au",
                              "xyz",
                              "ci",
-                             "create-input",
                              "help",
                              "exit",
                              "quit",
@@ -1195,7 +1194,7 @@ int run_interactive_loop()
             iss >> first_arg;
 
             // Check for invalid combinations of commands with template generation
-            if ((first_arg == "ci" || first_arg == "create-input" || first_arg == "--create-input") &&
+            if ((first_arg == "ci" || first_arg == "--create-input") &&
                 (line.find("--genci-params") != std::string::npos ||
                  line.find("--genci-all-params") != std::string::npos))
             {

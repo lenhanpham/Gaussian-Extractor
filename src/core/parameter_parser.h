@@ -159,6 +159,14 @@ private:
     std::string parseMultiLineValue(const std::vector<std::string>& lines, size_t& start_index);
 
     /**
+     * @brief Parse multi-line parameter content with support for punctuation marks
+     * @param lines Vector of file lines
+     * @param start_index Starting index (will be updated to skip processed lines)
+     * @return Parsed multi-line content
+     */
+    std::string parseMultiLineParameter(const std::vector<std::string>& lines, size_t& start_index);
+
+    /**
      * @brief Create template content for a specific calculation type
      * @param calc_type Calculation type
      * @return Template content as string

@@ -49,29 +49,20 @@ bool ParameterParser::loadFromFile(const std::string& filename)
                 value = value.substr(0, value.size() - 1);
                 value += parseMultiLineValue(lines, ++i);
             }
-            // Special handling for tail parameter which may be multi-line without backslashes
+            // Special handling for tail parameter which may be multi-line
             else if (key == "tail" && value.empty())
             {
-                // Collect multi-line tail content
-                std::string tail_content;
-                size_t      j = i + 1;
-                while (j < lines.size())
-                {
-                    std::string next_line = trim(lines[j]);
-                    if (next_line.empty() || next_line[0] == '#')
-                    {
-                        // Empty line or comment ends the tail section
-                        break;
-                    }
-                    if (!tail_content.empty())
-                    {
-                        tail_content += "\n";
-                    }
-                    tail_content += lines[j];  // Keep original formatting
-                    j++;
-                }
-                value = tail_content;
-                i     = j - 1;  // Skip the lines we processed
+                value = parseMultiLineParameter(lines, i);
+            }
+            // Special handling for modre parameter which may be multi-line
+            else if (key == "modre" && value.empty())
+            {
+                value = parseMultiLineParameter(lines, i);
+            }
+            // Special handling for extra_options parameters in the extra_options part which may be multi-line
+            else if (key == "extra_options" && value.empty())
+            {
+                value = parseMultiLineParameter(lines, i);
             }
             parameters_[key] = value;
         }
@@ -289,6 +280,7 @@ std::vector<std::string> ParameterParser::getSupportedCalcTypes() const
             "ts_freq",
             "oss_ts_freq",
             "modre_ts_freq",
+            "modre_opt",
             "oss_check_sp",
             "high_sp",
             "irc_forward",
@@ -433,6 +425,18 @@ std::string ParameterParser::createTemplateContent(const std::string& calc_type)
     {
         content << "# Freeze atoms for TS (1-based indices)\n";
         content << "# freeze_atoms = 1,2\n\n";
+        content << "# Modredundant section (alternative to freeze_atoms)\n";
+        content << "# modre =\n";
+        content << "# B 1 2 F\n";
+        content << "# A 1 2 3 F\n";
+        content << "#\n";
+        content << "# Or use punctuation marks to preserve blank lines:\n";
+        content << "# modre =\n";
+        content << "# (\n";
+        content << "# B 1 2 F\n";
+        content << "# \n";
+        content << "# A 1 2 3 F\n";
+        content << "# )\n\n";
     }
 
     if (calc_type == "high_sp" || calc_type == "irc_forward" || calc_type == "irc_reverse")
@@ -442,10 +446,9 @@ std::string ParameterParser::createTemplateContent(const std::string& calc_type)
     }
 
     // Advanced parameters
-    content << "# Advanced parameters\n";
     content << "# print_level = P\n";
-    content << "# extra_keywords = Int=UltraFine\n";
-    content << "# SCF=Conver=8\n\n";
+    content << "# route_extra_keywords = Int=UltraFine SCF=Conver=8\n";
+    content << "# Or with delimiters: Int=UltraFine, SCF=Conver=8; Opt=Loose\n\n";
 
     // Custom cycle and optimization parameters
     content << "# Custom cycle and optimization parameters (optional)\n";
@@ -465,12 +468,39 @@ std::string ParameterParser::createTemplateContent(const std::string& calc_type)
     }
     content << "\n";
 
-    // Multi-line tail example
-    content << "# Multi-line tail (for custom basis sets, etc.)\n";
-    content << "# tail = \n";
-    content << "# H 0\n";
-    content << "# 6-31G**\n";
-    content << "# ****\n\n";
+    // Multi-line tail example (only for calc types that support GEN/GENECP)
+    if (calc_type == "sp" || calc_type == "opt_freq" || calc_type == "ts_freq" || calc_type == "oss_ts_freq" ||
+        calc_type == "oss_check_sp" || calc_type == "modre_ts_freq" || calc_type == "high_sp" ||
+        calc_type == "irc_forward" || calc_type == "irc_reverse" || calc_type == "irc")
+    {
+        content << "# Multi-line tail (for custom basis sets, etc.)\n";
+        content << "# tail = \n";
+        content << "# additional lines of keywords\n";
+        content << "# additional lines of keywords\n";
+        content << "# additional lines of keywords\n";
+        content << "#\n";
+        content << "# Or use punctuation marks to preserve blank lines:\n";
+        content << "# tail =\n";
+        content << "# (\n";
+        content << "# additional lines of keywords\n";
+        content << "# \n";
+        content << "# additional lines of keywords\n";
+        content << "# additional lines of keywords\n";
+        content << "# )\n\n";
+    }
+
+    // Multi-line extra_options example (optional for all calc types)
+    content << "# Multi-line extra_options section (for additional input sections, etc.)\n";
+    content << "# extra_options = \n";
+    content << "# Additional keywords or sections here\n";
+    content << "#\n";
+    content << "# Or use punctuation marks to preserve blank lines:\n";
+    content << "# extra_options =\n";
+    content << "# (\n";
+    content << "# Additional keywords\n";
+    content << "# \n";
+    content << "# More sections\n";
+    content << "# )\n\n";
 
     return content.str();
 }
@@ -509,8 +539,20 @@ std::string ParameterParser::createGeneralTemplateContent() const
     content << "# (used by ts_freq, oss_ts_freq, modre_ts_freq)\n";
     content << "# ==========================================\n";
     content << "# large_basis = def2TZVPP\n";
+    content << "# freeze_atoms = 1,2\n";
     content << "# freeze_atom1 = 1\n";
-    content << "# freeze_atom2 = 2\n\n";
+    content << "# freeze_atom2 = 2\n";
+    content << "# modre =\n";
+    content << "# B 1 2 F\n";
+    content << "# A 1 2 3 F\n";
+    content << "#\n";
+    content << "# Or use punctuation marks to preserve blank lines for multiple parts of keywords\n";
+    content << "# modre =\n";
+    content << "# (\n";
+    content << "# B 1 2 F\n";
+    content << "# \n";
+    content << "# A 1 2 3 F\n";
+    content << "# )\n\n";
 
     // High-level calculation parameters (used by high_sp, IRC)
     content << "# ==========================================\n";
@@ -524,7 +566,8 @@ std::string ParameterParser::createGeneralTemplateContent() const
     content << "# ADVANCED PARAMETERS (used by all calc types)\n";
     content << "# ==========================================\n";
     content << "# print_level = P\n";
-    content << "# extra_keywords = Int=UltraFine SCF=Conver=8\n\n";
+    content << "# route_extra_keywords = Int=UltraFine SCF=Conver=8\n";
+    content << "# Supports multiple keywords separated by spaces, commas, or semicolons\n\n";
 
     // Custom cycle and optimization parameters
     content << "# ==========================================\n";
@@ -542,9 +585,33 @@ std::string ParameterParser::createGeneralTemplateContent() const
     content << "# MULTI-LINE TAIL (for custom basis sets, etc.)\n";
     content << "# ==========================================\n";
     content << "# tail = \n";
-    content << "# H 0\n";
-    content << "# 6-31G**\n";
-    content << "# ****\n\n";
+    content << "# additional lines of keywords\n";
+    content << "# additional lines of keywords\n";
+    content << "# additional lines of keywords\n";
+    content << "#\n";
+    content << "# Or use punctuation marks to preserve blank lines:\n";
+    content << "# tail =\n";
+    content << "# (\n";
+    content << "# additional lines of keywords\n";
+    content << "# \n";
+    content << "# additional lines of keywords\n";
+    content << "# additional lines of keywords\n";
+    content << "# )\n\n";
+
+    // Multi-line extra_options example
+    content << "# ==========================================\n";
+    content << "# MULTI-LINE EXTRA_KEYWORD (for additional input sections)\n";
+    content << "# ==========================================\n";
+    content << "# extra_options = \n";
+    content << "# Additional keywords or sections here\n";
+    content << "#\n";
+    content << "# Or use punctuation marks to preserve blank lines:\n";
+    content << "# extra_options =\n";
+    content << "# (\n";
+    content << "# Additional keywords\n";
+    content << "# \n";
+    content << "# More sections\n";
+    content << "# )\n\n";
 
     // Usage examples
     content << "# ==========================================\n";
@@ -572,4 +639,162 @@ std::string ParameterParser::createGeneralTemplateContent() const
     content << "#   tschk_path = ../ts_checkpoints\n\n";
 
     return content.str();
+}
+
+/**
+ * @brief Parse multi-line parameter content with support for punctuation marks
+ * @param lines Vector of file lines
+ * @param start_index Starting index (will be updated to skip processed lines)
+ * @return Parsed multi-line content
+ */
+std::string ParameterParser::parseMultiLineParameter(const std::vector<std::string>& lines, size_t& start_index)
+{
+    size_t i = start_index + 1;  // Start from the line after the parameter declaration
+
+    // Check if the next line starts with punctuation marks
+    if (i < lines.size())
+    {
+        std::string first_line   = trim(lines[i]);
+        char        opening_mark = '\0';
+        char        closing_mark = '\0';
+
+        // Detect punctuation marks
+        if (!first_line.empty())
+        {
+            if (first_line[0] == '(')
+            {
+                opening_mark = '(';
+                closing_mark = ')';
+            }
+            else if (first_line[0] == '[')
+            {
+                opening_mark = '[';
+                closing_mark = ']';
+            }
+            else if (first_line[0] == '{')
+            {
+                opening_mark = '{';
+                closing_mark = '}';
+            }
+            else if (first_line[0] == '<')
+            {
+                opening_mark = '<';
+                closing_mark = '>';
+            }
+        }
+
+        if (opening_mark != '\0')
+        {
+            // Parse content between punctuation marks
+            std::string content;
+            bool        found_closing = false;
+            size_t      j             = i;
+
+            // Find the matching closing mark
+            while (j < lines.size())
+            {
+                std::string line        = lines[j];
+                size_t      closing_pos = line.find(closing_mark);
+
+                if (closing_pos != std::string::npos)
+                {
+                    // Found closing mark - extract content up to this point
+                    if (j == i)
+                    {
+                        // Opening and closing marks on the same line
+                        // Extract content between marks, trim whitespace
+                        std::string between_marks = line.substr(1, closing_pos - 1);
+                        content                   = trim(between_marks);
+                    }
+                    else
+                    {
+                        // Multi-line content
+                        for (size_t k = i; k < j; ++k)
+                        {
+                            std::string line_content;
+                            if (k == i)
+                            {
+                                // First line: find and remove opening mark
+                                size_t mark_pos = lines[k].find(opening_mark);
+                                if (mark_pos != std::string::npos)
+                                {
+                                    // Extract content after the opening mark
+                                    std::string after_mark = lines[k].substr(mark_pos + 1);
+                                    line_content           = trim(after_mark);
+                                }
+                            }
+                            else
+                            {
+                                // Other lines: use as-is but trim
+                                line_content = trim(lines[k]);
+                            }
+
+                            // Only add non-empty lines
+                            if (!line_content.empty())
+                            {
+                                if (!content.empty())
+                                {
+                                    content += "\n";
+                                }
+                                content += line_content;
+                            }
+                        }
+
+                        // Handle the line with closing mark
+                        std::string closing_line_content = line.substr(0, closing_pos);
+                        closing_line_content             = trim(closing_line_content);
+
+                        // Only add if there's actual content before the closing mark
+                        if (!closing_line_content.empty())
+                        {
+                            if (!content.empty())
+                            {
+                                content += "\n";
+                            }
+                            content += closing_line_content;
+                        }
+                    }
+                    found_closing = true;
+                    start_index   = j;  // Update start_index to skip processed lines
+                    break;
+                }
+                j++;
+            }
+
+            if (!found_closing)
+            {
+                throw std::runtime_error("Missing closing punctuation mark '" + std::string(1, closing_mark) +
+                                         "' for multi-line parameter");
+            }
+
+            return content;
+        }
+    }
+
+    // Fallback to original parsing logic (no punctuation marks)
+    std::string content;
+    size_t      j = i;  // Start from the parameter declaration line
+    while (j < lines.size())
+    {
+        std::string next_line = trim(lines[j]);
+        if (next_line.empty() || next_line[0] == '#')
+        {
+            // Empty line or comment ends the section
+            break;
+        }
+        // Skip the parameter declaration line itself
+        if (j == start_index)
+        {
+            j++;
+            continue;
+        }
+        if (!content.empty())
+        {
+            content += "\n";
+        }
+        content += lines[j];  // Keep original formatting
+        j++;
+    }
+    start_index = j - 1;  // Skip the lines we processed
+    return content;
 }

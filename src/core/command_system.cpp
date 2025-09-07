@@ -1169,13 +1169,22 @@ void CommandParser::parse_create_input_options(CommandContext& context, int& i, 
                            context.ci_large_basis.end(),
                            context.ci_large_basis.begin(),
                            ::toupper);
-            context.ci_print_level    = parser.getString("print_level", context.ci_print_level);
-            context.ci_extra_keywords = parser.getString("extra_keywords", context.ci_extra_keywords);
-            context.ci_charge         = parser.getInt("charge", context.ci_charge);
-            context.ci_mult           = parser.getInt("mult", context.ci_mult);
-            context.ci_tail           = parser.getString("tail", context.ci_tail);
-            context.ci_extension      = parser.getString("extension", context.ci_extension);
-            context.ci_tschk_path     = parser.getString("tschk_path", context.ci_tschk_path);
+            context.ci_print_level = parser.getString("print_level", context.ci_print_level);
+            context.ci_extra_keywords =
+                Utils::parseExtraKeywords(parser.getString("route_extra_keywords", context.ci_extra_keywords));
+            std::string extra_options_value = parser.getString("extra_options", "DEFAULT_VALUE");
+            std::cout << "DEBUG: extra_options loaded: '" << extra_options_value
+                      << "' (length: " << extra_options_value.length() << ")" << std::endl;
+            if (extra_options_value != "DEFAULT_VALUE")
+            {
+                context.ci_extra_keyword_section = extra_options_value;
+            }
+            context.ci_charge     = parser.getInt("charge", context.ci_charge);
+            context.ci_mult       = parser.getInt("mult", context.ci_mult);
+            context.ci_tail       = parser.getString("tail", context.ci_tail);
+            context.ci_modre      = parser.getString("modre", context.ci_modre);
+            context.ci_extension  = parser.getString("extension", context.ci_extension);
+            context.ci_tschk_path = parser.getString("tschk_path", context.ci_tschk_path);
             // Handle freeze atoms - try freeze_atoms first, then fall back to separate parameters
             std::string freeze_atoms_str = parser.getString("freeze_atoms", "");
             if (!freeze_atoms_str.empty())

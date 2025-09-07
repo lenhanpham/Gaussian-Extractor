@@ -112,27 +112,29 @@ struct CommandContext
     std::vector<std::string> specific_files;  ///< List of specific files to process (empty for all files)
 
     // Create input-specific parameters
-    std::string ci_calc_type;       ///< Calculation type (sp, opt_freq, ts, etc.)
-    std::string ci_functional;      ///< DFT functional (UWB97XD, B3LYP, etc.)
-    std::string ci_basis;           ///< Basis set (def2SVPP, etc.)
-    std::string ci_large_basis;     ///< Large basis set for higher level calculations
-    std::string ci_solvent;         ///< Solvent name
-    std::string ci_solvent_model;   ///< Solvent model (smd, pcm, etc.)
-    std::string ci_print_level;     ///< Pound sign modifier (N, P, T)
-    std::string ci_extra_keywords;  ///< Additional Gaussian keywords
-    int         ci_charge;          ///< Molecular charge
-    int         ci_mult;            ///< Multiplicity
-    std::string ci_tail;            ///< Additional content at end of input
-    std::string ci_extension;       ///< Output file extension
-    std::string ci_tschk_path;      ///< Path to transition state checkpoint files
-    int         ci_freeze_atom1;    ///< First atom to freeze (for TS calculations)
-    int         ci_freeze_atom2;    ///< Second atom to freeze (for TS calculations)
-    int         ci_scf_maxcycle;    ///< SCF maxcycle override
-    int         ci_opt_maxcycles;   ///< OPT maxcycles override
-    int         ci_irc_maxpoints;   ///< IRC maxpoints override
-    int         ci_irc_recalc;      ///< IRC recalc override
-    int         ci_irc_maxcycle;    ///< IRC maxcycle override
-    int         ci_irc_stepsize;    ///< IRC stepsize override
+    std::string ci_calc_type;              ///< Calculation type (sp, opt_freq, ts, etc.)
+    std::string ci_functional;             ///< DFT functional (UWB97XD, B3LYP, etc.)
+    std::string ci_basis;                  ///< Basis set (def2SVPP, etc.)
+    std::string ci_large_basis;            ///< Large basis set for higher level calculations
+    std::string ci_solvent;                ///< Solvent name
+    std::string ci_solvent_model;          ///< Solvent model (smd, pcm, etc.)
+    std::string ci_print_level;            ///< Pound sign modifier (N, P, T)
+    std::string ci_extra_keywords;         ///< Additional Gaussian keywords
+    std::string ci_extra_keyword_section;  ///< Additional input sections
+    int         ci_charge;                 ///< Molecular charge
+    int         ci_mult;                   ///< Multiplicity
+    std::string ci_tail;                   ///< Additional content at end of input
+    std::string ci_modre;                  ///< Modredundant content for TS calculations
+    std::string ci_extension;              ///< Output file extension
+    std::string ci_tschk_path;             ///< Path to transition state checkpoint files
+    int         ci_freeze_atom1;           ///< First atom to freeze (for TS calculations)
+    int         ci_freeze_atom2;           ///< Second atom to freeze (for TS calculations)
+    int         ci_scf_maxcycle;           ///< SCF maxcycle override
+    int         ci_opt_maxcycles;          ///< OPT maxcycles override
+    int         ci_irc_maxpoints;          ///< IRC maxpoints override
+    int         ci_irc_recalc;             ///< IRC recalc override
+    int         ci_irc_maxcycle;           ///< IRC maxcycle override
+    int         ci_irc_stepsize;           ///< IRC stepsize override
 
     /**
      * @brief Default constructor with built-in fallback values
@@ -170,9 +172,11 @@ struct CommandContext
           ci_solvent_model("smd"),                  // Default solvent model
           ci_print_level(""),                       // Empty pound sign (defaults to N)
           ci_extra_keywords(""),                    // No extra keywords
+          ci_extra_keyword_section(""),             // No extra keyword section
           ci_charge(0),                             // Neutral charge
           ci_mult(1),                               // Singlet multiplicity
           ci_tail(""),                              // No tail content
+          ci_modre(""),                             // No modre content
           ci_extension(".gau"),                     // Default extension
           ci_tschk_path(""),                        // No TS checkpoint path
           ci_freeze_atom1(0),                       // No frozen atoms

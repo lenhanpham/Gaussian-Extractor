@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <algorithm>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
@@ -134,6 +135,98 @@ namespace Utils
         std::filesystem::path new_path = parent_path / (stem + "_" + timestamp.str() + extension);
 
         return new_path;
+    }
+
+    std::string parseExtraKeywords(const std::string& keywords_str)
+    {
+        if (keywords_str.empty())
+        {
+            return "";
+        }
+
+        std::vector<std::string> keywords;
+        std::string              cleaned_str = keywords_str;
+
+        // Remove leading/trailing whitespace
+        cleaned_str.erase(cleaned_str.begin(),
+                          std::find_if(cleaned_str.begin(), cleaned_str.end(), [](unsigned char ch) {
+                              return !std::isspace(ch);
+                          }));
+        cleaned_str.erase(std::find_if(cleaned_str.rbegin(),
+                                       cleaned_str.rend(),
+                                       [](unsigned char ch) {
+                                           return !std::isspace(ch);
+                                       })
+                              .base(),
+                          cleaned_str.end());
+
+        // Split by multiple delimiters: spaces, commas, semicolons
+        std::string token;
+        for (char ch : cleaned_str)
+        {
+            if (ch == ' ' || ch == ',' || ch == ';')
+            {
+                // Process the current token
+                if (!token.empty())
+                {
+                    // Trim whitespace from token
+                    token.erase(token.begin(), std::find_if(token.begin(), token.end(), [](unsigned char c) {
+                                    return !std::isspace(c);
+                                }));
+                    token.erase(std::find_if(token.rbegin(),
+                                             token.rend(),
+                                             [](unsigned char c) {
+                                                 return !std::isspace(c);
+                                             })
+                                    .base(),
+                                token.end());
+
+                    if (!token.empty())
+                    {
+                        keywords.push_back(token);
+                    }
+                    token.clear();
+                }
+            }
+            else
+            {
+                token += ch;
+            }
+        }
+
+        // Process the last token
+        if (!token.empty())
+        {
+            // Trim whitespace from token
+            token.erase(token.begin(), std::find_if(token.begin(), token.end(), [](unsigned char c) {
+                            return !std::isspace(c);
+                        }));
+            token.erase(std::find_if(token.rbegin(),
+                                     token.rend(),
+                                     [](unsigned char c) {
+                                         return !std::isspace(c);
+                                     })
+                            .base(),
+                        token.end());
+
+            if (!token.empty())
+            {
+                keywords.push_back(token);
+            }
+        }
+
+        // Join keywords with single spaces
+        std::string result;
+        for (size_t i = 0; i < keywords.size(); ++i)
+        {
+            if (i > 0)
+            {
+                result += " ";
+            }
+            result += keywords[i];
+        }
+
+        return result;
     }
 
 }  // namespace Utils

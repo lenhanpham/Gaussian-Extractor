@@ -6,7 +6,7 @@
 Gaussian Extractor User Manual
 ==============================
 
-**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
+**Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It runs in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
 .. image:: _static/im.png
    :alt: Gaussian Extractor Results

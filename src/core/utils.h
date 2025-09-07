@@ -55,10 +55,20 @@ namespace Utils
     /**
      * @brief Generate a unique filename with timestamp suffix if file already exists
      * @param base_path
-     * Base file path
+
+     * * Base file path
      * @return Unique file path (original if doesn't exist, or with timestamp suffix)
      */
     std::filesystem::path generate_unique_filename(const std::filesystem::path& base_path);
+
+    /**
+     * @brief Parse extra keywords string to handle multiple keywords separated by delimiters
+     * @param
+     * keywords_str Raw keywords string from parameter file
+     * @return Parsed keywords string with single spaces
+     * between keywords
+     */
+    std::string parseExtraKeywords(const std::string& keywords_str);
 
 }  // namespace Utils
 

@@ -1,5 +1,5 @@
 %chk=CH4.chk
-# scf(maxcycle=500,xqc) UwB97XD/Def2SVPP
+# scf(maxcycle=500,xqc) UWB97XD/DEF2SVPP Int=UltraFine
 
 Title: Normal single point calculation
 
@@ -9,3 +9,10 @@ H         -2.08635        1.18864        0.00000
 H         -3.51301        1.45464       -0.97311
 H         -3.51302        1.89838        0.71691
 H         -3.51302        0.21291        0.25619
+
+H 0
+6-31G**
+****
+extra_keyword =
+Additional section
+with multiple lines
