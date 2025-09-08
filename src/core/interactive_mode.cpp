@@ -297,6 +297,7 @@ public:
                           "date",
                           "time",
                           "findstr",
+                          "grep",
                           "where",
                           "set",
                           "path"};
