@@ -9,10 +9,10 @@
  */
 
 #include "help_utils.h"
-#include "command_system.h"
-#include "config_manager.h"
-#include "gaussian_extractor.h"
-#include "version.h"
+#include "utilities/command_system.h"
+#include "utilities/config_manager.h"
+#include "extraction/gaussian_extractor.h"
+#include "utilities/version.h"
 #include <iostream>
 
 namespace HelpUtils

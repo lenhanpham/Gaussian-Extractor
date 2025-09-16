@@ -1,17 +1,15 @@
 #include "module_executor.h"
-#include "coord_extractor.h"
-#include "create_input.h"
-#include "gaussian_extractor.h"
-#include "high_level_energy.h"
-#include "job_checker.h"
-#include "version.h"
+#include "extraction/coord_extractor.h"
+#include "extraction/gaussian_extractor.h"
+#include "high_level/high_level_energy.h"
+#include "input_gen/create_input.h"
+#include "job_management/job_checker.h"
 #include <algorithm>
 #include <atomic>
 #include <csignal>
+#include <filesystem>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <thread>
 
@@ -1249,7 +1247,7 @@ int execute_create_input_command(const CommandContext& context)
         else if (context.ci_calc_type == "modre_opt")
         {
             calc_type = CalculationType::MODRE_OPT;
-        }       
+        }
         else if (context.ci_calc_type == "oss_ts_freq")
         {
             calc_type = CalculationType::OSS_TS_FREQ;

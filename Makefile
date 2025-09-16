@@ -3,7 +3,6 @@
 
 # Directory structure
 SRC_DIR = src
-CORE_DIR = $(SRC_DIR)/core
 BUILD_DIR = build
 TEST_DIR = tests
 
@@ -18,7 +17,7 @@ ifeq ($(CXX),)
     CXX = g++
 endif
 $(info Using compiler: $(CXX))
-CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR) -I$(CORE_DIR)
+CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR)
 
 # Add Intel-specific flags if using Intel compiler
 ifneq ($(filter icpx icpc icc,$(CXX)),)
@@ -52,42 +51,42 @@ endif
 
 # Source files
 SOURCES = $(SRC_DIR)/main.cpp \
-          $(CORE_DIR)/module_executor.cpp \
-          $(CORE_DIR)/gaussian_extractor.cpp \
-          $(CORE_DIR)/job_scheduler.cpp \
-          $(CORE_DIR)/command_system.cpp \
-          $(CORE_DIR)/job_checker.cpp \
-          $(CORE_DIR)/config_manager.cpp \
-          $(CORE_DIR)/metadata.cpp \
-          $(CORE_DIR)/high_level_energy.cpp \
-		  $(CORE_DIR)/coord_extractor.cpp \
-		  $(CORE_DIR)/parameter_parser.cpp \
-		  $(CORE_DIR)/utils.cpp \
-		  $(CORE_DIR)/interactive_mode.cpp \
-		  $(CORE_DIR)/create_input.cpp \
-		  $(CORE_DIR)/help_utils.cpp
+          $(SRC_DIR)/utilities/module_executor.cpp \
+          $(SRC_DIR)/extraction/gaussian_extractor.cpp \
+          $(SRC_DIR)/job_management/job_scheduler.cpp \
+          $(SRC_DIR)/utilities/command_system.cpp \
+          $(SRC_DIR)/job_management/job_checker.cpp \
+          $(SRC_DIR)/utilities/config_manager.cpp \
+          $(SRC_DIR)/utilities/metadata.cpp \
+          $(SRC_DIR)/high_level/high_level_energy.cpp \
+          $(SRC_DIR)/extraction/coord_extractor.cpp \
+          $(SRC_DIR)/input_gen/parameter_parser.cpp \
+          $(SRC_DIR)/utilities/utils.cpp \
+          $(SRC_DIR)/ui/interactive_mode.cpp \
+          $(SRC_DIR)/input_gen/create_input.cpp \
+          $(SRC_DIR)/ui/help_utils.cpp
 
-HEADERS = $(CORE_DIR)/module_executor.h \
-          $(CORE_DIR)/gaussian_extractor.h \
-          $(CORE_DIR)/job_scheduler.h \
-          $(CORE_DIR)/command_system.h \
-          $(CORE_DIR)/job_checker.h \
-          $(CORE_DIR)/config_manager.h \
-          $(CORE_DIR)/metadata.h \
-          $(CORE_DIR)/high_level_energy.h \
-		  $(CORE_DIR)/coord_extractor.h \
-		  $(CORE_DIR)/parameter_parser.h \
-		  $(CORE_DIR)/utils.h \
-          $(CORE_DIR)/version.h \
-          $(CORE_DIR)/interactive_mode.h \
-          $(CORE_DIR)/create_input.h \
-          $(CORE_DIR)/help_utils.h
+HEADERS = $(SRC_DIR)/utilities/module_executor.h \
+          $(SRC_DIR)/extraction/gaussian_extractor.h \
+          $(SRC_DIR)/job_management/job_scheduler.h \
+          $(SRC_DIR)/utilities/command_system.h \
+          $(SRC_DIR)/job_management/job_checker.h \
+          $(SRC_DIR)/utilities/config_manager.h \
+          $(SRC_DIR)/utilities/metadata.h \
+          $(SRC_DIR)/high_level/high_level_energy.h \
+          $(SRC_DIR)/extraction/coord_extractor.h \
+          $(SRC_DIR)/input_gen/parameter_parser.h \
+          $(SRC_DIR)/utilities/utils.h \
+          $(SRC_DIR)/utilities/version.h \
+          $(SRC_DIR)/ui/interactive_mode.h \
+          $(SRC_DIR)/input_gen/create_input.h \
+          $(SRC_DIR)/ui/help_utils.h
 
 OBJECTS = $(SOURCES:%.cpp=$(BUILD_DIR)/%.o)
 TARGET = gaussian_extractor.x
 
 # Ensure build directory structure exists
-$(shell mkdir -p $(BUILD_DIR)/$(SRC_DIR)/core)
+$(shell mkdir -p $(BUILD_DIR)/$(SRC_DIR)/extraction $(BUILD_DIR)/$(SRC_DIR)/high_level $(BUILD_DIR)/$(SRC_DIR)/input_gen $(BUILD_DIR)/$(SRC_DIR)/job_management $(BUILD_DIR)/$(SRC_DIR)/ui $(BUILD_DIR)/$(SRC_DIR)/utilities)
 
 # Default target
 all: $(TARGET)

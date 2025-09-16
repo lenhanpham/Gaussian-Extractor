@@ -11,7 +11,7 @@
 #ifndef HELP_UTILS_H
 #define HELP_UTILS_H
 
-#include "command_system.h"  // For CommandType
+#include "utilities/command_system.h"  // For CommandType
 #include <string>
 
 namespace HelpUtils

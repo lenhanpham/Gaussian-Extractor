@@ -37,13 +37,12 @@
  */
 
 #include "gaussian_extractor.h"
-#include "job_scheduler.h"
-#include "metadata.h"
+#include "job_management/job_scheduler.h"
+#include "utilities/metadata.h"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <cmath>
-#include <condition_variable>
 #include <csignal>
 #include <cstdlib>
 #include <exception>

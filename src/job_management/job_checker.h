@@ -35,8 +35,7 @@
 #ifndef JOB_CHECKER_H
 #define JOB_CHECKER_H
 
-#include "gaussian_extractor.h"
-#include <filesystem>
+#include "extraction/gaussian_extractor.h"
 #include <memory>
 #include <string>
 #include <vector>

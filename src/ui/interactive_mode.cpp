@@ -9,14 +9,14 @@
  */
 
 #include "interactive_mode.h"
-#include "command_system.h"
-#include "config_manager.h"
-#include "gaussian_extractor.h"
+#include "extraction/gaussian_extractor.h"
 #include "help_utils.h"
-#include "parameter_parser.h"
-#include "utils.h"
-#include "version.h"
-#include <cstdlib>
+#include "input_gen/parameter_parser.h"
+#include "utilities/command_system.h"
+#include "utilities/config_manager.h"
+#include "utilities/utils.h"
+#include "utilities/version.h"
+#include <atomic>
 #include <cstring>
 #include <filesystem>
 #include <iostream>
@@ -1466,11 +1466,11 @@ bool is_shell_command(const std::string& cmd)
 {
     // Common shell commands that should be executed directly
     static const std::vector<std::string> shell_commands = {
-        "cd",   "ls",    "dir",    "pwd",  "mkdir", "rmdir", "cp",   "mv",     "rm",      "cat",     "more",  "less",
-        "head", "tail",  "grep",   "find", "which", "echo",  "date", "time",   "touch",   "history", "alias", "export",
-        "set",  "unset", "source", "bash", "sh",    "zsh",   "fish", "python", "python3", "pip",     "pip3",  "git",
-        "make", "cmake", "gcc",    "g++",  "clang", "vim",   "nano", "emacs",  "code",    "subl",    "atom",  "del",
-        "clear", "cls", "exit"};
+        "cd",    "ls",     "dir",  "pwd",   "mkdir",  "rmdir", "cp",   "mv",    "rm",   "cat",    "more",
+        "less",  "head",   "tail", "grep",  "find",   "which", "echo", "date",  "time", "touch",  "history",
+        "alias", "export", "set",  "unset", "source", "bash",  "sh",   "zsh",   "fish", "python", "python3",
+        "pip",   "pip3",   "git",  "make",  "cmake",  "gcc",   "g++",  "clang", "vim",  "nano",   "emacs",
+        "code",  "subl",   "atom", "del",   "clear",  "cls",   "exit"};
 
     // Check if command starts with any shell command
     for (const auto& shell_cmd : shell_commands)

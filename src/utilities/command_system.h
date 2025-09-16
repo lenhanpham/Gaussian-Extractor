@@ -33,9 +33,8 @@
 #ifndef COMMAND_SYSTEM_H
 #define COMMAND_SYSTEM_H
 
+#include "job_management/job_scheduler.h"
 #include "config_manager.h"
-#include "job_scheduler.h"
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>

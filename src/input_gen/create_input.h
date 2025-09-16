@@ -11,9 +11,7 @@
 #ifndef CREATE_INPUT_H
 #define CREATE_INPUT_H
 
-#include "gaussian_extractor.h"
-#include "utils.h"
-#include <filesystem>
+#include "extraction/gaussian_extractor.h"
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -25,18 +23,18 @@
  */
 enum class CalculationType
 {
-    SP,              ///< Single point energy calculation
-    OPT_FREQ,        ///< Geometry optimization + frequency analysis
-    TS_FREQ,         ///< Transition state search + frequency analysis
-    OSS_TS_FREQ,     ///< Openshell singlet TS search + frequency analysis
-    OSS_CHECK_SP,    ///< Openshell singlet check single point
-    HIGH_SP,         ///< High-level single point with larger basis set
-    IRC_FORWARD,     ///< IRC calculation in forward direction
-    IRC_REVERSE,     ///< IRC calculation in reverse direction
-    IRC,             ///< IRC calculation in both directions
-    MODRE_TS_FREQ,   ///< Modredundant TS search + frequency analysis
-    MODRE_OPT,       ///< Modredundant single point energy calculation
-    TS_FREQ_FROM_CHK ///< Transition state search using modre check file + frequency analysis
+    SP,               ///< Single point energy calculation
+    OPT_FREQ,         ///< Geometry optimization + frequency analysis
+    TS_FREQ,          ///< Transition state search + frequency analysis
+    OSS_TS_FREQ,      ///< Openshell singlet TS search + frequency analysis
+    OSS_CHECK_SP,     ///< Openshell singlet check single point
+    HIGH_SP,          ///< High-level single point with larger basis set
+    IRC_FORWARD,      ///< IRC calculation in forward direction
+    IRC_REVERSE,      ///< IRC calculation in reverse direction
+    IRC,              ///< IRC calculation in both directions
+    MODRE_TS_FREQ,    ///< Modredundant TS search + frequency analysis
+    MODRE_OPT,        ///< Modredundant single point energy calculation
+    TS_FREQ_FROM_CHK  ///< Transition state search using modre check file + frequency analysis
 };
 
 /**

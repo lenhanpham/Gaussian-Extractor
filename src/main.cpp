@@ -18,25 +18,16 @@
  * - Graceful shutdown handling for long-running operations
  */
 
-#include "core/command_system.h"
-#include "core/config_manager.h"
-#include "core/gaussian_extractor.h"
-#include "core/interactive_mode.h"
-#include "core/job_scheduler.h"
-#include "core/module_executor.h"
-#include "core/version.h"
+#include "extraction/gaussian_extractor.h"
+#include "job_management/job_scheduler.h"
+#include "ui/interactive_mode.h"
+#include "utilities/command_system.h"
+#include "utilities/config_manager.h"
+#include "utilities/version.h"
 #include <atomic>
 #include <csignal>
-#include <cstdlib>
-#include <cstring>
-#include <filesystem>
 #include <iostream>
-#include <limits>
-#include <map>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
+
 
 /**
  * @brief Global flag to indicate when a shutdown has been requested
@@ -149,13 +140,15 @@ int main(int argc, char* argv[])
             std::cout << "Welcome to GX interactive mode!" << std::endl;
             std::cout << std::endl;
             std::cout << "This tool helps you play with computational chemistry using Gaussian:" << std::endl;
-            std::cout << "> High-performance multi-threaded extraction of thermodynamic data and energy components" << std::endl;
+            std::cout << "> High-performance multi-threaded extraction of thermodynamic data and energy components"
+                      << std::endl;
             std::cout << "> Job status checking and error detection" << std::endl;
             std::cout << "> High-level theoryGibbs free energy calculations with thermal corrections " << std::endl;
             std::cout << "> Coordinate extraction and Gaussian input file generation" << std::endl;
             std::cout << std::endl;
             std::cout << "For help and available commands, type 'help' in interactive mode." << std::endl;
-            std::cout << "Type 'help <command>' for command-specific help, e.g. 'help ci' for input creation." << std::endl;
+            std::cout << "Type 'help <command>' for command-specific help, e.g. 'help ci' for input creation."
+                      << std::endl;
             std::cout << "To exit, type 'exit' or 'quit'." << std::endl;
             std::cout << std::endl;
 

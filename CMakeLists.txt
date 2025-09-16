@@ -18,9 +18,12 @@ option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(BUILD_FOR_CLUSTER "Build with cluster-specific optimizations" OFF)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Set compiler to clang++
+set(CMAKE_CXX_COMPILER clang++)
 
 # Output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -30,20 +33,20 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # Define source files
 set(SOURCES
     src/main.cpp
-    src/core/module_executor.cpp
-    src/core/gaussian_extractor.cpp
-    src/core/job_scheduler.cpp
-    src/core/command_system.cpp
-    src/core/job_checker.cpp
-    src/core/config_manager.cpp
-    src/core/high_level_energy.cpp
-    src/core/coord_extractor.cpp
-    src/core/metadata.cpp
-    src/core/parameter_parser.cpp
-    src/core/utils.cpp
-    src/core/interactive_mode.cpp
-    src/core/create_input.cpp
-    src/core/help_utils.cpp
+    src/utilities/module_executor.cpp
+    src/extraction/gaussian_extractor.cpp
+    src/job_management/job_scheduler.cpp
+    src/utilities/command_system.cpp
+    src/job_management/job_checker.cpp
+    src/utilities/config_manager.cpp
+    src/high_level/high_level_energy.cpp
+    src/extraction/coord_extractor.cpp
+    src/utilities/metadata.cpp
+    src/input_gen/parameter_parser.cpp
+    src/utilities/utils.cpp
+    src/ui/interactive_mode.cpp
+    src/input_gen/create_input.cpp
+    src/ui/help_utils.cpp
 )
 
 # Add Windows resource file if building on Windows
@@ -52,21 +55,21 @@ if(WIN32)
 endif()
 
 set(HEADERS
-    src/core/module_executor.h
-    src/core/gaussian_extractor.h
-    src/core/job_scheduler.h
-    src/core/command_system.h
-    src/core/job_checker.h
-    src/core/config_manager.h
-    src/core/high_level_energy.h
-    src/core/coord_extractor.h
-    src/core/metadata.h
-    src/core/parameter_parser.h
-    src/core/utils.h
-    src/core/version.h
-    src/core/interactive_mode.h
-    src/core/create_input.h
-    src/core/help_utils.h
+    src/utilities/module_executor.h
+    src/extraction/gaussian_extractor.h
+    src/job_management/job_scheduler.h
+    src/utilities/command_system.h
+    src/job_management/job_checker.h
+    src/utilities/config_manager.h
+    src/high_level/high_level_energy.h
+    src/extraction/coord_extractor.h
+    src/utilities/metadata.h
+    src/input_gen/parameter_parser.h
+    src/utilities/utils.h
+    src/utilities/version.h
+    src/ui/interactive_mode.h
+    src/input_gen/create_input.h
+    src/ui/help_utils.h
 )
 
 # Create the executable
@@ -76,7 +79,6 @@ add_executable(gaussian_extractor ${SOURCES} ${HEADERS})
 target_include_directories(gaussian_extractor
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core
 )
 
 # Find required packages

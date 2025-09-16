@@ -13,13 +13,14 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
-#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <mutex>
-#include <sstream>
-#include <thread>
 #include <vector>
+#include <thread>
+#include <filesystem>
+#include <fstream>
+
 
 // External global for shutdown
 extern std::atomic<bool> g_shutdown_requested;
@@ -593,7 +594,7 @@ std::string CreateInput::generate_route_for_single_section_calc_type(Calculation
 
     route << pound;
 
-    // Handle keywords in route 
+    // Handle keywords in route
     switch (type)
     {
         case CalculationType::SP:
@@ -611,8 +612,9 @@ std::string CreateInput::generate_route_for_single_section_calc_type(Calculation
         }
         case CalculationType::TS_FREQ_FROM_CHK: {
             std::string basis_to_use = select_basis_for_calculation();
-            route << " opt(maxcycles=" << opt_mc << ",ts,noeigen,calcfc,NoFreeze,MaxStep=5) freq scf(maxcycle=" << scf_mc << ",xqc) "
-                  << functional_ << "/" << basis_to_use << " Guess(Read) Geom(AllCheck)";
+            route << " opt(maxcycles=" << opt_mc
+                  << ",ts,noeigen,calcfc,NoFreeze,MaxStep=5) freq scf(maxcycle=" << scf_mc << ",xqc) " << functional_
+                  << "/" << basis_to_use << " Guess(Read) Geom(AllCheck)";
         }
         break;
         case CalculationType::OSS_CHECK_SP:
@@ -858,12 +860,12 @@ std::string CreateInput::generate_input_content(const std::string& isomer_name, 
 //    return route.str();
 //}
 
-//std::string CreateInput::generate_checkpoint_section(const std::string& isomer_name)
+// std::string CreateInput::generate_checkpoint_section(const std::string& isomer_name)
 //{
-//    std::ostringstream chk;
-//    chk << "%chk=" << isomer_name << ".chk";
-//    return chk.str();
-//}
+//     std::ostringstream chk;
+//     chk << "%chk=" << isomer_name << ".chk";
+//     return chk.str();
+// }
 
 std::string CreateInput::generate_title()
 {
