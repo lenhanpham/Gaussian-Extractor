@@ -1131,23 +1131,69 @@ void CommandParser::parse_create_input_options(CommandContext& context, int& i, 
     else if (arg == "--param-file")
     {
         std::string param_file;
+        std::string detected_calc_type;
 
-        if (++i < argc && argv[i][0] != '-')
+        if (++i < argc)
         {
-            // User specified a file path
-            param_file = argv[i];
+            std::string next_arg = argv[i];
+            if (next_arg[0] == '-')
+            {
+                // Next is another option, use default param
+                param_file = find_or_create_default_param_file();
+                if (param_file.empty())
+                {
+                    add_warning(context, "Error: Could not find or create default parameter file");
+                    return;
+                }
+                --i;  // Don't consume
+            }
+            else if (next_arg.size() >= 4 && next_arg.substr(next_arg.size() - 4) == ".xyz")
+            {
+                // Looks like a xyz file, use default param, and let it be processed as positional later
+                param_file = find_or_create_default_param_file();
+                if (param_file.empty())
+                {
+                    add_warning(context, "Error: Could not find or create default parameter file");
+                    return;
+                }
+                --i;  // Don't consume
+            }
+            else
+            {
+                // Check if it's a known calc_type keyword
+                std::string lower_arg = next_arg;
+                std::transform(lower_arg.begin(), lower_arg.end(), lower_arg.begin(), ::tolower);
+                if (lower_arg == "sp" || lower_arg == "opt_freq" || lower_arg == "ts_freq" ||
+                    lower_arg == "modre_opt" || lower_arg == "oss_ts_freq" || lower_arg == "modre_ts_freq" ||
+                    lower_arg == "oss_check_sp" || lower_arg == "high_sp" || lower_arg == "irc_forward" ||
+                    lower_arg == "irc_reverse" || lower_arg == "irc")
+                {
+                    // It's a calc_type, use default param and set calc_type
+                    param_file = find_or_create_default_param_file();
+                    if (param_file.empty())
+                    {
+                        add_warning(context, "Error: Could not find or create default parameter file");
+                        return;
+                    }
+                    detected_calc_type = next_arg;
+                    // i already incremented, so consumed
+                }
+                else
+                {
+                    // Assume it's a param file
+                    param_file = next_arg;
+                }
+            }
         }
         else
         {
-            // No file specified, look for default parameter file
+            // No more args, use default
             param_file = find_or_create_default_param_file();
             if (param_file.empty())
             {
                 add_warning(context, "Error: Could not find or create default parameter file");
                 return;
             }
-            // Decrement i since we didn't consume an argument
-            --i;
         }
 
         ParameterParser parser;
@@ -1267,6 +1313,10 @@ void CommandParser::parse_create_input_options(CommandContext& context, int& i, 
             context.ci_irc_stepsize  = parser.getInt("irc_stepsize", context.ci_irc_stepsize);
 
             std::cout << "Parameters loaded from: " << param_file << std::endl;
+            if (!detected_calc_type.empty())
+            {
+                context.ci_calc_type = detected_calc_type;
+            }
         }
         else
         {

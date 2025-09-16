@@ -611,7 +611,7 @@ std::string CreateInput::generate_route_for_single_section_calc_type(Calculation
         }
         case CalculationType::TS_FREQ_FROM_CHK: {
             std::string basis_to_use = select_basis_for_calculation();
-            route << " opt(maxcycles=" << opt_mc << ",ts,noeigen,calcfc) freq scf(maxcycle=" << scf_mc << ",xqc) "
+            route << " opt(maxcycles=" << opt_mc << ",ts,noeigen,calcfc,NoFreeze,MaxStep=5) freq scf(maxcycle=" << scf_mc << ",xqc) "
                   << functional_ << "/" << basis_to_use << " Guess(Read) Geom(AllCheck)";
         }
         break;
