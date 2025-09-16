@@ -541,7 +541,9 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
             }
             else if (freeze_atoms_.first != 0 && freeze_atoms_.second != 0)
             {
+                content << "\n";
                 content << "B " << freeze_atoms_.first << " " << freeze_atoms_.second << " F";
+                content << "\n";
             }
         }
 
