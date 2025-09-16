@@ -375,7 +375,8 @@ std::string ParameterParser::createTemplateContent(const std::string& calc_type)
                                             "irc_forward",
                                             "irc_reverse",
                                             "irc",
-                                            "modre_ts_freq"};
+                                            "modre_ts_freq",
+                                            "modre_opt"};
 
     bool is_valid = false;
     for (const auto& type : valid_types)
@@ -421,7 +422,7 @@ std::string ParameterParser::createTemplateContent(const std::string& calc_type)
         content << "large_basis = def2TZVPP\n\n";
     }
 
-    if (calc_type == "oss_ts_freq" || calc_type == "modre_ts_freq")
+    if (calc_type == "oss_ts_freq" || calc_type == "modre_ts_freq" || calc_type == "modre_opt")
     {
         content << "# Freeze atoms for TS (1-based indices)\n";
         content << "# freeze_atoms = 1,2\n\n";
@@ -455,7 +456,8 @@ std::string ParameterParser::createTemplateContent(const std::string& calc_type)
     content << "# Override defaults for SCF, OPT, IRC keywords\n";
     int default_scf = (calc_type == "sp" || calc_type == "opt_freq" || calc_type == "high_sp") ? 500 : 300;
     content << "# scf_maxcycle = " << default_scf << "\n";
-    if (calc_type == "opt_freq" || calc_type == "ts_freq" || calc_type == "oss_ts_freq" || calc_type == "modre_ts_freq")
+    if (calc_type == "opt_freq" || calc_type == "ts_freq" || calc_type == "oss_ts_freq" ||
+        calc_type == "modre_ts_freq" || calc_type == "modre_opt")
     {
         content << "# opt_maxcycles = 300\n";
     }
@@ -470,8 +472,8 @@ std::string ParameterParser::createTemplateContent(const std::string& calc_type)
 
     // Multi-line tail example (only for calc types that support GEN/GENECP)
     if (calc_type == "sp" || calc_type == "opt_freq" || calc_type == "ts_freq" || calc_type == "oss_ts_freq" ||
-        calc_type == "oss_check_sp" || calc_type == "modre_ts_freq" || calc_type == "high_sp" ||
-        calc_type == "irc_forward" || calc_type == "irc_reverse" || calc_type == "irc")
+        calc_type == "oss_check_sp" || calc_type == "modre_ts_freq" || calc_type == "modre_opt" ||
+        calc_type == "high_sp" || calc_type == "irc_forward" || calc_type == "irc_reverse" || calc_type == "irc")
     {
         content << "# Multi-line tail (for custom basis sets, etc.)\n";
         content << "# tail = \n";
@@ -702,9 +704,8 @@ std::string ParameterParser::parseMultiLineParameter(const std::vector<std::stri
                     if (j == i)
                     {
                         // Opening and closing marks on the same line
-                        // Extract content between marks, trim whitespace
-                        std::string between_marks = line.substr(1, closing_pos - 1);
-                        content                   = trim(between_marks);
+                        // Extract content between marks exactly as is
+                        content = line.substr(1, closing_pos - 1);
                     }
                     else
                     {
@@ -719,40 +720,39 @@ std::string ParameterParser::parseMultiLineParameter(const std::vector<std::stri
                                 if (mark_pos != std::string::npos)
                                 {
                                     // Extract content after the opening mark
-                                    std::string after_mark = lines[k].substr(mark_pos + 1);
-                                    line_content           = trim(after_mark);
+                                    line_content = lines[k].substr(mark_pos + 1);
                                 }
                             }
                             else
                             {
-                                // Other lines: use as-is but trim
-                                line_content = trim(lines[k]);
+                                // Other lines: use as-is
+                                line_content = lines[k];
                             }
 
-                            // Only add non-empty lines
-                            if (!line_content.empty())
+                            // Always add the line, even if empty (to preserve blank lines)
+                            if (!content.empty() || k > i)
                             {
-                                if (!content.empty())
-                                {
-                                    content += "\n";
-                                }
-                                content += line_content;
+                                content += "\n";
                             }
+                            content += line_content;
                         }
 
                         // Handle the line with closing mark
                         std::string closing_line_content = line.substr(0, closing_pos);
-                        closing_line_content             = trim(closing_line_content);
-
-                        // Only add if there's actual content before the closing mark
-                        if (!closing_line_content.empty())
+                        // Remove trailing whitespace
+                        size_t last_non_ws = closing_line_content.find_last_not_of(" \t\r\n");
+                        if (last_non_ws != std::string::npos)
                         {
-                            if (!content.empty())
-                            {
-                                content += "\n";
-                            }
-                            content += closing_line_content;
+                            closing_line_content = closing_line_content.substr(0, last_non_ws + 1);
                         }
+                        else
+                        {
+                            closing_line_content = "";
+                        }
+
+                        // Always add the closing line content, even if empty
+                        content += "\n";
+                        content += closing_line_content;
                     }
                     found_closing = true;
                     start_index   = j;  // Update start_index to skip processed lines

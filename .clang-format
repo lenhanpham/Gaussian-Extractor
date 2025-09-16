@@ -1,9 +1,9 @@
-# Clang-Format Configuration for Gaussian Extractor
+# Clang-Format Configuration for OpenThermo
 # Modern C++ style guide based on LLVM style with modifications
 
 # Basic Settings
 Language: Cpp
-Standard: c++20
+Standard: c++17
 BasedOnStyle: LLVM
 
 # Indentation

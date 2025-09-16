@@ -125,7 +125,8 @@ void CreateInput::validate_gen_basis_requirements() const
 void CreateInput::validate_modre_requirements() const
 {
     // For MODRE_TS_FREQ and OSS_TS_FREQ, either freeze_atoms or modre must be provided
-    if (calc_type_ == CalculationType::MODRE_TS_FREQ || calc_type_ == CalculationType::OSS_TS_FREQ)
+    if (calc_type_ == CalculationType::MODRE_TS_FREQ || calc_type_ == CalculationType::OSS_TS_FREQ ||
+        calc_type_ == CalculationType::MODRE_OPT)
     {
         bool has_freeze_atoms = (freeze_atoms_.first != 0 && freeze_atoms_.second != 0);
         bool has_modre        = !modre_.empty();
@@ -262,6 +263,8 @@ bool CreateInput::loadParameters(const std::string& param_file)
             calc_type_ = CalculationType::IRC;
         else if (calc_type_str == "modre_ts_freq")
             calc_type_ = CalculationType::MODRE_TS_FREQ;
+        else if (calc_type_str == "modre_opt")
+            calc_type_ = CalculationType::MODRE_OPT;
         // If invalid, keep default SP
     }
 
@@ -534,19 +537,19 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
         {
             if (!modre_.empty())
             {
-                content << "\n" << modre_ << "\n";
+                content << modre_;
             }
             else if (freeze_atoms_.first != 0 && freeze_atoms_.second != 0)
             {
-                content << "\nB " << freeze_atoms_.first << " " << freeze_atoms_.second << " F\n";
+                content << "B " << freeze_atoms_.first << " " << freeze_atoms_.second << " F";
             }
         }
 
         if (!tail_.empty())
-            content << "\n" << tail_ << "\n";
+            content << tail_;
         if (!extra_keyword_section_.empty())
-            content << "\n" << extra_keyword_section_;
-        content << "\n\n";
+            content << extra_keyword_section_;
+        content << "\n";
     }
 
     return content.str();
