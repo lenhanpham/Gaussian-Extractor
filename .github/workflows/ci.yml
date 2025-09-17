@@ -23,8 +23,8 @@ jobs:
 
       - name: Configure Git identify
         run: |
-          git config user.name "lnp"
-          git config user.email "lnp@lnp.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com" 
 
       - name: Install dependencies
         run: |

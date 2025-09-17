@@ -12,30 +12,48 @@ Architecture
 Gaussian Extractor is a C++20 application designed for high-performance processing of Gaussian computational chemistry log files. The codebase follows a modular architecture with clear separation of concerns:
 
 .. code-block::
+src
+├── main.cpp                           # Application entry point
+├── extraction
+│   ├── coord_extractor.cpp
+│   ├── coord_extractor.h
+│   ├── gaussian_extractor.cpp
+│   └── gaussian_extractor.h
+├── high_level
+│   ├── high_level_energy.cpp
+│   └── high_level_energy.h
+├── input_gen
+│   ├── create_input.cpp
+│   ├── create_input.h
+│   ├── parameter_parser.cpp
+│   └── parameter_parser.h
+├── job_management
+│   ├── job_checker.cpp
+│   ├── job_checker.h
+│   ├── job_scheduler.cpp
+│   └── job_scheduler.h
+├── ui
+│   ├── help_utils.cpp
+│   ├── help_utils.h
+│   ├── interactive_mode.cpp
+│   └── interactive_mode.h
+├── utilities
+│   ├── command_system.cpp
+│   ├── command_system.h
+│   ├── config_manager.cpp
+│   ├── config_manager.h
+│   ├── metadata.cpp
+│   ├── metadata.h
+│   ├── module_executor.cpp
+│   ├── module_executor.h
+│   ├── utils.cpp
+│   ├── utils.h
+│   └── version.h
+├── tests/                             # Test files and data
+├── docs/                              # Documentation
+├── Makefile                           # Build system
+└── README.MD                          # User documentation
 
-		gaussian-extractor/
-		├── src/
-		│   ├── main.cpp                 # Application entry point
-		│   └── core/                    # Core functionality
-		│       ├── command_system.h/.cpp # Command parsing and execution
-		│       ├── config_manager.h/.cpp # Configuration management
-		│       ├── gaussian_extractor.h/.cpp # Core extraction logic
-		│       ├── job_scheduler.h/.cpp  # Job scheduler integration
-		│       ├── module_executor.h/.cpp # Command execution dispatch
-		│       ├── help_utils.h/.cpp     # Help system utilities
-		│       ├── interactive_mode.h/.cpp # Interactive mode for Windows
-		│       ├── coord_extractor.h/.cpp # Coordinate extraction and XYZ processing
-		│       ├── create_input.h/.cpp   # Gaussian input file generation
-		│       ├── high_level_energy.h/.cpp # High-level energy calculations
-		│       ├── job_checker.h/.cpp    # Job status checking and organization
-		│       ├── metadata.h/.cpp       # File metadata handling
-		│       ├── parameter_parser.h/.cpp # Parameter file parsing
-		│       ├── utils.h/.cpp          # Utility functions
-		│       └── version.h             # Version information
-	├── tests/                        # Test files and data
-	├── docs/                         # Documentation
-	├── Makefile                      # Build system
-	└── README.MD                     # User documentation
 
 New Modules in v0.5.0
 ---------------------
