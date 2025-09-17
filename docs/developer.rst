@@ -12,47 +12,51 @@ Architecture
 Gaussian Extractor is a C++20 application designed for high-performance processing of Gaussian computational chemistry log files. The codebase follows a modular architecture with clear separation of concerns:
 
 .. code-block::
-src
-├── main.cpp                           # Application entry point
-├── extraction
-│   ├── coord_extractor.cpp
-│   ├── coord_extractor.h
-│   ├── gaussian_extractor.cpp
-│   └── gaussian_extractor.h
-├── high_level
-│   ├── high_level_energy.cpp
-│   └── high_level_energy.h
-├── input_gen
-│   ├── create_input.cpp
-│   ├── create_input.h
-│   ├── parameter_parser.cpp
-│   └── parameter_parser.h
-├── job_management
-│   ├── job_checker.cpp
-│   ├── job_checker.h
-│   ├── job_scheduler.cpp
-│   └── job_scheduler.h
-├── ui
-│   ├── help_utils.cpp
-│   ├── help_utils.h
-│   ├── interactive_mode.cpp
-│   └── interactive_mode.h
-├── utilities
-│   ├── command_system.cpp
-│   ├── command_system.h
-│   ├── config_manager.cpp
-│   ├── config_manager.h
-│   ├── metadata.cpp
-│   ├── metadata.h
-│   ├── module_executor.cpp
-│   ├── module_executor.h
-│   ├── utils.cpp
-│   ├── utils.h
-│   └── version.h
-├── tests/                             # Test files and data
-├── docs/                              # Documentation
-├── Makefile                           # Build system
-└── README.MD                          # User documentation
+├── src/
+│   ├── main.cpp                           # Application entry point
+│   ├── extraction/
+│   │   ├── coord_extractor.cpp
+│   │   ├── coord_extractor.h
+│   │   ├── gaussian_extractor.cpp
+│   │   └── gaussian_extractor.h
+│   ├── high_level/
+│   │   ├── high_level_energy.cpp
+│   │   └── high_level_energy.h
+│   ├── input_gen/
+│   │   ├── create_input.cpp
+│   │   ├── create_input.h
+│   │   ├── parameter_parser.cpp
+│   │   └── parameter_parser.h
+│   ├── job_management/
+│   │   ├── job_checker.cpp
+│   │   ├── job_checker.h
+│   │   ├── job_scheduler.cpp
+│   │   └── job_scheduler.h
+│   ├── ui/
+│   │   ├── help_utils.cpp
+│   │   ├── help_utils.h
+│   │   ├── interactive_mode.cpp
+│   │   └── interactive_mode.h
+│   └── utilities/
+│       ├── command_system.cpp
+│       ├── command_system.h
+│       ├── config_manager.cpp
+│       ├── config_manager.h
+│       ├── metadata.cpp
+│       ├── metadata.h
+│       ├── module_executor.cpp
+│       ├── module_executor.h
+│       ├── utils.cpp
+│       ├── utils.h
+│       └── version.h
+├── tests/
+├── docs/
+├── resources/
+├── CMakeLists.txt                      # CMake build configuration
+├── Doxyfile                            # Doxygen configuration
+├── LICENSE                             # Project license
+├── Makefile                            # Make build system
+└── README.MD                           # User documentation
 
 
 New Modules in v0.5.0
