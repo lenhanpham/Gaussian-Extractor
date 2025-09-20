@@ -1,5 +1,5 @@
 name: CI/CD for Gaussian Extractor
-run-name: ${{ github.event.head_commit.message }}
+run-name: ${{ github.actor }}'s CI/CD Run on Commit "${{ github.event.head_commit.message }}"
 
 on:
   push:
