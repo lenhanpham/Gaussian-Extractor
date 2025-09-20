@@ -1,4 +1,5 @@
 PROJECT_NAME = "Gaussian Extractor"
+PROJECT_BRIEF = "High-performance Gaussian log file processor"
 OUTPUT_DIRECTORY = docs 
 INPUT = src 
 FILE_PATTERNS = *.cpp *.hpp *.h 

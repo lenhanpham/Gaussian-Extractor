@@ -46,7 +46,7 @@ exhale_args = {
     "doxygenStripFromPath": os.path.abspath("../src"),
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin": """
-        PROJECT_NAME = GaussianExtractor
+        PROJECT_NAME = "Gaussian Extractor"
         INPUT = ../src
         FILE_PATTERNS = *.cpp *.hpp *.h *.cxx *.cc
         RECURSIVE = YES
@@ -92,7 +92,7 @@ exhale_args = {
 
 
 breathe_projects = {
-    'GaussianExtractor': './xml/'  # Path to Doxygen XML output
+    'GaussianExtractor': 'docs/xml/'  # Path to Doxygen XML output
 }
 breathe_default_project = 'GaussianExtractor'
 
