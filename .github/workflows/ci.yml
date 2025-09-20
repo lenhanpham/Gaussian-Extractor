@@ -18,13 +18,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Configure Git BEFORE checkout to prevent any default identity usage
+      - name: Configure Git identity (global)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global init.defaultBranch main
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configure Git identity
+      # Verify Git configuration immediately after checkout
+      - name: Verify Git configuration
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com" 
+          echo "=== Git Configuration Debug ==="
+          echo "Git user name: '$(git config user.name)'"
+          echo "Git user email: '$(git config user.email)'"
+          echo "Global Git user name: '$(git config --global user.name)'"
+          echo "Global Git user email: '$(git config --global user.email)'"
+          
+          # Check if there are any local repo configs overriding global
+          echo "Local repo Git config:"
+          git config --local --list | grep -E '^user\.' || echo "No local user config found"
+          
+          echo "Git status:"
+          git status --porcelain || echo "Git status failed"
+          echo "==============================="
 
       - name: Install dependencies
         run: |
@@ -140,15 +159,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      # Same fix for docs job
+      - name: Configure Git identity (global)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global init.defaultBranch main
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Configure Git identity
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com" 
           
       - name: Set up Python
         uses: actions/setup-python@v5
