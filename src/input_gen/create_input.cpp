@@ -13,13 +13,13 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <mutex>
-#include <vector>
 #include <thread>
-#include <filesystem>
-#include <fstream>
+#include <vector>
 
 
 // External global for shutdown
@@ -504,7 +504,8 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
     {
         content << "%chk=" << isomer_name << checkpoint_suffix << ".chk\n";
     }
-    else if (type != CalculationType::HIGH_SP)
+    else if (type != CalculationType::HIGH_SP && type != CalculationType::IRC && type != CalculationType::IRC_FORWARD &&
+             type != CalculationType::IRC_REVERSE)
     {
         content << "%chk=" << isomer_name << ".chk\n";
     }
