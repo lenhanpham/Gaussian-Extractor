@@ -351,7 +351,7 @@ private:
      * @param type The calculation type
      * @param isomer_name Name of the isomer
      * @param coordinates Coordinate data
-     * @param checkpoint_suffix Suffix for checkpoint file (empty for default)
+     * @param checkpoint_suffix Suffix for checkpoint file (empty for default) used in IRC calculations for F and R
      * @return Complete section content
      */
     std::string generate_single_section_calc_type(CalculationType    type,
