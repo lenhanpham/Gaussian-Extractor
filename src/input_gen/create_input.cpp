@@ -66,6 +66,15 @@ bool CreateInput::is_gen_basis(const std::string& basis_str) const
     return (upper_basis == "GEN" || upper_basis == "GENECP");
 }
 
+// Check generic solvent, and read keyword
+//bool CreateInput::is_solvent_read(const std::string& solvent_read) const
+//{
+//    // Check if basis is GEN or GENECP (case insensitive)
+//    std::string upper_solvent_read = solvent_read;
+//    std::transform(upper_solvent_read.begin(), upper_solvent_read.end(), upper_solvent_read.begin(), ::toupper);
+//    return (upper_solvent_read == "READ" || upper_solvent_read == "GENERIC");
+//}
+
 void CreateInput::validate_gen_basis_requirements() const
 {
     // For calculations with GEN/GENECP basis, tail is required
@@ -153,6 +162,24 @@ void CreateInput::validate_modre_requirements() const
             throw std::runtime_error("Error: " + calc_type_name +
                                      " calculation with modre parameter requires non-empty modre content.\n"
                                      "Please provide valid modre content in the parameter file.");
+        }
+    }
+}
+
+void CreateInput::validate_solvent_tail_requirements() const
+{
+    // Check if solvent contains "Generic" and "Read" (case-insensitive)
+    std::string lower_solvent = solvent_;
+    std::transform(lower_solvent.begin(), lower_solvent.end(), lower_solvent.begin(), ::tolower);
+
+    if (lower_solvent.find("generic") != std::string::npos && lower_solvent.find("read") != std::string::npos)
+    {
+        if (tail_.empty())
+        {
+            throw std::runtime_error(
+                "Error: Solvent with 'Generic' and 'Read' requires external basis set (tail parameter).\n"
+                "Please provide the external basis set using --tail or in the parameter file.\n"
+                "Example: --tail \"H 0\\nS    3 1.00\\n  0.1873113696D+02  0.3349460434D-01\\n****\"");
         }
     }
 }
@@ -511,12 +538,12 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
     }
 
     // Generate route section for this specific type
-    content << generate_route_for_single_section_calc_type(type, isomer_name) << "\n\n";
+    content << generate_route_for_single_section_calc_type(type, isomer_name) << "\n";
 
     // Handle Geom(AllCheck) cases
     if (content.str().find("Geom(AllCheck)") != std::string::npos)
     {
-        if (type == CalculationType::HIGH_SP && is_gen_basis(select_basis_for_calculation()))
+        if (!tail_.empty())
         {
             content << tail_ << "\n";
             if (!extra_keyword_section_.empty())
@@ -672,6 +699,7 @@ std::string CreateInput::generate_input_content(const std::string& isomer_name, 
 {
     validate_gen_basis_requirements();
     validate_modre_requirements();
+    validate_solvent_tail_requirements();
 
     std::ostringstream content;
 
