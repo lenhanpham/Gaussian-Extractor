@@ -558,6 +558,7 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
     else
     {
         // Regular sections with title and coordinates
+        content << "\n";
         content << generate_title(type) << "\n\n";
         content << generate_molecule_section(coordinates);
 
