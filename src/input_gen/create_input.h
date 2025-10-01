@@ -143,11 +143,26 @@ public:
      */
     void validate_gen_basis_requirements() const;
 
+    ///**
+    // * @brief Checks if the given solvent is a generic one, and the check the read keyword
+    // * @param solvent_read The generic solvent and read strings
+    // * @return true if valid, false otherwise
+    // */
+    //bool is_solvent_read(const std::string& solvent_read) const;
+
     /**
      * @brief Validates requirements for MODRE_TS_FREQ and OSS_TS_FREQ calculations
-     * @throws std::runtime_error if neither freeze_atoms nor modre is provided
+     * @throws
+     * std::runtime_error if neither freeze_atoms nor modre is provided
      */
     void validate_modre_requirements() const;
+
+    /**
+     * @brief Validates requirements for solvent with Generic and Read keywords
+     * @throws
+     * std::runtime_error if tail is empty when solvent contains Generic and Read
+     */
+    void validate_solvent_tail_requirements() const;
 
     /**
      * @brief Main method to create input files from XYZ files
