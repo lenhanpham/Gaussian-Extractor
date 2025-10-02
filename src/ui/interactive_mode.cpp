@@ -9,7 +9,6 @@
  */
 
 #include "interactive_mode.h"
-#include "extraction/gaussian_extractor.h"
 #include "help_utils.h"
 #include "input_gen/parameter_parser.h"
 #include "utilities/command_system.h"

@@ -14,7 +14,6 @@
 #include "extraction/gaussian_extractor.h"
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 /**

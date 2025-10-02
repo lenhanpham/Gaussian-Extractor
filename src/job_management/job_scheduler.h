@@ -38,7 +38,6 @@
 
 #include <algorithm>
 #include <cstdlib>
-#include <functional>
 #include <string>
 
 /**
