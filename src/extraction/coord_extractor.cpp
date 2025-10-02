@@ -11,6 +11,7 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 // External global for shutdown

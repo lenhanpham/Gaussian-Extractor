@@ -36,10 +36,8 @@
 #ifndef GAUSSIAN_EXTRACTOR_H
 #define GAUSSIAN_EXTRACTOR_H
 
-#include <algorithm>
 #include <atomic>
 #include <condition_variable>
-#include <functional>
 #include <memory>
 #include <mutex>
 #include <string>

@@ -19,7 +19,6 @@
  */
 
 #include "extraction/gaussian_extractor.h"
-#include "job_management/job_scheduler.h"
 #include "ui/interactive_mode.h"
 #include "utilities/command_system.h"
 #include "utilities/config_manager.h"

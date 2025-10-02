@@ -11,7 +11,6 @@
 #include "help_utils.h"
 #include "utilities/command_system.h"
 #include "utilities/config_manager.h"
-#include "extraction/gaussian_extractor.h"
 #include "utilities/version.h"
 #include <iostream>
 

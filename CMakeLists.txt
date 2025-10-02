@@ -25,6 +25,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Set compiler to clang++
 set(CMAKE_CXX_COMPILER clang++)
 
+#Set
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -53,6 +56,10 @@ set(SOURCES
 if(WIN32)
     list(APPEND SOURCES resources/icon.rc)
 endif()
+
+# Include directories
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 
 set(HEADERS
     src/utilities/module_executor.h

@@ -2,15 +2,11 @@
 #include "utilities/config_manager.h"
 #include <iostream>
 #include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <regex>
 #include <algorithm>
 #include <chrono>
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include <future>
 #include <filesystem>
 
 // JobChecker Implementation
@@ -148,7 +144,7 @@ CheckSummary JobChecker::check_error_jobs(const std::vector<std::string>& log_fi
     std::atomic<size_t> file_index{0};
 
     // Calculate safe thread count
-    unsigned int num_threads = calculateSafeThreadCount(context->requested_threads, 
+    unsigned int num_threads = calculateSafeThreadCount(context->requested_threads,
                                                        log_files.size(),
                                                        context->job_resources);
 
@@ -255,7 +251,7 @@ CheckSummary JobChecker::check_pcm_failures(const std::vector<std::string>& log_
     std::atomic<size_t> file_index{0};
 
     // Calculate safe thread count
-    unsigned int num_threads = calculateSafeThreadCount(context->requested_threads, 
+    unsigned int num_threads = calculateSafeThreadCount(context->requested_threads,
                                                        log_files.size(),
                                                        context->job_resources);
 
@@ -359,11 +355,11 @@ CheckSummary JobChecker::check_all_job_types_optimized(const std::vector<std::st
     std::string done_dir = get_current_directory_name() + "-done";
     std::string error_dir = "errorJobs";
     std::string pcm_dir = "PCMMkU";
-    
-    bool dirs_ok = create_target_directory(done_dir) && 
-                   create_target_directory(error_dir) && 
+
+    bool dirs_ok = create_target_directory(done_dir) &&
+                   create_target_directory(error_dir) &&
                    create_target_directory(pcm_dir);
-    
+
     if (!dirs_ok) {
         total_summary.errors.push_back("Failed to create one or more target directories");
         return total_summary;
@@ -400,10 +396,10 @@ CheckSummary JobChecker::check_all_job_types_optimized(const std::vector<std::st
 
                     // Single comprehensive status check with priority-based classification
                     JobCheckResult result = check_job_status(log_files[index]);
-                    
+
                     {
                         std::lock_guard<std::mutex> lock(results_mutex);
-                        
+
                         // Classify based on priority: completed > error > PCM
                         if (result.status == JobStatus::COMPLETED) {
                             completed_jobs.push_back(result);
@@ -416,7 +412,7 @@ CheckSummary JobChecker::check_all_job_types_optimized(const std::vector<std::st
                     }
 
                     size_t current = processed_count.fetch_add(1) + 1;
-                    
+
                     // Report progress
                     if (!quiet_mode && current % 50 == 0) {
                         report_progress(current, total_summary.total_files, "classifying");
@@ -515,7 +511,7 @@ CheckSummary JobChecker::check_all_job_types_optimized(const std::vector<std::st
         if (total_summary.failed_moves > 0) {
             std::cout << "Failed moves: " << total_summary.failed_moves << std::endl;
         }
-        std::cout << "Total execution time: " << std::fixed << std::setprecision(3) 
+        std::cout << "Total execution time: " << std::fixed << std::setprecision(3)
                   << total_summary.execution_time << " seconds" << std::endl;
     }
 
@@ -719,11 +715,11 @@ bool JobChecker::check_error_termination(const std::string& content, std::string
     // Check specifically within the error lines for "Error on"
     bool has_error_on = false;
     std::string last_error_line;
-    
+
     if (!error_lines.empty()) {
         // Get the last error line (tail -1 from grep "Error")
         last_error_line = error_lines.back();
-        
+
         // Check if any of the error lines contain "Error on"
         for (const auto& err_line : error_lines) {
             if (err_line.find("Error on") != std::string::npos) {
@@ -761,74 +757,74 @@ bool JobChecker::check_pcm_failure(const std::string& content) {
 // Independent error checking - matches bash script exactly
 JobCheckResult JobChecker::check_error_directly(const std::string& log_file) {
     JobCheckResult result(log_file, JobStatus::UNKNOWN);
-    
+
     try {
         // Use unified reading with TAIL mode for efficiency
         std::string tail_content = read_file_unified(log_file, FileReadMode::TAIL, 10);
-        
+
         // Check for normal termination first - if found, skip file
         if (check_normal_termination(tail_content)) {
             result.status = JobStatus::COMPLETED;
             return result;
         }
-        
+
         // Check for error termination using bash script logic
         std::string error_msg;
         if (check_error_termination(tail_content, error_msg)) {
             result.status = JobStatus::ERROR;
             result.error_message = error_msg;
             result.related_files = find_related_files(log_file);
-            
+
             if (show_error_details && !quiet_mode) {
                 std::cerr << "DEBUG ERROR: " << log_file << " -> " << error_msg << std::endl;
             }
             return result;
         }
-        
+
         // If no error found, assume still running
         result.status = JobStatus::RUNNING;
-        
+
     } catch (const std::exception& e) {
         result.status = JobStatus::UNKNOWN;
         result.error_message = "Failed to read file: " + std::string(e.what());
     }
-    
+
     return result;
 }
 
 // Independent PCM checking - looks only for PCM failures
 JobCheckResult JobChecker::check_pcm_directly(const std::string& log_file) {
     JobCheckResult result(log_file, JobStatus::UNKNOWN);
-    
+
     try {
         // PCM failures often appear near the end, try tail first with SMART mode
         // This will read tail first, and only read full if pattern might be elsewhere
         std::string content = read_file_unified(log_file, FileReadMode::TAIL, 100);
-        
+
         //// If not found in tail, check full file
         //if (!check_pcm_failure(content)) {
         //    content = read_file_unified(log_file, FileReadMode::FULL);
         //}
-        
+
         if (check_pcm_failure(content)) {
             result.status = JobStatus::PCM_FAILED;
             result.error_message = "failed in PCMMkU";
             result.related_files = find_related_files(log_file);
-            
+
             if (show_error_details && !quiet_mode) {
                 std::cerr << "DEBUG PCM: " << log_file << " -> PCM failure detected" << std::endl;
             }
             return result;
         }
-        
+
         // If no PCM failure found, status remains unknown for this check
         result.status = JobStatus::UNKNOWN;
-        
+
     } catch (const std::exception& e) {
         result.status = JobStatus::UNKNOWN;
         result.error_message = "Failed to read file: " + std::string(e.what());
     }
-    
+
     return result;
 }
 
@@ -842,8 +838,8 @@ std::string JobChecker::read_file_content(const std::string& filename) {
     return read_file_unified(filename, FileReadMode::FULL);
 }
 
-std::string JobChecker::read_file_unified(const std::string& filename, 
-                                          FileReadMode mode, 
+std::string JobChecker::read_file_unified(const std::string& filename,
+                                          FileReadMode mode,
                                           size_t tail_lines) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
@@ -851,7 +847,7 @@ std::string JobChecker::read_file_unified(const std::string& filename,
     }
 
     std::streamsize file_size = file.tellg();
-    
+
     // For FULL mode or empty files, read entire content
     if (mode == FileReadMode::FULL || file_size == 0) {
         file.seekg(0, std::ios::beg);
@@ -859,7 +855,7 @@ std::string JobChecker::read_file_unified(const std::string& filename,
         buffer << file.rdbuf();
         return buffer.str();
     }
-    
+
     // For TAIL or SMART mode
     if (mode == FileReadMode::TAIL || mode == FileReadMode::SMART) {
         if (tail_lines == 0) {
@@ -882,10 +878,10 @@ std::string JobChecker::read_file_unified(const std::string& filename,
             // Seek to the position and read the chunk
             file.seekg(pos);
             file.read(buffer.data(), chunk_to_read);
-            
+
             // Prepend the chunk to the accumulated string
             accumulated.insert(0, buffer.data(), chunk_to_read);
-            
+
             // Count newlines in the accumulated string
             lines_found = std::count(accumulated.begin(), accumulated.end(), '\n');
         }
@@ -906,15 +902,15 @@ std::string JobChecker::read_file_unified(const std::string& filename,
         }
 
         // If we found the start position (meaning we found enough newlines)
-        if (start_pos > 0) { 
+        if (start_pos > 0) {
             // Return the substring starting after the found newline
             return accumulated.substr(start_pos + 1);
-        } else { 
+        } else {
             // If start_pos is 0, it means the file has fewer than tail_lines lines, so return the whole accumulated string
             return accumulated;
         }
     }
-    
+
     // Fallback for any other case (e.g., mode is not FULL, TAIL, or SMART)
     file.seekg(0, std::ios::beg);
     std::ostringstream buffer;
@@ -932,14 +928,14 @@ std::vector<std::string> JobChecker::find_related_files(const std::string& log_f
     std::vector<std::string> input_extensions = g_config_manager.get_input_extensions();
 
     // Add .chk explicitly as it's a common related file and might not be an "input" extension
-    input_extensions.push_back(".chk"); 
+    input_extensions.push_back(".chk");
 
     for (const auto& ext : input_extensions) {
         std::string related_file = base_name_with_path + ext;
-        
+
         // Avoid adding the log file itself if its extension matches an input extension
         if (log_path.extension().string() == ext) {
-            continue; 
+            continue;
         }
 
         if (JobCheckerUtils::file_exists(related_file)) {
@@ -987,7 +983,7 @@ bool JobChecker::move_job_files(const JobCheckResult& result, const std::string&
         return false;
     }
 }
- 
+
 bool JobChecker::create_target_directory(const std::string& target_dir) {
     try {
         std::filesystem::path dir_path = target_dir;
