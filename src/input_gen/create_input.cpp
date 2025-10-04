@@ -545,6 +545,7 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
     {
         if (!tail_.empty())
         {
+            content << "\n";
             content << tail_ << "\n";
             if (!extra_keyword_section_.empty())
                 content << "\n" << extra_keyword_section_;
@@ -578,7 +579,10 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
         }
 
         if (!tail_.empty())
+        {
+            content << "\n";
             content << tail_;
+        }
         if (!extra_keyword_section_.empty())
             content << extra_keyword_section_;
         content << "\n";

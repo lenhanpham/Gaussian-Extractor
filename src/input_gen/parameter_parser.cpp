@@ -730,7 +730,7 @@ std::string ParameterParser::parseMultiLineParameter(const std::vector<std::stri
                             }
 
                             // Always add the line, even if empty (to preserve blank lines)
-                            if (!content.empty() || k > i)
+                            if (!content.empty())
                             {
                                 content += "\n";
                             }
@@ -750,8 +750,11 @@ std::string ParameterParser::parseMultiLineParameter(const std::vector<std::stri
                             closing_line_content = "";
                         }
 
-                        // Always add the closing line content, even if empty
-                        content += "\n";
+                        // Append only if it’s not the very first thing
+                        if (!content.empty())
+                        {
+                            content += "\n";
+                        }
                         content += closing_line_content;
                     }
                     found_closing = true;
