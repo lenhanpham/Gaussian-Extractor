@@ -1,7 +1,0 @@
-%OldChk=/scratch/f81/np9048/Copper-chiral-catalysis/L12/Substrate-10-C8H15-CH3/3-OSET-ISET/R-TS-ISET/R-TS-ISET-done/R-TS-ISET-done_final_coord/CuL12SO2Cl-C8H15CH3CF3-R-TS-13-deepthought.chk
-%chk=CuL12SO2Cl-C8H15CH3CF3-R-TS-13-deepthought.chk
-# scf(maxcycle=300,xqc) UWB97XD/GENECP Guess(Read) Geom(AllCheck) scrf(smd,solvent=acetonitrile)
-
-@/home/595/np9048/sources/BasisSetGaussian/ma-def2-TZVP.gbs/N
-
-
