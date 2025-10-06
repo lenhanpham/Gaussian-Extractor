@@ -36,7 +36,7 @@
 
 **Compiler Requirements:**
 
-* **C++20 or newer**: GCC 10+, Intel oneAPI, Intel Classic, Clang 10+, or MSVC 2019+
+* **C++17 or newer**: GCC 10+, Intel oneAPI, Intel Classic, Clang 10+, or MSVC 2019+
 * **Threading Support**: pthread library (Linux/macOS) or Windows threading
 * **Filesystem Support**: std::filesystem (included in modern compilers)
 
@@ -558,7 +558,7 @@ gaussian_extractor.x -nt 32 --memory-limit 24576  # 24GB limit, 32 threads
 
 ```bash
 # Check compiler version
-g++ --version                # Need GCC 10+ for C++20
+g++ --version                # Need GCC 10+ for C++17
 icpx --version               # Intel oneAPI compiler
 icpc --version               # Intel Classic compiler
 
