@@ -591,6 +591,7 @@ std::string CreateInput::generate_single_section_calc_type(CalculationType    ty
     return content.str();
 }
 
+// At the end of check point file, a new line \n is always added; but no newline \n at the end of whole single route section
 std::string CreateInput::generate_route_for_single_section_calc_type(CalculationType    type,
                                                                      const std::string& isomer_name)
 {
@@ -676,8 +677,17 @@ std::string CreateInput::generate_route_for_single_section_calc_type(Calculation
                   << basis_to_use << " Guess(Read) Geom(AllCheck)";
         }
         break;
-        case CalculationType::IRC:
-            // IRC is handled separately in the main function
+        case CalculationType::IRC: {
+            std::string basis_to_use = select_basis_for_calculation();
+            std::string direction    = "IRC";
+            int         maxpoints    = (irc_maxpoints_ != -1) ? irc_maxpoints_ : 60;
+            int         recalc       = (irc_recalc_ != -1) ? irc_recalc_ : 10;
+            int         maxcyc       = (irc_maxcycle_ != -1) ? irc_maxcycle_ : 350;
+            int         stepsz       = (irc_stepsize_ != -1) ? irc_stepsize_ : 10;
+            route << " irc=(" << direction << ",RCFC,MaxPoints=" << maxpoints << ",Recalc=" << recalc
+                  << ",MaxCycle=" << maxcyc << ",StepSize=" << stepsz << ",loose,LQA,nogradstop) " << functional_ << "/"
+                  << basis_to_use << " Guess(Read) Geom(AllCheck)";
+        }
             break;
         case CalculationType::OSS_TS_FREQ:
             // OSS_TS_FREQ is handled as multi-section
@@ -728,12 +738,11 @@ std::string CreateInput::generate_input_content(const std::string& isomer_name, 
             content << "--Link1--\n%OldChk=" << isomer_name << "-modre.chk\n";
             content << generate_single_section_calc_type(CalculationType::TS_FREQ_FROM_CHK, isomer_name, coordinates);
             break;
-
+        
+        // Need to fix this to generate an IRC input with both
         case CalculationType::IRC:
-            // IRC creates two files: forward and reverse
-            content << generate_single_section_calc_type(CalculationType::IRC_FORWARD, isomer_name, coordinates);
-            content << "\n--Link1--\n";
-            content << generate_single_section_calc_type(CalculationType::IRC_REVERSE, isomer_name, coordinates);
+        // IRC creates one single file for both directions
+            content << generate_single_section_calc_type(CalculationType::IRC, isomer_name, coordinates);
             break;
 
         default:
@@ -745,161 +754,6 @@ std::string CreateInput::generate_input_content(const std::string& isomer_name, 
     return content.str();
 }
 
-// Old functions and unused
-// std::string CreateInput::generate_route_section(const std::string& isomer_name)
-//{
-//    std::ostringstream route;
-//
-//    // Add checkpoint first (at the top)
-//    if (calc_type_ == CalculationType::IRC_FORWARD || calc_type_ == CalculationType::IRC_REVERSE)
-//    {
-//        // For IRC, use OldChk pointing to TS checkpoint
-//        std::string ts_chk_path;
-//        if (!tschk_path_.empty())
-//        {
-//            ts_chk_path = tschk_path_ + "/" + isomer_name + ".chk";
-//        }
-//        else
-//        {
-//            // Default to parent directory
-//            std::filesystem::path current_path = std::filesystem::current_path();
-//            std::filesystem::path parent_path  = current_path.parent_path();
-//            ts_chk_path                        = parent_path.string() + "/" + isomer_name + ".chk";
-//        }
-//        route << "%OldChk=" << ts_chk_path << "\n";
-//        route << "%chk=" << isomer_name << (calc_type_ == CalculationType::IRC_FORWARD ? "F" : "R") << ".chk\n";
-//    }
-//    else if (calc_type_ != CalculationType::HIGH_SP && calc_type_ != CalculationType::OSS_TS_FREQ)
-//    {
-//        route << "%chk=" << isomer_name << ".chk\n";
-//    }
-//    else if (calc_type_ == CalculationType::HIGH_SP)
-//    {
-//        std::string ts_chk_path;
-//        if (!tschk_path_.empty())
-//        {
-//            ts_chk_path = tschk_path_ + "/" + isomer_name + ".chk";
-//        }
-//        else
-//        {
-//            // Default to parent directory
-//            std::filesystem::path current_path = std::filesystem::current_path();
-//            std::filesystem::path parent_path  = current_path.parent_path();
-//            ts_chk_path                        = parent_path.string() + "/" + isomer_name + ".chk";
-//        }
-//        route << "%OldChk=" << ts_chk_path << "\n";
-//        route << "%chk=" << isomer_name << ".chk\n";
-//    }
-//
-//    // Pound sign - N, P, T should be directly after #, others get space
-//    std::string pound;
-//    if (print_level_.empty())
-//    {
-//        pound = "#";
-//    }
-//    else if (print_level_ == "N" || print_level_ == "P" || print_level_ == "T")
-//    {
-//        pound = "#" + print_level_;
-//    }
-//    else
-//    {
-//        pound = "#" + print_level_ + " ";
-//    }
-//
-//    // Determine defaults for configurable parameters
-//    int default_scf = (calc_type_ == CalculationType::SP || calc_type_ == CalculationType::OPT_FREQ ||
-//                       calc_type_ == CalculationType::HIGH_SP)
-//                          ? 500
-//                          : 300;
-//    int scf_mc      = (scf_maxcycle_ != -1) ? scf_maxcycle_ : default_scf;
-//    int opt_mc      = (opt_maxcycles_ != -1) ? opt_maxcycles_ : 300;
-//
-//    // Base route components
-//    route << pound;
-//
-//    switch (calc_type_)
-//    {
-//        case CalculationType::SP:
-//            route << " scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/" << basis_;
-//            break;
-//
-//        case CalculationType::OPT_FREQ:
-//            route << " opt(maxcycles=" << opt_mc << ") freq scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/"
-//                  << basis_;
-//            break;
-//
-//        case CalculationType::TS_FREQ: {
-//            std::string basis_to_use = select_basis_for_calculation();
-//            route << " opt(maxcycles=" << opt_mc << ",ts,noeigen,calcfc) freq scf(maxcycle=" << scf_mc << ",xqc) "
-//                  << functional_ << "/" << basis_to_use;
-//        }
-//        break;
-//
-//        case CalculationType::OSS_CHECK_SP:
-//            route << " Stable=Opt scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/" << basis_;
-//            break;
-//
-//        case CalculationType::HIGH_SP: {
-//            std::string basis_to_use = select_basis_for_calculation();
-//            route << " scf(maxcycle=" << scf_mc << ",xqc) " << functional_ << "/" << basis_to_use
-//                  << " Guess(Read) Geom(AllCheck)";
-//        }
-//        break;
-//
-//        case CalculationType::IRC_FORWARD:
-//        case CalculationType::IRC_REVERSE: {
-//            std::string basis_to_use = select_basis_for_calculation();
-//            std::string direction    = (calc_type_ == CalculationType::IRC_FORWARD) ? "Forward" : "Reverse";
-//            int         maxpoints    = (irc_maxpoints_ != -1) ? irc_maxpoints_ : 50;
-//            int         recalc       = (irc_recalc_ != -1) ? irc_recalc_ : 10;
-//            int         maxcyc       = (irc_maxcycle_ != -1) ? irc_maxcycle_ : 350;
-//            int         stepsz       = (irc_stepsize_ != -1) ? irc_stepsize_ : 10;
-//            route << " irc=(" << direction << ",RCFC,MaxPoints=" << maxpoints << ",Recalc=" << recalc
-//                  << ",MaxCycle=" << maxcyc << ",StepSize=" << stepsz << ",loose,LQA,nogradstop) " << functional_ <<
-//                  "/"
-//                  << basis_to_use << " Guess(Read) Geom(AllCheck)";
-//        }
-//        break;
-//
-//        case CalculationType::OSS_TS_FREQ:
-//            // Handled separately in generate_input_content
-//            break;
-//
-//        case CalculationType::MODRE_TS_FREQ:
-//            // Handled separately in generate_input_content
-//            break;
-//
-//        case CalculationType::IRC:
-//            // Handled separately in generate_input_content
-//            break;
-//        case CalculationType::MODRE_OPT:
-//            route << " opt(maxcycles=" << opt_mc << ", modredundant" << ") scf(maxcycle=" << scf_mc << ",xqc) "
-//                  << functional_ << "/" << basis_;
-//            break;
-//    }
-//
-//    // Add solvent if specified
-//    if (!solvent_.empty() && calc_type_ != CalculationType::OSS_TS_FREQ && calc_type_ !=
-//    CalculationType::MODRE_TS_FREQ)
-//    {
-//        route << " scrf=(" << solvent_model_ << ",solvent=" << solvent_ << ")";
-//    }
-//
-//    // Add extra keywords
-//    if (!extra_keywords_.empty())
-//    {
-//        route << " " << extra_keywords_;
-//    }
-//
-//    return route.str();
-//}
-
-// std::string CreateInput::generate_checkpoint_section(const std::string& isomer_name)
-//{
-//     std::ostringstream chk;
-//     chk << "%chk=" << isomer_name << ".chk";
-//     return chk.str();
-// }
 
 std::string CreateInput::generate_title()
 {

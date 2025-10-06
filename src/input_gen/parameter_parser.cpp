@@ -31,6 +31,8 @@ bool ParameterParser::loadFromFile(const std::string& filename)
     std::string              line;
     while (std::getline(file, line))
     {
+        // Strip carriage return characters (\r) to handle Windows line endings
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
         lines.push_back(line);
     }
     file.close();
