@@ -17,7 +17,7 @@ ifeq ($(CXX),)
     CXX = g++
 endif
 $(info Using compiler: $(CXX))
-CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -pthread -I$(SRC_DIR)
+CXXFLAGS = -std=c++17 -Wall -Wextra -O3 -pthread -I$(SRC_DIR)
 
 # Add Intel-specific flags if using Intel compiler
 ifneq ($(filter icpx icpc icc,$(CXX)),)
