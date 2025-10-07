@@ -103,7 +103,7 @@ CommandContext CommandParser::parse(int argc, char* argv[])
             std::string template_type = "";   // Empty means general template
             std::string directory     = ".";  // Default to current directory
             std::string filename;
-            bool        is_general_template = true;
+            bool is_general_template = true;
 
             if (++i < argc)
             {
@@ -163,7 +163,7 @@ CommandContext CommandParser::parse(int argc, char* argv[])
             }
 
             ParameterParser parser;
-            bool            success;
+            bool success;
 
             if (is_general_template)
             {
