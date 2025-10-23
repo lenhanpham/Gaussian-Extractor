@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="41.684368mm"
+   height="19.840199mm"
+   viewBox="0 0 41.684368 19.840199"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="gx-logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.71179153"
+     inkscape:cx="164.37397"
+     inkscape:cy="250.77567"
+     inkscape:window-width="1920"
+     inkscape:window-height="1013"
+     inkscape:window-x="2391"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-61.316044,-82.094246)">
+    <path
+       style="font-size:28.2223px;font-family:Azonix;-inkscape-font-specification:Azonix;text-align:center;text-anchor:middle;fill:#bc0b0b;stroke-width:1.292"
+       d="m 71.19387,85.622001 h 9.877805 V 82.094213 H 71.19387 c -5.446904,0 -9.877805,4.430901 -9.877805,9.877805 0,5.446904 4.430901,9.877802 9.877805,9.877802 h 9.877805 V 91.01246 H 71.19387 v 3.527787 h 6.350018 v 3.781789 H 71.19387 c -3.499565,0 -6.350017,-2.850453 -6.350017,-6.350018 0,-3.499565 2.850452,-6.350017 6.350017,-6.350017 z m 11.994456,16.312489 0.05644,-0.0564 h -0.05644 z m 19.755614,-0.0564 h -0.0282 l 0.0282,0.0564 z m 0,-19.755614 h -4.430906 l -5.418681,7.027352 -5.418682,-7.027352 h -4.459123 l 7.648243,9.906027 -7.591798,9.849587 h 4.459123 l 5.390459,-6.970913 5.390459,6.970913 h 4.459126 l -7.620023,-9.849587 7.648243,-9.906027 z"
+       id="text1"
+       aria-label="GX" />
+  </g>
+</svg>

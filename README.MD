@@ -1,8 +1,22 @@
-# Gaussian Extractor v0.5.0
+<p align="center">
+  <a href="https://github.com/lenhanpham/Gaussian-Extractor">
+    <picture>
+      <img src="resources/gx-logo.svg" alt="Gaussian Extractor">
+    </picture>
+  </a>
+</p>
+<p align="center">
+  <a href="https://en.cppreference.com/w/cpp/17">
+    <img src="https://img.shields.io/badge/C%2B%2B-17-blue.svg" alt="C++17">
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
+  </a>
+  <img src="https://img.shields.io/badge/Build-Passing-brightgreen.svg" alt="Build Status">
+</p>
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It runs in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
 
-<img src="./docs/im.png" title="" alt="results" data-align="center">
 
 ## Key Features
 
