@@ -32,7 +32,7 @@
 
 ## Full features and User Manual:
 
-**Visit**: [Gaussian Extractor documentation](https://lenhanpham.github.io/gaussian-extractor/)
+**Visit**: [Gaussian Extractor documentation](https://lenhanpham.github.io/Gaussian-Extractor/)
 
 ## Installation and Compilation
 
