@@ -1,4 +1,4 @@
-name: CI/CD for Gaussian Extractor
+name: Build
 run-name: ${{ github.actor }}'s CI/CD Run on Commit "${{ github.event.head_commit.message }}"
 
 on:

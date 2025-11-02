@@ -12,7 +12,8 @@
   <a href="./LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
   </a>
-  <img src="https://img.shields.io/badge/Build-Passing-brightgreen.svg" alt="Build Status">
+  <a href="https://github.com/lenhanpham/Gaussian-Extractor/actions/workflows/ci.yml">
+    <img src="https://github.com/lenhanpham/Gaussian-Extractor/actions/workflows/ci.yml/badge.svg" alt="Build Status">
 </p>
 
 **Gaussian Extractor** is a high-performance, cluster-safe program designed to extract data from Gaussian computational chemistry outputs and to create inputs. It runs in parallel with comprehensive safety features to prevent system overload and ensure stable operation in shared computing environments.
