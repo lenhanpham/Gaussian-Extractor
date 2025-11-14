@@ -571,7 +571,7 @@ std::string ParameterParser::createGeneralTemplateContent() const
     content << "# ==========================================\n";
     content << "# print_level = P\n";
     content << "# route_extra_keywords = Int=UltraFine SCF=Conver=8\n";
-    content << "# Supports multiple keywords separated by spaces, commas, or semicolons\n\n";
+    content << "# Supports multiple keywords separated by spaces, | , or semicolons\n\n";
 
     // Custom cycle and optimization parameters
     content << "# ==========================================\n";

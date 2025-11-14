@@ -145,7 +145,7 @@ namespace Utils
         }
 
         std::vector<std::string> keywords;
-        std::string              cleaned_str = keywords_str;
+        std::string cleaned_str = keywords_str;
 
         // Remove leading/trailing whitespace
         cleaned_str.erase(cleaned_str.begin(),
@@ -164,7 +164,7 @@ namespace Utils
         std::string token;
         for (char ch : cleaned_str)
         {
-            if (ch == ' ' || ch == ',' || ch == ';')
+            if (ch == ' ' || ch == '|' || ch == ';')
             {
                 // Process the current token
                 if (!token.empty())
